@@ -23,40 +23,41 @@ const scanI2C = (sda, scl) => {
 4 - MOSI 
 5 - MISO
 6 - SCK
-7 - 2INT
+7 - INT UNKNOWN1
 8
 9 - BACKLIGHT
 10 - MOTOR
 11
 12
-13
-14
-15
+13 - ???TFT
+14 - ???TFT
+15 - ???TFT
 16
-17
-18
-19
-20
-21 - 2SDA
-22
-23
+17 - ???TFT
+18 - ???TFT
+19 - ???TFT
+20 - ???TFT
+21 - SDA UNKNOWN1 (device 0x20)
+22 - ???TFT
+23 - ???TFT
 24 - TX
-25 - 2SCL
+25 - SCL UNKNOWN1
 26 - RX
 27
-28 - 2RESET
+28 - RESET UNKNOWN1
 29
-30 - SDA
-31 - SCL
+30 - SDA ACCELEROMETER (device addr 25)
+31 - SCL ACCELEROMETER
 */
 
-const pinMonitor = () => {
-    const regs = [0, 1, 3, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 23, 27, 29];
+/* const pinMonitor = () => {
+    const regs = [0, 1, 3, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 23, 27, 29];
 
     let pr = {};
 
     let int = setInterval(() => {
         regs.forEach(r => {
+            // Pin(r).mode('input_pullup');
             const val = digitalRead(r);
             if (val != pr[r]) {
                 console.log(r, val);
@@ -66,29 +67,25 @@ const pinMonitor = () => {
     }, 100);
 };
 
-// pinMonitor();
+pinMonitor();
+*/
+
+scanI2C(13, 14);
+// scanI2C(13,15);
+scanI2C(13, 17);
+scanI2C(13, 18);
+scanI2C(13, 19);
+scanI2C(13, 20);
+scanI2C(13, 22);
+scanI2C(13, 23);
+
+// Unknown I2C device with address 0x20
+/*
 digitalWrite(28, 0);
 digitalWrite(28, 1);
-
-// scanI2C(21, 25);
 const i = I2C1;
 i.setup({ sda: 21, scl: 25 });
 i.writeTo(0x20, [247, 181, 73, 137, 95, 223, 71, 183, 91, 230, 237, 90,
     125, 91, 29, 188]);
 console.log(i.readFrom(0x20, 16));
-
-
-setWatch(() => {
-    console.log('2INT');
-}, 7, { edge: 'both', debounce: 50, repeat: true });
-
-setWatch(() => {
-    console.log('MOSI');
-}, 4, { edge: 'both', debounce: 50, repeat: true });
-
-setWatch(() => {
-    console.log('MOSI');
-}, 5, { edge: 'both', debounce: 50, repeat: true });
-
-const spi = new SPI({ mosi: 4, miso: 5, sck: 6, cs: 2, mode: 3 });
-spi.write(1);
+*/
