@@ -8,21 +8,21 @@ let i = 0;
 4
 5 - SCL reg 31
 6 - 
-7 - SDA reg 0x44
-8 - SCL
+7 - HEART SDA reg 0x44
+8 - HEART SCL reg 0x44
 9  - 
 10 - 
 11 - 
-12
+12 - LED?? FLASH??
 13 - 
 14 - HEART_BACKLIGHT
 15 - LCD?
 16 - BUTTON
-17
-18 - DEVICE RESET, LED?
-19
+17 - HEART_ENABLE
+18 - (DEVICE RESET), LED?
+19 - LED?? FLASH??
 20 - MOTOR
-21 
+21 - LED?? FLASH??
 22 - BACKLIGHT
 23 - 
 24 - 
@@ -51,14 +51,53 @@ let i = 0;
 // found i2c on scl 8 sda 7 reg 68
 // found i2c on scl 6 sda 2 reg 9
 
-
 // I2C device SCL 8 SDA 7 REG 0x44
 // reply 0: [34, 1, 17, 143, 16, 32, 80, 7, 0, 2, 94, 143, 1, 255, 255, 15]
+
+// memory spi
+/*
+*
+21 0
+19 1
+12 1
+*/
+
+/**
+Pin reactions:
+pin 0
+0 0
+pin 11
+11 0
+pin 13
+11 1
+13 0
+pin 15
+15 0
+15 1
+pin 18
+18 0
+13 1
+pin 23
+18 1
+23 0
+pin 24
+24 0
+31 1
+24 1
+31 0
+pin 27
+27 0
+27 1
+pin 28
+28 0
+28 1
+23 1
+*/
 
 const MOTOR = 20;
 const HEART_BACKLIGHT = 14;
 const BUTTON = 16;
-const ACCELEROMETER_ENABLE = 17;
+const HEART_SENSOR_ENABLE = 17;
 const BACKLIGHT = 22;
 const BACKLIGHT2 = 30;
 const CHARGING = 25;
@@ -83,7 +122,7 @@ setWatch(() => {
   bl(j);
   j++;
 
-  digitalPulse(ACCELEROMETER_ENABLE, 1, 2000);
+  digitalPulse(HEART_SENSOR_ENABLE, 1, 100);
   if (j === 4) { j = 0; }
 
 }, BUTTON, { edge: 'falling', debounce: 50, repeat: true });
@@ -102,7 +141,7 @@ const pinMonitor = () => {
 
   let int = setInterval(() => {
     regs.forEach(r => {
-      Pin(r).mode('input');
+      Pin(r).mode('input_pulldown');
       const val = digitalRead(r);
       if (val != pr[r]) {
         console.log(r, val);
@@ -162,5 +201,4 @@ const pinScan2 = (sda) => {
   }, 500);
 }
 
-// Pin(ACCELEROMETER_ENABLE).write(0);
-// scan2(7,8);
+
