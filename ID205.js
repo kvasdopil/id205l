@@ -13,16 +13,16 @@ let i = 0;
 9  - 
 10 - 
 11 - 
-12 - LED?? FLASH??
+12 - MEMORY_WP
 13 - 
 14 - HEART_BACKLIGHT
 15 - LCD?
 16 - BUTTON
 17 - HEART_ENABLE
 18 - (DEVICE RESET), LED?
-19 - LED?? FLASH??
+19 - MEMORY_SO
 20 - MOTOR
-21 - LED?? FLASH??
+21 - MEMORY_CS
 22 - BACKLIGHT
 23 - 
 24 - 
@@ -94,13 +94,25 @@ pin 28
 23 1
 */
 
+// MEMORY CHIP:
+// CS - D21?
+// SO - D19?
+// WP - D12
+// HOLD -
+// SCLK -
+// SI - 
+
 const MOTOR = 20;
-const HEART_BACKLIGHT = 14;
+// const HEART_BACKLIGHT = 14;
 const BUTTON = 16;
 const HEART_SENSOR_ENABLE = 17;
 const BACKLIGHT = 22;
 const BACKLIGHT2 = 30;
 const CHARGING = 25;
+
+const MEMORY_CS = 21;
+const MEMORY_WP = 12;
+const MEMORY_SO = 19;
 
 const vibrate = ms => digitalPulse(20, 1, ms);
 
@@ -110,38 +122,37 @@ const bl = level => {
 };
 
 vibrate([50, 50, 50]);
-digitalPulse(HEART_BACKLIGHT, 1, 1000);
-Pin(BUTTON).mode('input_pullup');
+// digitalPulse(HEART_BACKLIGHT, 1, 1000);
+// Pin(BUTTON).mode('input_pullup');
 
 bl(2);
 let j = 0;
 
 setWatch(() => {
   console.log('btn');
-  digitalPulse(HEART_BACKLIGHT, 1, 1000);
+  // digitalPulse(HEART_BACKLIGHT, 1, 1000);
   bl(j);
   j++;
 
-  digitalPulse(HEART_SENSOR_ENABLE, 1, 100);
+  // digitalPulse(HEART_SENSOR_ENABLE, 1, 100);
   if (j === 4) { j = 0; }
 
 }, BUTTON, { edge: 'falling', debounce: 50, repeat: true });
 
-const pinMonitor = () => {
+const pinMonitor = (mode) => {
   const regs = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-    15,
-    18, 19,
-    21, 23, 24,
-    26, 27, 28, 29, 31, 32, 33, 34, 35,
-    36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    11, 12, 13, 14, 15, 16, 17, 18, 19,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+    31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+    41, 42, 43, 44, 45, 46, 47
   ];
 
   let pr = {};
 
   let int = setInterval(() => {
     regs.forEach(r => {
-      Pin(r).mode('input_pulldown');
+      Pin(r).mode(mode);
       const val = digitalRead(r);
       if (val != pr[r]) {
         console.log(r, val);
@@ -151,7 +162,7 @@ const pinMonitor = () => {
   }, 100);
 };
 
-pinMonitor();
+// pinMonitor("input_pulldown");
 
 const scan2 = (sda, scl) => {
   I2C1.setup({ sda: sda, scl: scl });
@@ -200,5 +211,3 @@ const pinScan2 = (sda) => {
     scan2(sda, b);
   }, 500);
 }
-
-
