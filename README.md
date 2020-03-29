@@ -70,8 +70,8 @@ Pinout
 - 4
 - 5 - SCL device 0x1f?, related to LCD?
 - 6 - 
-- 7 - HEART_SENSOR SDA device 0x44
-- 8 - HEART_SENSOR SCL device 0x44
+- 7 = HEART_SENSOR SDA device 0x44
+- 8 = HEART_SENSOR SCL device 0x44
 - 9  - 
 - 10 - 
 - 11 - 
@@ -80,7 +80,7 @@ Pinout
 - 14 = heart senssor backlight aka LED1
 - 15 - related to LCD? related to HEART?
 - 16 = BTN1
-- 17 - HEART_SENSOR_ENABLE
+- 17 = HEART_SENSOR_ENABLE
 - 18 - (DEVICE RESET), related LCD?, related to HEART?
 - 19 - MEMORY_SO, related to HEART?
 - 20 = MOTOR
@@ -114,7 +114,8 @@ This pins are connected to display and touch sensor
 - 2, 15, 18, 30, 31
 
 ### Heart rate sensor
-HX3600, enabled by D17.write(1), I2C on SDA=7 SCL=8 deviceId=0x44
+HX3600, enabled by `D17.write(1)`, I2C on SDA=7 SCL=8 deviceId=0x44
+
 Cannot find datasheet, but similar product here: http://www.tianyihexin.com/pic/file/20180323/20180323105824952495.pdf
 
 ### Touch sensor
