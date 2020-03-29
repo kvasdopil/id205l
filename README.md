@@ -19,6 +19,16 @@ Prebuilt .hex files: (see the repo). Beware, DFU is not working!
 - ./scripts/provision.py NRF52340DK
 - copy build/IS205L.py to espruino/boards
 
+Change this:
+```
+DEFINES += DNRF52 -DNRF52840_XXAA
+```
+to this:
+```
+DEFINES += -DNRF52840_XXAA
+```
+in `NRF52.make`
+
 To build bootloader:
 ```
 make clean && \
@@ -38,16 +48,6 @@ make clean && \
     DEFINES="-DUARTE1_EASYDMA_MAXCNT_SIZE=16 -DNRF52"  \
     make
 ```
-
-Change this:
-```
-DEFINES += DNRF52 -DNRF52840_XXAA
-```
-to this:
-```
-DEFINES += -DNRF52840_XXAA
-```
-in `NRF52.make`
 
 ## How to flash
 
