@@ -16,10 +16,10 @@ i'm pretty sure the easiest way to open it would be using a hot gun and suction 
 Prebuilt .hex files: (see the repo). Beware, DFU is not working!
 
 - Checkout espruino sources
-- ./scripts/provision.py NRF52340DK
-- copy build/IS205L.py to espruino/boards
+- ./scripts/provision.py NRF52340DK (this will ask for a filename to patch, just press enter twice)
+- copy `build/IS205L.py` to `espruino/boards/`
 
-Change this:
+Change this line:
 ```
 DEFINES += DNRF52 -DNRF52840_XXAA
 ```
@@ -29,25 +29,32 @@ DEFINES += -DNRF52840_XXAA
 ```
 in `NRF52.make`
 
-To build bootloader:
+### Building device fw
 ```
 make clean && \
     DFU_UPDATE_BUILD=1 \
     BOARD=ID205L \
     RELEASE=1 \
-    DEFINES="-DUARTE1_EASYDMA_MAXCNT_SIZE=16 -I./targetlibs/nrf5x_15/components/libraries/bootloader/ -I/targetlibs/nrf5x_15/components/libraries/bootloader/dfu"  \
+    DEFINES="-DNRF52"  \
+    make
+```
+
+### Building bootloader
+```
+curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.0.0_a53641a.zip -o nRF5_SDK_15.0.0_a53641a.zip
+unzip -o nRF5_SDK_15.0.0_a53641a.zip
+mv nRF5_SDK_15.0.0_a53641a/external/nano-pb ./targetlibs/nrf5x_15/external/
+rm -rf nRF5_SDK_15.0.0_a53641a.zip nRF5_SDK_15.0.0_a53641a
+
+make clean && \
+    DFU_UPDATE_BUILD=1 \
+    BOARD=ID205L \
+    RELEASE=1 \
     BOOTLOADER=1 \
     make
 ```
-To build device code
-```
-make clean && \
-    DFU_UPDATE_BUILD=1 \
-    BOARD=ID205L \
-    RELEASE=1 \
-    DEFINES="-DUARTE1_EASYDMA_MAXCNT_SIZE=16 -DNRF52"  \
-    make
-```
+
+FIXME: currently bootloader is entering DFU mode after startup (because BTN1 is not negated?) A bootloader for PUCKJS seems to be working, but DFU function is now working in it.
 
 ## How to flash
 
