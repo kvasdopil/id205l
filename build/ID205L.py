@@ -37,11 +37,12 @@ info = {
      'NEOPIXEL'
    ],
    'makefile' : [
-     'DEFINES += -DCONFIG_GPIO_AS_PINRESET', # Allow the reset pin to work
-     #'DEFINES += -DBOARD_PCA10056',
-     #'DEFINES += -DNRF_USB=1 -DUSB',
+     #'DEFINES+=-DBLUETOOTH_NAME_PREFIX=\'"ID205L"\''
+     'DEFINES+=-DCONFIG_GPIO_AS_PINRESET', # Allow the reset pin to work
+     'DEFINES+=-DUARTE1_EASYDMA_MAXCNT_SIZE=16', # fix UART params problem
      'NRF_SDK15=1',
      'DFU_PRIVATE_KEY=targets/nrf5x_dfu/dfu_private_key.pem',
+     'DFU_SETTINGS=--application-version 0xff --hw-version 52 --sd-req 0xA9', 
    ]
  }
 };
@@ -113,7 +114,15 @@ def get_pins():
   pins = pinutils.generate_pins(0,47) # 48 General Purpose I/O Pins.
   pinutils.findpin(pins, "PD0", True)["functions"]["XL1"]=0;
   pinutils.findpin(pins, "PD1", True)["functions"]["XL2"]=0;
+  pinutils.findpin(pins, "PD2", True)["functions"]["ADC1_IN0"]=0;
+  pinutils.findpin(pins, "PD3", True)["functions"]["ADC1_IN1"]=0;
+  pinutils.findpin(pins, "PD4", True)["functions"]["ADC1_IN2"]=0;
+  pinutils.findpin(pins, "PD5", True)["functions"]["ADC1_IN3"]=0;
   pinutils.findpin(pins, "PD16", True)["functions"]["NEGATED"]=0;
+  pinutils.findpin(pins, "PD28", True)["functions"]["ADC1_IN4"]=0;
+  pinutils.findpin(pins, "PD29", True)["functions"]["ADC1_IN5"]=0;
+  pinutils.findpin(pins, "PD30", True)["functions"]["ADC1_IN6"]=0;
+  pinutils.findpin(pins, "PD31", True)["functions"]["ADC1_IN7"]=0;
 
   # everything is non-5v tolerant
   for pin in pins:
