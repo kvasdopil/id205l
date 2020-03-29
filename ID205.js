@@ -94,13 +94,28 @@ pin 28
 23 1
 */
 
-// MEMORY CHIP:
+// Poke on pin -> changed values:
+// 13->11
+// 22->18,30,15
+// 23->30
+// 24->31
+// 28->27,23
+// 29->23,22
+
+// MEMORY CHIP related are
 // CS - D21?
 // SO - D19?
 // WP - D12
 // HOLD -
 // SCLK -
 // SI - 
+
+// back sensor related are
+// 15, 16(btn), 17, 18, 19, 25
+// display - 30,31,2
+
+// display related are
+// 2, 15, 18, 30, 31,
 
 const MOTOR = 20;
 // const HEART_BACKLIGHT = 14;
