@@ -117,7 +117,7 @@ This pins are connected to display and touch sensor
 IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87
 
 ### Accelerometer
-Unknown markings are B271 VS35
+Unknown, markings are B271 VS35
 
 ## Ask questions
 https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
