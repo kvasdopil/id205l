@@ -63,8 +63,8 @@ Use softdevice 140 v6.0.0
 ### Chip: NRF52840
 
 Pinout
-- 0 - 
-- 1 
+- 0 - XL1
+- 1 - XL1
 - 2 - related to LCD?
 - 3
 - 4
@@ -114,7 +114,7 @@ This pins are connected to display and touch sensor
 - 2, 15, 18, 30, 31
 
 ### Touch sensor
-IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87
+IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet somewhere?
 
 ### Accelerometer
 Unknown, markings are B271 VS35
