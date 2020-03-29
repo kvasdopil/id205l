@@ -1,10 +1,10 @@
 # ID205L smart watch custom firmware WIP 
 
 ## Photos: 
-Fccid: https://fccid.io/2AHFT228/Internal-Photos/Internal-Photo-4438078
-Opened device: https://photos.google.com/share/AF1QipMEgaVUau3sA0FcNTVeyZKY0TScTzwYiXO7fe6Rh2gIK8x5G0z2D5svC86-koTstQ?key=MGM4Y1JZT2xTaGxvSmY0MWdkMnpBYVZNd3lES3JR
-PCB photos: https://photos.google.com/share/AF1QipO3eowMmGWax-Yk8IF-ml1vgUQFByVLIt-XGVHYddveYpcckNRNJQFuctqWAHlYUA?key=MEE2aWFhakNvVFg1VUpoTENOeEF6RU82OEZBY0ln
-Chip markings: https://photos.google.com/share/AF1QipNFV63yPYG3SIgiTFkugtkMYC76d3eq6xieDRYmCEP69MpZUu-oj6QuwDR9ZJyVDg?key=bS1uQldlSGN4Wmh2alh4bENydW9YTGV1aTg3djFB
+- Fccid: https://fccid.io/2AHFT228/Internal-Photos/Internal-Photo-4438078
+- Opened device: https://photos.google.com/share/AF1QipMEgaVUau3sA0FcNTVeyZKY0TScTzwYiXO7fe6Rh2gIK8x5G0z2D5svC86-koTstQ?key=MGM4Y1JZT2xTaGxvSmY0MWdkMnpBYVZNd3lES3JR
+- PCB photos: https://photos.google.com/share/AF1QipO3eowMmGWax-Yk8IF-ml1vgUQFByVLIt-XGVHYddveYpcckNRNJQFuctqWAHlYUA?key=MEE2aWFhakNvVFg1VUpoTENOeEF6RU82OEZBY0ln
+- Chip markings: https://photos.google.com/share/AF1QipNFV63yPYG3SIgiTFkugtkMYC76d3eq6xieDRYmCEP69MpZUu-oj6QuwDR9ZJyVDg?key=bS1uQldlSGN4Wmh2alh4bENydW9YTGV1aTg3djFB
 
 ## How to open:
 i'm pretty sure the easiest way to open it would be using a hot gun and suction cup to remove the glass. What i did is:
@@ -52,10 +52,10 @@ in `NRF52.make`
 ## How to flash
 
 Connect to J-Link to device to following pads:
-VCC - VCC
-G - GND
-DIO - DIO  
-C - CLK
+- VCC - VCC
+- G - GND
+- DIO - DIO  
+- C - CLK
 
 Use softdevice 140 v6.0.0
 
@@ -63,47 +63,49 @@ Use softdevice 140 v6.0.0
 ### Chip: NRF52840
 
 Pinout
-0 - 
-1 
-2 - related to LCD?
-3
-4
-5 - SCL device 0x1f?, related to LCD?
-6 - 
-7 - HEART_SENSOR? SDA device 0x44
-8 - HEART_SENSOR? SCL device 0x44
-9  - 
-10 - 
-11 - 
-12 - MEMORY_WP
-13 - 
-14 = heart senssor backlight aka LED1
-15 - related to LCD? related to HEART?
-16 = side button aka BTN1
-17 - HEART_SENSOR_ENABLE
-18 - (DEVICE RESET), related LCD?, related to HEART?
-19 - MEMORY_SO, related to HEART?
-20 = MOTOR
-21 = MEMORY_CS
-22 = BACKLIGHT
-23 - 
-24 - 
-25 - CHARGING, related to HEART?
-26 - 
-27 - SDA device 0x1f?
-28 - 
-29 - 
-30 - BACKLIGHT2
-31 - related to LCD?
-32
-33
-34
-35
-36
-37
-38
-39
-40
+- 0 - 
+- 1 
+- 2 - related to LCD?
+- 3
+- 4
+- 5 - SCL device 0x1f?, related to LCD?
+- 6 - 
+- 7 - HEART_SENSOR? SDA device 0x44
+- 8 - HEART_SENSOR? SCL device 0x44
+- 9  - 
+- 10 - 
+- 11 - 
+- 12 - MEMORY_WP
+- 13 - 
+- 14 = heart senssor backlight aka LED1
+- 15 - related to LCD? related to HEART?
+- 16 = side button aka BTN1
+- 17 - HEART_SENSOR_ENABLE
+- 18 - (DEVICE RESET), related LCD?, related to HEART?
+- 19 - MEMORY_SO, related to HEART?
+- 20 = MOTOR
+- 21 = MEMORY_CS
+- 22 = BACKLIGHT
+- 23 - 
+- 24 - 
+- 25 - CHARGING, related to HEART?
+- 26 - 
+- 27 - SDA device 0x1f?
+- 28 - 
+- 29 - 
+- 30 - BACKLIGHT2
+- 31 - related to LCD?
+- 32
+- 33
+- 34
+- 35
+- 36
+- 37
+- 38
+- 39
+- 40
+
+Pins 32+ does not seem to be connected to anything, maybe theres a problem with firmware?
 
 These pins are connected to wires going to heart sensor and button
 - 15, 16(btn), 17, 18, 19, 25
