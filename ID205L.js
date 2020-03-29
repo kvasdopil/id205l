@@ -1,15 +1,14 @@
-let i = 0;
-
-/* 
-0 - I2C1 SCL 0
-1 
+/*
+=== Pin Layout ===
+0 - XL1
+1 - XL1
 2 - some I2C sda reg 0x9
-3
-4
-5 - SCL reg 31
+3 -
+4 -
+5 - SCL reg 0x1f
 6 - 
-7 - HEART SDA reg 0x44
-8 - HEART SCL reg 0x44
+7 - HEART_SENSOR SDA reg 0x44
+8 - HEART_SENSOR SCL reg 0x44
 9  - 
 10 - 
 11 - 
@@ -17,7 +16,7 @@ let i = 0;
 13 - 
 14 - HEART_BACKLIGHT
 15 - LCD?
-16 - BUTTON
+16 - BTN1
 17 - HEART_ENABLE
 18 - (DEVICE RESET), LED?
 19 - MEMORY_SO
@@ -33,69 +32,16 @@ let i = 0;
 29 - 
 30 - BACKLIGHT2
 31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-*/
 
+Pins 32-47 are always off and does not seem to be working (does espruino support them?)
+*/
 
 // I2C device SCL 5, SDA 27 addr 15
 // reply 0: 33 0 0 128 240 127 0 128 0 0
 
-// found i2c on scl 8 sda 7 reg 68
-// found i2c on scl 6 sda 2 reg 9
-
-// I2C device SCL 8 SDA 7 REG 0x44
-// reply 0: [34, 1, 17, 143, 16, 32, 80, 7, 0, 2, 94, 143, 1, 255, 255, 15]
-
-// memory spi
-/*
-*
-21 0
-19 1
-12 1
-*/
-
-/**
-Pin reactions:
-pin 0
-0 0
-pin 11
-11 0
-pin 13
-11 1
-13 0
-pin 15
-15 0
-15 1
-pin 18
-18 0
-13 1
-pin 23
-18 1
-23 0
-pin 24
-24 0
-31 1
-24 1
-31 0
-pin 27
-27 0
-27 1
-pin 28
-28 0
-28 1
-23 1
-*/
-
 // Poke on pin -> changed values:
 // 13->11
+// 18->13
 // 22->18,30,15
 // 23->30
 // 24->31
@@ -110,17 +56,19 @@ pin 28
 // SCLK -
 // SI - 
 
-// back sensor related are
+// back sensor related pins are
 // 15, 16(btn), 17, 18, 19, 25
 // display - 30,31,2
 
-// display related are
+// display related pins are
 // 2, 15, 18, 30, 31,
 
-const MOTOR = 20;
-// const HEART_BACKLIGHT = 14;
+const HEART_SDA = 7
+const HEART_SCL = 8
+const HEART_BACKLIGHT = 14;
 const BUTTON = 16;
 const HEART_SENSOR_ENABLE = 17;
+const MOTOR = 20;
 const BACKLIGHT = 22;
 const BACKLIGHT2 = 30;
 const CHARGING = 25;
@@ -131,36 +79,36 @@ const MEMORY_SO = 19;
 
 const vibrate = ms => digitalPulse(20, 1, ms);
 
-const bl = level => {
+const backlight = level => {
   Pin(BACKLIGHT2).write(level >> 1 & 1);
   Pin(BACKLIGHT).write(level & 1);
 };
 
 vibrate([50, 50, 50]);
-// digitalPulse(HEART_BACKLIGHT, 1, 1000);
-// Pin(BUTTON).mode('input_pullup');
+digitalPulse(HEART_BACKLIGHT, 1, 100);
 
-bl(2);
-let j = 0;
+backlight(2);
 
+digitalWrite(HEART_SENSOR_ENABLE, 1);
+const heartSensor = new I2C();
+heartSensor.setup({ sda: HEART_SDA, scl: HEART_SCL });
+
+// =======
+// Demo of the button 
 setWatch(() => {
-  console.log('btn');
-  // digitalPulse(HEART_BACKLIGHT, 1, 1000);
-  bl(j);
-  j++;
+  digitalPulse(HEART_BACKLIGHT, 1, 100);
+  vibrate(100);
+}, BTN1, { edge: 'rising', debounce: 50, repeat: true });
 
-  // digitalPulse(HEART_SENSOR_ENABLE, 1, 100);
-  if (j === 4) { j = 0; }
-
-}, BUTTON, { edge: 'falling', debounce: 50, repeat: true });
+// ==== utility functions used to figure out pin assignments ====
 
 const pinMonitor = (mode) => {
   const regs = [
-    2, 3, 4, 5, 6, 7, 8, 9, 10,
-    11, 12, 13, 14, 15, 16, 17, 18, 19,
-    21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-    31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47
+    2, 3, 4, 5, 6, 9,
+    10, 11, 12, 13, 15, 18, 19,
+    21, 23, 24, 25, 26, 27, 28, 29,
+    31, 32, 33, 34, 35, 36, 37, 38, 39,
+    40, 41, 42, 43, 44, 45, 46, 47
   ];
 
   let pr = {};
@@ -179,9 +127,7 @@ const pinMonitor = (mode) => {
   }, 100);
 };
 
-// pinMonitor("input_pulldown");
-
-const scan2 = (sda, scl) => {
+const scanI2C = (sda, scl) => {
   I2C1.setup({ sda: sda, scl: scl });
   for (let reg = 8; reg < 127; reg++) {
     try {
@@ -195,12 +141,13 @@ const scan2 = (sda, scl) => {
   Pin(sda).mode('input');
 };
 
-
 const pinScan = () => {
   const regs = [
-    0, 1, 2, 3, 4, 5, 6, 7,
-    8, 9, 10, 11, 12, 13,
-    15, 17, 18, 19, 21, 23, 24, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39
+    2, 3, 4, 5, 6, 9,
+    10, 11, 12, 13, 15, 18, 19,
+    21, 23, 24, 25, 26, 27, 28, 29,
+    31, 32, 33, 34, 35, 36, 37, 38, 39,
+    40, 41, 42, 43, 44, 45, 46, 47
   ];
   let a = 0;
   let b = 0;
@@ -218,49 +165,49 @@ const pinScan = () => {
 
 const pinScan2 = (sda) => {
   const regs = [
-    0, 1, 3, 4, 5, 6, 7,
-    8, 9, 10, 11, 12, 13,
-    15, 17, 18, 19, 21, 23, 24, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39
+    2, 3, 4, 5, 6, 9,
+    10, 11, 12, 13, 15, 18, 19,
+    21, 23, 24, 25, 26, 27, 28, 29,
+    31, 32, 33, 34, 35, 36, 37, 38, 39,
+    40, 41, 42, 43, 44, 45, 46, 47
   ];
   const i = setInterval(() => {
     if (regs.length === 0) { console.log('done'); clearInterval(i); return; }
     const b = regs.shift();
-    scan2(sda, b);
+    scanI2C(sda, b);
   }, 500);
 }
 
-
-// ===
-///
-
-var spi = new SPI();
-setWatch(() => {
-  const freePins = [
-    24, 23, 28, 21, 12, 19, 18, 2, 1, 3
-  ];
-  const pick = () => {
-    while (1) {
-      var n = Math.floor(Math.random() * freePins.length);
-      const res = freePins[n];
-      if (res != -1) {
-        freePins[n] = -1;
-        return res;
+const tryDisplay = () => {
+  var spi = new SPI();
+  setWatch(() => {
+    const freePins = [
+      24, 23, 28, 21, 12, 19, 18, 2, 1, 3
+    ];
+    const pick = () => {
+      while (1) {
+        var n = Math.floor(Math.random() * freePins.length);
+        const res = freePins[n];
+        if (res != -1) {
+          freePins[n] = -1;
+          return res;
+        }
       }
     }
-  }
-  const cs = pick();
-  const en = pick();
-  const irq = pick();
-  const mosi = pick();
-  const sck = pick();
-  spi.setup({ mosi: Pin(mosi), sck: Pin(sck) });
-  var g = require("ST7789").connect(spi, Pin(cs), Pin(en), Pin(irq), () => {
-    console.log('conn', cs, en, irq, mosi, sck);
-    //g.clear();
-    g.setRotation(1);
-    g.drawString("Hello", 0, 0);
-    //g.setFontVector(20);
-    //g.setColor(0,0.5,1);
-    //g.drawString("Espruino",0,10);
-  });
-}, BTN1, { edge: 'rising', debounce: 50, repeat: true });
+    const cs = pick();
+    const en = pick();
+    const irq = pick();
+    const mosi = pick();
+    const sck = pick();
+    spi.setup({ mosi: Pin(mosi), sck: Pin(sck) });
+    var g = require("ST7789").connect(spi, Pin(cs), Pin(en), Pin(irq), () => {
+      console.log('conn', cs, en, irq, mosi, sck);
+      //g.clear();
+      g.setRotation(1);
+      g.drawString("Hello", 0, 0);
+      //g.setFontVector(20);
+      //g.setColor(0,0.5,1);
+      //g.drawString("Espruino",0,10);
+    });
+  }, BTN1, { edge: 'rising', debounce: 50, repeat: true });
+};
