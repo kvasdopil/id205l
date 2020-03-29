@@ -116,7 +116,9 @@ This pins are connected to display and touch sensor
 ### Heart rate sensor
 HX3600, enabled by `D17.write(1)`, I2C on SDA=7 SCL=8 deviceId=0x44
 
-Cannot find datasheet, but similar product here: http://www.tianyihexin.com/pic/file/20180323/20180323105824952495.pdf
+Datasheet: http://www.synercontech.com/Public/uploads/file/2019_10/20191020152311_81180.pdf
+
+More detailed datasheet for similar device: http://www.tianyihexin.com/pic/file/20180323/20180323105824952495.pdf
 
 ### Touch sensor
 IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet somewhere?
