@@ -211,3 +211,39 @@ const pinScan2 = (sda) => {
     scan2(sda, b);
   }, 500);
 }
+
+
+// ===
+///
+
+var spi = new SPI();
+setWatch(() => {
+  const freePins = [
+    24, 23, 28, 21, 12, 19, 18, 2, 1, 3
+  ];
+  const pick = () => {
+    while (1) {
+      var n = Math.floor(Math.random() * freePins.length);
+      const res = freePins[n];
+      if (res != -1) {
+        freePins[n] = -1;
+        return res;
+      }
+    }
+  }
+  const cs = pick();
+  const en = pick();
+  const irq = pick();
+  const mosi = pick();
+  const sck = pick();
+  spi.setup({ mosi: Pin(mosi), sck: Pin(sck) });
+  var g = require("ST7789").connect(spi, Pin(cs), Pin(en), Pin(irq), () => {
+    console.log('conn', cs, en, irq, mosi, sck);
+    //g.clear();
+    g.setRotation(1);
+    g.drawString("Hello", 0, 0);
+    //g.setFontVector(20);
+    //g.setColor(0,0.5,1);
+    //g.drawString("Espruino",0,10);
+  });
+}, BTN1, { edge: 'rising', debounce: 50, repeat: true });
