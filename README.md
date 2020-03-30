@@ -120,6 +120,24 @@ These pins are connected to wires going to heart sensor and button
 This pins are connected to display and touch sensor
 - 2, 15, 18, 30, 31
 
+### Display
+Supposedly controlled by ST7789. 
+
+Backlight has 4 brightness levels set by changing values on `D22` and `D30` pins.
+
+Pinout of SPI is unknown. Flash memory chip is likely to be on same SPI interface.
+
+### Flash memory chip
+XT25F64B
+
+Pinout:
+- CS - D21?
+- SO - D19?
+- WP - D12
+- HOLD -
+- SCLK -
+- SI - 
+
 ### Heart rate sensor
 HX3600, enabled by `D17.write(1)`, I2C on SDA=7 SCL=8 deviceId=0x44
 
@@ -138,6 +156,8 @@ TODO: add interrupt support
 
 ### Touch sensor
 IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet somewhere?
+
+There's a driver and datasheet for similar device here: https://github.com/amazfitbip/documentation/tree/master/documents/IT7259
 
 ### Accelerometer
 Unknown, markings are B271 VS35. 
