@@ -54,7 +54,7 @@ make clean && \
     make
 ```
 
-FIXME: currently bootloader is entering DFU mode after startup (because BTN1 is not negated?) A bootloader for PUCKJS seems to be working, but DFU function is now working in it.
+- FIXME: currently bootloader is entering DFU mode after startup (because BTN1 is not negated?) A bootloader for PUCKJS seems to be working, but DFU function is now working in it.
 
 ## How to flash
 
@@ -151,8 +151,8 @@ Usage:
   console.log(heartSensor.read(0, 16)); // read registers 0x00-0x10
 ```
 
-TODO: add actual data processing
-TODO: add interrupt support
+- TODO: add actual data processing
+- TODO: add interrupt support
 
 ### Touch sensor
 IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet somewhere?
@@ -176,7 +176,7 @@ Usage:
   }, 100);
 ```
 
-TODO: add interrupt support
+- TODO: add interrupt support
 
 ## Ask questions
 https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
