@@ -2,10 +2,10 @@
 === Pin Layout ===
 0 - XL1
 1 - XL1
-2 - some I2C sda reg 0x9
+2 - 
 3 -
-4 -
-5 - SCL reg 0x1f
+4 - ACCELEROMETER_ENABLE
+5 - ACCELEROMETER SCL reg 0x1f
 6 - 
 7 - HEART_SENSOR SDA reg 0x44
 8 - HEART_SENSOR SCL reg 0x44
@@ -27,17 +27,14 @@
 24 - 
 25 - CHARGING
 26 - 
-27 - SDA reg 31 or 15
+27 - ACCELEROMETER SDA reg 0x1f
 28 - 
 29 - 
 30 - BACKLIGHT2
-31
+31 -
 
 Pins 32-47 are always off and does not seem to be working (does espruino support them?)
 */
-
-// I2C device SCL 5, SDA 27 addr 15
-// reply 0: 33 0 0 128 240 127 0 128 0 0
 
 // Poke on pin -> changed values:
 // 13->11
@@ -63,6 +60,8 @@ Pins 32-47 are always off and does not seem to be working (does espruino support
 // display related pins are
 // 2, 15, 18, 30, 31,
 
+const ACCELEROMETER_ENABLE = 4;
+const ACCELEROMETER_CLK = 5;
 const HEART_SDA = 7
 const HEART_SCL = 8
 const HEART_BACKLIGHT = 14;
@@ -72,6 +71,7 @@ const MOTOR = 20;
 const BACKLIGHT = 22;
 const BACKLIGHT2 = 30;
 const CHARGING = 25;
+const ACCELEROMETER_SDA = 27;
 
 const MEMORY_CS = 21;
 const MEMORY_WP = 12;
@@ -139,7 +139,34 @@ addr   value  desc
 0xC0 - 0x86 - led driver config
 */
 
-// ======= demo of the button ===
+// === accelerometer ===
+
+const u8u8tos16 = (byteA, byteB) => {
+  const sign = byteA & (1 << 7);
+  var x = ((byteA & 0xff) << 8) | (byteB & 0xff);
+  if (sign) {
+    return 0xffff0000 | x; // fill in most significant bits with 1's
+  }
+  return x;
+};
+
+const accI2C = new I2C();
+accI2C.setup({ sda: ACCELEROMETER_SDA, clk: ACCELEROMETER_CLK });
+const accelerometer = {
+  enable: () => digitalWrite(ACCELEROMETER_ENABLE, 1),
+  disable: () => digitalRead(ACCELEROMETER_ENABLE, 0),
+  read: () => {
+    accI2C.writeTo(0x1f, 0x02);
+    const data = accI2C.readFrom(0x1f, 6);
+    return {
+      x: u8u8tos16(data[1], data[0]) >> 6,
+      y: u8u8tos16(data[3], data[2]) >> 6,
+      z: u8u8tos16(data[5], data[4]) >> 6
+    }
+  }
+}
+
+// === demo of the button ===
 
 setWatch(() => {
   digitalPulse(HEART_BACKLIGHT, 1, 100);
@@ -262,3 +289,6 @@ const tryDisplay = () => {
 
 heartSensor.enable();
 console.log(heartSensor.read(0, 16).map(i => Number(i).toString(16)));
+
+accelerometer.enable();
+console.log(accelerometer.read());
