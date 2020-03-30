@@ -127,11 +127,34 @@ Datasheet: http://www.synercontech.com/Public/uploads/file/2019_10/2019102015231
 
 More detailed datasheet for similar device: http://www.tianyihexin.com/pic/file/20180323/20180323105824952495.pdf
 
+Usage: 
+```
+  heartSensor.enable();
+  console.log(heartSensor.read(0, 16)); // read registers 0x00-0x10
+```
+
+TODO: add actual data processing
+TODO: add interrupt support
+
 ### Touch sensor
 IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet somewhere?
 
 ### Accelerometer
-Unknown, markings are B271 VS35
+Unknown, markings are B271 VS35. 
+
+Enabled by `D4.write(1)`, I2C on SDA=27, SCL=5, deviceId=0x1f
+
+DeviceId is similar to https://www.nxp.com/docs/en/data-sheet/FXOS8700CQ.pdf, but WHO_AM_I register value is wrong.
+
+Usage: 
+```
+  accelerometer.enable();
+  setInterval(() => {
+    console.log(accelerometer.read());
+  }, 100);
+```
+
+TODO: add interrupt support
 
 ## Ask questions
 https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
