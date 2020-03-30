@@ -4,7 +4,7 @@
 - Fccid: https://fccid.io/2AHFT228/Internal-Photos/Internal-Photo-4438078
 - Opened device: https://photos.google.com/share/AF1QipMEgaVUau3sA0FcNTVeyZKY0TScTzwYiXO7fe6Rh2gIK8x5G0z2D5svC86-koTstQ?key=MGM4Y1JZT2xTaGxvSmY0MWdkMnpBYVZNd3lES3JR
 - PCB photos: https://photos.google.com/share/AF1QipO3eowMmGWax-Yk8IF-ml1vgUQFByVLIt-XGVHYddveYpcckNRNJQFuctqWAHlYUA?key=MEE2aWFhakNvVFg1VUpoTENOeEF6RU82OEZBY0ln
-- Chip markings: https://photos.google.com/share/AF1QipNFV63yPYG3SIgiTFkugtkMYC76d3eq6xieDRYmCEP69MpZUu-oj6QuwDR9ZJyVDg?key=bS1uQldlSGN4Wmh2alh4bENydW9YTGV1aTg3djFB
+- Chip labels: https://photos.google.com/share/AF1QipNFV63yPYG3SIgiTFkugtkMYC76d3eq6xieDRYmCEP69MpZUu-oj6QuwDR9ZJyVDg?key=bS1uQldlSGN4Wmh2alh4bENydW9YTGV1aTg3djFB
 
 ## How to open:
 i'm pretty sure the easiest way to open it would be using a hot gun and suction cup to remove the glass. What i did is:
@@ -16,7 +16,7 @@ i'm pretty sure the easiest way to open it would be using a hot gun and suction 
 Prebuilt .hex files: (see the repo). Beware, DFU is not working!
 
 - Checkout espruino sources
-- ./scripts/provision.py NRF52340DK (this will ask for a filename to patch, just press enter twice)
+- Run `./scripts/provision.py NRF52340DK` (this will ask for a filename to patch, just press enter twice)
 - copy `build/IS205L.py` to `espruino/boards/`
 
 Change this line:
@@ -139,7 +139,7 @@ Pinout:
 - SI - 
 
 ### Heart rate sensor
-HX3600, enabled by `D17.write(1)`, I2C on SDA=7 SCL=8 deviceId=0x44
+HX3600, enabled by `D17.write(1)`, I2C on `SDA=7` `SCL=8` `deviceId=0x44`
 
 Datasheet: http://www.synercontech.com/Public/uploads/file/2019_10/20191020152311_81180.pdf
 
@@ -162,9 +162,11 @@ There's a driver and datasheet for similar device here: https://github.com/amazf
 ### Accelerometer
 Unknown, markings are B271 VS35. 
 
-Enabled by `D4.write(1)`, I2C on SDA=27, SCL=5, deviceId=0x1f
+Enabled by `D4.write(1)`, I2C on `SDA=27`, `SCL=5`, `deviceId=0x1f`
 
-DeviceId is similar to https://www.nxp.com/docs/en/data-sheet/FXOS8700CQ.pdf, but WHO_AM_I register value is wrong.
+DeviceId is similar to https://www.nxp.com/docs/en/data-sheet/FXOS8700CQ.pdf, but `WHO_AM_I` register value is wrong.
+
+X,Y,Z accelerometer values can be obtained by reading registers `0x02-0x07`.
 
 Usage: 
 ```
