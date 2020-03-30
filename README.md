@@ -74,8 +74,8 @@ Pinout
 - 1 - XL1
 - 2 - related to LCD?
 - 3
-- 4
-- 5 - SCL device 0x1f?, related to LCD?
+- 4 - ACCELEROMETER_ENABLE
+- 5 - ACCELEROMETER SCL device 0x1f
 - 6 - 
 - 7 = HEART_SENSOR SDA device 0x44
 - 8 = HEART_SENSOR SCL device 0x44
@@ -97,7 +97,7 @@ Pinout
 - 24 - 
 - 25 - CHARGING, related to HEART?
 - 26 - 
-- 27 - SDA device 0x1f?
+- 27 - ACCELEROMETER SDA device 0x1f
 - 28 - 
 - 29 - 
 - 30 - BACKLIGHT2
