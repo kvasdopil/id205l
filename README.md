@@ -83,9 +83,9 @@ Pinout
 - 25 - CHARGING
 - 26 - 
 - 27 - ACCELEROMETER SDA device 0x1f
-- 28 - 
+- 28 - BATTERY_CHARGE?
 - 29 - 
-- 30 - BACKLIGHT2
+- 30 - BACKLIGHT2 or BATTERY_CHARGE?
 - 31 - ?
 - 32 -
 - 33 - MEMORY_HOLD
@@ -167,6 +167,13 @@ Usage:
 ```
 
 - TODO: add interrupt support
+
+### Battery charge and charging status
+
+Battery charge level is either on D28 or D30.
+Pin D25 is 1 when device is charging.
+
+- TODO: add battery percentage calculation
 
 ## Ask questions
 https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
