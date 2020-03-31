@@ -19,16 +19,6 @@ Prebuilt .hex files: (see the repo). Beware, DFU is not working!
 - Run `./scripts/provision.py NRF52340DK` (this will ask for a filename to patch, just press enter twice)
 - copy `build/IS205L.py` to `espruino/boards/`
 
-Change this line:
-```
-DEFINES += DNRF52 -DNRF52840_XXAA
-```
-to this:
-```
-DEFINES += -DNRF52840_XXAA
-```
-in `NRF52.make`
-
 ### Building device fw
 ```
 make clean && \
@@ -50,6 +40,7 @@ make clean && \
     BOARD=ID205L \
     RELEASE=1 \
     BOOTLOADER=1 \
+    USE_BOOTLOADER=1 \
     make
 ```
 
@@ -83,24 +74,24 @@ Pinout
 - 11 - 
 - 12 - MEMORY_WP
 - 13 - 
-- 14 = heart senssor backlight aka LED1
-- 15 - related to LCD? related to HEART?
+- 14 = heart sensor backlight aka LED1
+- 15 - 
 - 16 = BTN1
 - 17 = HEART_SENSOR_ENABLE
-- 18 - (DEVICE RESET), related LCD?, related to HEART?
-- 19 - MEMORY_SO, related to HEART?
+- 18 - (DEVICE RESET)
+- 19 - MEMORY_SO
 - 20 = MOTOR
 - 21 = MEMORY_CS
 - 22 = BACKLIGHT
 - 23 - 
 - 24 - 
-- 25 - CHARGING, related to HEART?
+- 25 - CHARGING
 - 26 - 
 - 27 - ACCELEROMETER SDA device 0x1f
 - 28 - 
 - 29 - 
 - 30 - BACKLIGHT2
-- 31 - related to LCD?
+- 31 - ?
 - 32 -
 - 33 - MEMORY_HOLD
 - 34 -
@@ -117,8 +108,6 @@ Pinout
 - 45 -
 - 46 -
 - 47 -
-
-Pins 32+ does not seem to be connected to anything, maybe theres a problem with firmware?
 
 These pins are connected to wires going to heart sensor and button
 - 15, 16(btn), 17, 18, 19, 25
@@ -140,9 +129,9 @@ Pinout:
 - CS - D21?
 - SO - D19?
 - WP - D12
-- HOLD -
-- SCLK -
-- SI - 
+- HOLD - D33
+- SCLK - D38
+- SI - ??
 
 ### Heart rate sensor
 HX3600, enabled by `D17.write(1)`, I2C on `SDA=7` `SCL=8` `deviceId=0x44`
