@@ -61,7 +61,7 @@ Pins 32-47 are always off and does not seem to be working (does espruino support
 // 2, 15, 18, 30, 31,
 
 const ACCELEROMETER_ENABLE = 4;
-const ACCELEROMETER_CLK = 5;
+const ACCELEROMETER_SCL = 5;
 const HEART_SDA = 7
 const HEART_SCL = 8
 const HEART_BACKLIGHT = 14;
@@ -151,7 +151,7 @@ const u8u8tos16 = (byteA, byteB) => {
 };
 
 const accI2C = new I2C();
-accI2C.setup({ sda: ACCELEROMETER_SDA, clk: ACCELEROMETER_CLK });
+accI2C.setup({ sda: ACCELEROMETER_SDA, scl: ACCELEROMETER_SCL });
 const accelerometer = {
   enable: () => digitalWrite(ACCELEROMETER_ENABLE, 1),
   disable: () => digitalRead(ACCELEROMETER_ENABLE, 0),
@@ -288,7 +288,8 @@ const tryDisplay = () => {
 /// ====
 
 heartSensor.enable();
-console.log(heartSensor.read(0, 16).map(i => Number(i).toString(16)));
+console.log('Heart', heartSensor.read(0, 16).map(i => Number(i).toString(16)));
 
 accelerometer.enable();
-console.log(accelerometer.read());
+console.log('Accelerometer', accelerometer.read());
+
