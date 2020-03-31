@@ -32,8 +32,22 @@
 29 - 
 30 - BACKLIGHT2
 31 -
-
-Pins 32-47 are always off and does not seem to be working (does espruino support them?)
+32 -
+33 - MEMORY_HOLD
+34 -
+35 -
+36 - TX
+37 - RX
+38 - MEMORY_CLK
+39 -
+40 - ?
+41 - ?
+42 - 
+43 -
+44 -
+45 -
+46 -
+47 -
 */
 
 // Poke on pin -> changed values:
@@ -45,20 +59,17 @@ Pins 32-47 are always off and does not seem to be working (does espruino support
 // 28->27,23
 // 29->23,22
 
-// MEMORY CHIP related are
-// CS - D21?
-// SO - D19?
-// WP - D12
-// HOLD -
-// SCLK -
-// SI - 
-
 // back sensor related pins are
 // 15, 16(btn), 17, 18, 19, 25
 // display - 30,31,2
 
 // display related pins are
 // 2, 15, 18, 30, 31,
+
+// pullup
+// 40 = 0
+// input
+// 41 = 1
 
 const ACCELEROMETER_ENABLE = 4;
 const ACCELEROMETER_SCL = 5;
@@ -76,6 +87,9 @@ const ACCELEROMETER_SDA = 27;
 const MEMORY_CS = 21;
 const MEMORY_WP = 12;
 const MEMORY_SO = 19;
+const MEMORY_HOLD = 33;
+const MEMORY_CLK = 38;
+// const MEMORY_SI = ??;
 
 const vibrate = ms => digitalPulse(20, 1, ms);
 
@@ -229,8 +243,8 @@ const pinScan = () => {
     if (b >= regs.length) { console.log('done'); return };
 
     if (a != b && a != undefined && b != undefined) {
-      scan2(regs[a], regs[b]);
-      scan2(regs[b], regs[a]);
+      scanI2C(regs[a], regs[b]);
+      scanI2C(regs[b], regs[a]);
     }
     a++;
   }, 500);

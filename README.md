@@ -35,7 +35,6 @@ make clean && \
     DFU_UPDATE_BUILD=1 \
     BOARD=ID205L \
     RELEASE=1 \
-    DEFINES="-DNRF52"  \
     make
 ```
 
@@ -102,15 +101,22 @@ Pinout
 - 29 - 
 - 30 - BACKLIGHT2
 - 31 - related to LCD?
-- 32
-- 33
-- 34
-- 35
-- 36
-- 37
-- 38
-- 39
-- 40
+- 32 -
+- 33 - MEMORY_HOLD
+- 34 -
+- 35 -
+- 36 - TX
+- 37 - RX
+- 38 - MEMORY_CLK
+- 39 -
+- 40 - ?
+- 41 - ?
+- 42 - 
+- 43 -
+- 44 -
+- 45 -
+- 46 -
+- 47 -
 
 Pins 32+ does not seem to be connected to anything, maybe theres a problem with firmware?
 
