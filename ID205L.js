@@ -219,8 +219,9 @@ const scanI2C = (sda, scl) => {
   for (let reg = 8; reg < 127; reg++) {
     try {
       I2C1.writeTo(reg, 0);
-      console.log('found i2c on scl', scl, 'sda', sda, 'reg', Number(reg).toString(16));
-      // console.log(I2C1.readFrom(reg, 1).forEach(i => console.log('j' + i)));
+      I2C1.readFrom(reg, 1).forEach(val => {
+        console.log('found i2c on scl', scl, 'sda', sda, 'reg', Number(reg).toString(16), 'reg0', val);
+      });
     } catch (e) {
     }
   }
@@ -238,9 +239,9 @@ const pinScan = () => {
   ];
   let a = 0;
   let b = 0;
-  setInterval(() => {
+  const int = setInterval(() => {
     if (a >= b) { console.log('.', b); b++; a = 0; };
-    if (b >= regs.length) { console.log('done'); return };
+    if (b >= regs.length) { console.log('done'); clearInterval(int); return };
 
     if (a != b && a != undefined && b != undefined) {
       scanI2C(regs[a], regs[b]);

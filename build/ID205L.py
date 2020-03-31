@@ -19,10 +19,9 @@ info = {
  'name' : "ID205L",
  'link' :  [ "https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK" ],
  'espruino_page_link' : 'ID205L',
-  # This is the PCA10036
  'default_console' : "EV_SERIAL1",
- 'default_console_tx' : "D6",
- 'default_console_rx' : "D8",
+ 'default_console_tx' : "D36",
+ 'default_console_rx' : "D37",
  'default_console_baudrate' : "9600",
  'variables' : 12500, # How many variables are allocated for Espruino to use. RAM will be overflowed if this number is too high and code won't compile.
  'bootloader' : 1,
@@ -33,16 +32,12 @@ info = {
      'BLUETOOTH',
      'NET',
      'GRAPHICS',
-#     'NFC',
      'NEOPIXEL'
    ],
    'makefile' : [
-     #'DEFINES+=-DBLUETOOTH_NAME_PREFIX=\'"ID205L"\''
-     'DEFINES+=-DCONFIG_GPIO_AS_PINRESET', # Allow the reset pin to work
-     'DEFINES+=-DUARTE1_EASYDMA_MAXCNT_SIZE=16', # fix UART params problem
      'NRF_SDK15=1',
      'DFU_PRIVATE_KEY=targets/nrf5x_dfu/dfu_private_key.pem',
-     'DFU_SETTINGS=--application-version 0xff --hw-version 52 --sd-req 0xA9', 
+     'DFU_SETTINGS=--application-version 0xff --hw-version 52 --sd-req 0xA9'
    ]
  }
 };

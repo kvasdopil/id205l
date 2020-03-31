@@ -13,38 +13,35 @@ i'm pretty sure the easiest way to open it would be using a hot gun and suction 
 3) used a hairdryer to soften the glue behind the screen and caaaaaaaarefully pulled it up
 
 ## How to build firmware
-Prebuilt .hex files: (see the repo). Beware, DFU is not working!
+Prebuilt .hex file are located in ./hex/ folder of this repo. 
 
 - Checkout espruino sources
+- Make sure you have `dos2unix` utility installed
 - Run `./scripts/provision.py NRF52340DK` (this will ask for a filename to patch, just press enter twice)
 - copy `build/IS205L.py` to `espruino/boards/`
 
-### Building device fw
-```
-make clean && \
-    DFU_UPDATE_BUILD=1 \
-    BOARD=ID205L \
-    RELEASE=1 \
-    make
-```
-
-### Building bootloader
 ```
 curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.0.0_a53641a.zip -o nRF5_SDK_15.0.0_a53641a.zip
 unzip -o nRF5_SDK_15.0.0_a53641a.zip
 mv nRF5_SDK_15.0.0_a53641a/external/nano-pb ./targetlibs/nrf5x_15/external/
 rm -rf nRF5_SDK_15.0.0_a53641a.zip nRF5_SDK_15.0.0_a53641a
 
-make clean && \
-    DFU_UPDATE_BUILD=1 \
-    BOARD=ID205L \
-    RELEASE=1 \
-    BOOTLOADER=1 \
-    USE_BOOTLOADER=1 \
-    make
+make clean && BOARD=ID205L RELEASE=1 make
 ```
 
-- FIXME: currently bootloader is entering DFU mode after startup (because BTN1 is not negated?) A bootloader for PUCKJS seems to be working, but DFU function is now working in it.
+This will build a .hex file with firmware. Now if we flash this the device will stuck in DFU (aka over-the-air update) mode because of invalid DFU settings. To apply correct DFU settings run this (replace `2v05.436` version with yours):
+
+```
+nrfutil settings generate --family NRF52840 --application espruino_2v05.436_id205l.app_hex --app-boot-validation VALIDATE_GENERATED_CRC --application-version 0xff --bootloader-version 0xff --bl-settings-version 2 dfu_settings.hex
+
+python scripts/hexmerge.py --overlap=replace ./targetlibs/nrf5x_15/components/softdevice/s140/hex/s140_nrf52_6.0.0_softdevice.hex bootloader_espruino_2v05.436_id205l.hex espruino_2v05.436_id205l.app_hex dfu_settings.hex -o espruino_2v05.436_id205l.hex
+```
+
+Alternatively you can generate DFU package using
+```
+make clean && BOARD=ID205L RELEASE=1 DFU_UPDATE_BUILD=1 make
+```
+And update it via BLE.
 
 ## How to flash
 
@@ -131,7 +128,7 @@ Pinout:
 - WP - D12
 - HOLD - D33
 - SCLK - D38
-- SI - ??
+- SI - D9?
 
 ### Heart rate sensor
 HX3600, enabled by `D17.write(1)`, I2C on `SDA=7` `SCL=8` `deviceId=0x44`
@@ -155,7 +152,7 @@ IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet
 There's a driver and datasheet for similar device here: https://github.com/amazfitbip/documentation/tree/master/documents/IT7259
 
 ### Accelerometer
-Unknown, markings are B271 VS35. 
+Unknown, labelled as "B271 VS35". 
 
 Enabled by `D4.write(1)`, I2C on `SDA=27`, `SCL=5`, `deviceId=0x1f`
 
