@@ -51,8 +51,6 @@ Connect to J-Link to device to following pads:
 - DIO - DIO  
 - C - CLK
 
-Use softdevice 140 v6.0.0
-
 ## What we do know
 ### Chip: NRF52840
 
