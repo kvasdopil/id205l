@@ -25,12 +25,12 @@
 22 - BACKLIGHT
 23 - 
 24 - 
-25 - CHARGING
+25 - 
 26 - 
 27 - ACCELEROMETER SDA reg 0x1f
-28 - BATTERY_CHARGE?
+28 - BATTERY_LEVEL
 29 - 
-30 - BACKLIGHT2 or BATTERY_CHARGE?
+30 - BACKLIGHT2 
 31 -
 32 -
 33 - MEMORY_HOLD
@@ -39,7 +39,7 @@
 36 - TX
 37 - RX
 38 - MEMORY_CLK
-39 -
+39 - CHARGING
 40 - ?
 41 - ?
 42 - 
@@ -81,8 +81,9 @@ const HEART_SENSOR_ENABLE = 17;
 const MOTOR = 20;
 const BACKLIGHT = 22;
 const BACKLIGHT2 = 30;
-const CHARGING = 25;
 const ACCELEROMETER_SDA = 27;
+const BATTERY_LEVEL = 28;
+const CHARGING = 39;
 
 const MEMORY_CS = 21;
 const MEMORY_WP = 12;
@@ -102,6 +103,8 @@ vibrate([50, 50, 50]);
 digitalPulse(HEART_BACKLIGHT, 1, 100);
 
 backlight(2);
+
+Pin(CHARGING).mode('input_pulldown');
 
 // === heart rate sensor functions ===
 

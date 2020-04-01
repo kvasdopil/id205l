@@ -80,12 +80,12 @@ Pinout
 - 22 = BACKLIGHT
 - 23 - 
 - 24 - 
-- 25 - CHARGING
+- 25 - 
 - 26 - 
 - 27 - ACCELEROMETER SDA device 0x1f
-- 28 - BATTERY_CHARGE?
+- 28 - BATTERY_LEVEL
 - 29 - 
-- 30 - BACKLIGHT2 or BATTERY_CHARGE?
+- 30 - BACKLIGHT2
 - 31 - ?
 - 32 -
 - 33 - MEMORY_HOLD
@@ -94,7 +94,7 @@ Pinout
 - 36 - TX
 - 37 - RX
 - 38 - MEMORY_CLK
-- 39 -
+- 39 - CHARGING
 - 40 - ?
 - 41 - ?
 - 42 - 
@@ -168,10 +168,10 @@ Usage:
 
 - TODO: add interrupt support
 
-### Battery charge and charging status
+### Battery level and charging status
 
-Battery charge level is either on D28 or D30.
-Pin D25 is 1 when device is charging.
+Battery charge level is analog value on D28
+Pin D39 is low when device is charging.
 
 - TODO: add battery percentage calculation
 
