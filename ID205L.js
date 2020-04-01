@@ -92,7 +92,7 @@ const MEMORY_HOLD = 33;
 const MEMORY_CLK = 38;
 // const MEMORY_SI = ??;
 
-const vibrate = ms => digitalPulse(20, 1, ms);
+const vibrate = ms => digitalPulse(MOTOR, 1, ms);
 
 const backlight = level => {
   Pin(BACKLIGHT2).write(level >> 1 & 1);
