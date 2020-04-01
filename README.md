@@ -64,8 +64,8 @@ Pinout
 - 6 - 
 - 7 = HEART_SENSOR SDA device 0x44
 - 8 = HEART_SENSOR SCL device 0x44
-- 9  - 
-- 10 - 
+- 9  - GND?
+- 10 - GND?
 - 11 - 
 - 12 - MEMORY_WP
 - 13 - 
@@ -81,7 +81,7 @@ Pinout
 - 23 - 
 - 24 - 
 - 25 - 
-- 26 - 
+- 26 - GND?
 - 27 - ACCELEROMETER SDA device 0x1f
 - 28 - BATTERY_LEVEL
 - 29 - 
@@ -95,11 +95,11 @@ Pinout
 - 37 - RX
 - 38 - MEMORY_CLK
 - 39 - CHARGING
-- 40 - ?
+- 40 - GND?
 - 41 - ?
-- 42 - 
-- 43 -
-- 44 -
+- 42 - VCC?
+- 43 - VCC?
+- 44 - VCC?
 - 45 -
 - 46 -
 - 47 -
