@@ -1,6 +1,8 @@
 # ID205L smart watch custom firmware WIP 
 
 ## Photos: 
+![photo](http://official-file.honbow.com/2019-12-12-12-01-4601%20(2).png "Device")
+
 - Fccid: https://fccid.io/2AHFT228/Internal-Photos/Internal-Photo-4438078
 - Opened device: https://photos.google.com/share/AF1QipMEgaVUau3sA0FcNTVeyZKY0TScTzwYiXO7fe6Rh2gIK8x5G0z2D5svC86-koTstQ?key=MGM4Y1JZT2xTaGxvSmY0MWdkMnpBYVZNd3lES3JR
 - PCB photos: https://photos.google.com/share/AF1QipO3eowMmGWax-Yk8IF-ml1vgUQFByVLIt-XGVHYddveYpcckNRNJQFuctqWAHlYUA?key=MEE2aWFhakNvVFg1VUpoTENOeEF6RU82OEZBY0ln
