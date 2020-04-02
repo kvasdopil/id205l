@@ -61,7 +61,7 @@ Pinout
 - 3
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
-- 6 - 
+- 6 
 - 7 = HEART_SENSOR SDA device 0x44
 - 8 = HEART_SENSOR SCL device 0x44
 - 9  - GND?
@@ -74,9 +74,9 @@ Pinout
 - 16 = BTN1
 - 17 = HEART_SENSOR_ENABLE
 - 18 - (DEVICE RESET)
-- 19 - MEMORY_SO
+- 19 - MEMORY_CS
 - 20 = MOTOR
-- 21 = MEMORY_CS
+- 21 = MEMORY_SO
 - 22 = BACKLIGHT
 - 23 - 
 - 24 - 
