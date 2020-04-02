@@ -63,7 +63,7 @@ Pinout
 - 3
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
-- 6 
+- 6 - ACCELEROMETER_STOP
 - 7 = HEART_SENSOR SDA device 0x44
 - 8 = HEART_SENSOR SCL device 0x44
 - 9  - GND?
@@ -83,7 +83,7 @@ Pinout
 - 23 - 
 - 24 - 
 - 25 - 
-- 26 - GND?
+- 26 - GND? ACCELEROMETER_INT1?
 - 27 - ACCELEROMETER SDA device 0x1f
 - 28 - BATTERY_LEVEL
 - 29 - 
@@ -155,6 +155,8 @@ There's a driver and datasheet for similar device here: https://github.com/amazf
 Unknown, labelled as "B271 VS35". 
 
 Enabled by `D4.write(1)`, I2C on `SDA=27`, `SCL=5`, `deviceId=0x1f`
+Pulling D6 down stops accelerometer (but device is still repsonding).
+Dulling D4 down powers down accelerometer
 
 DeviceId is similar to https://www.nxp.com/docs/en/data-sheet/FXOS8700CQ.pdf, but `WHO_AM_I` register value is wrong.
 

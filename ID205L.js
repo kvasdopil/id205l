@@ -1,53 +1,53 @@
 /*
 === Pin Layout ===
-0 - XL1
-1 - XL1
-2 - 
-3 -
-4 - ACCELEROMETER_ENABLE
-5 - ACCELEROMETER SCL reg 0x1f
-6 - 
-7 - HEART_SENSOR SDA reg 0x44
-8 - HEART_SENSOR SCL reg 0x44
-9  - 
-10 - 
-11 - 
-12 - MEMORY_WP
-13 - 
-14 - HEART_BACKLIGHT
-15 - ??? HEART
-16 - BTN1
-17 - HEART_ENABLE
-18 - ??? HEART
-19 - MEMORY_CS
-20 - MOTOR
-21 - MEMORY_SO
-22 - BACKLIGHT
-23 - 
-24 - 
-25 - 
-26 - 
-27 - ACCELEROMETER SDA reg 0x1f
-28 - BATTERY_LEVEL
-29 - 
-30 - BACKLIGHT2 
-31 -
-32 -
-33 - MEMORY_HOLD
-34 -
-35 -
-36 - TX
-37 - RX
-38 - MEMORY_CLK
-39 - CHARGING
-40 - ?
-41 - ?
-42 - 
-43 -
-44 -
-45 -
-46 -
-47 -
+- 0 - XL1
+- 1 - XL1
+- 2 - related to LCD?
+- 3
+- 4 - ACCELEROMETER_ENABLE
+- 5 - ACCELEROMETER SCL device 0x1f
+- 6 - ACCELEROMETER_STOP
+- 7 = HEART_SENSOR SDA device 0x44
+- 8 = HEART_SENSOR SCL device 0x44
+- 9  - GND?
+- 10 - GND?
+- 11 - 
+- 12 - MEMORY_WP
+- 13 - 
+- 14 = heart sensor backlight aka LED1
+- 15 - 
+- 16 = BTN1
+- 17 = HEART_SENSOR_ENABLE
+- 18 - (DEVICE RESET)
+- 19 - MEMORY_CS
+- 20 = MOTOR
+- 21 = MEMORY_SO
+- 22 = BACKLIGHT
+- 23 - 
+- 24 - 
+- 25 - 
+- 26 - GND? ACCELEROMETER_INT1?
+- 27 - ACCELEROMETER SDA device 0x1f
+- 28 - BATTERY_LEVEL
+- 29 - 
+- 30 - BACKLIGHT2
+- 31 - ?
+- 32 -
+- 33 - MEMORY_HOLD
+- 34 -
+- 35 -
+- 36 - TX
+- 37 - RX
+- 38 - MEMORY_CLK
+- 39 - CHARGING
+- 40 - GND?
+- 41 - ?
+- 42 - VCC?
+- 43 - VCC?
+- 44 - VCC?
+- 45 -
+- 46 -
+- 47 -
 */
 
 // Poke on pin -> changed values:
