@@ -59,7 +59,7 @@ Connect to J-Link to device to following pads:
 Pinout
 - 0 - XL1
 - 1 - XL1
-- 2 - related to LCD?
+- 2 - 
 - 3
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
@@ -68,22 +68,22 @@ Pinout
 - 8 = HEART_SENSOR SCL device 0x44
 - 9  - GND?
 - 10 - GND?
-- 11 - 
+- 11 - NO_CHIP? 
 - 12 - MEMORY_WP
 - 13 - 
 - 14 = heart sensor backlight aka LED1
 - 15 - 
 - 16 = BTN1
 - 17 = HEART_SENSOR_ENABLE
-- 18 - (DEVICE RESET)
+- 18 - (DEVICE RESET), connected to screen
 - 19 - MEMORY_CS
 - 20 = MOTOR
 - 21 = MEMORY_SO
 - 22 = BACKLIGHT
 - 23 - 
-- 24 - 
+- 24 - TOUCH_RESET
 - 25 - 
-- 26 - GND? ACCELEROMETER_INT1?
+- 26 - ACCELEROMETER_INT1? (pulled down)
 - 27 - ACCELEROMETER SDA device 0x1f
 - 28 - BATTERY_LEVEL
 - 29 - 
@@ -97,14 +97,14 @@ Pinout
 - 37 - RX
 - 38 - MEMORY_CLK
 - 39 - CHARGING
-- 40 - GND?
-- 41 - ?
-- 42 - VCC?
-- 43 - VCC?
-- 44 - VCC?
-- 45 -
+- 40 - (pulled down) - connected to HEART_SENSOR
+- 41 - NO_CHIP?
+- 42 - TOUCH unknown
+- 43 - TOUCH unknown
+- 44 - TOUCH unknown
+- 45 - TOUCH unknown
 - 46 -
-- 47 -
+- 47 - TOUCH unknown
 
 These pins are connected to wires going to heart sensor and button
 - 15, 16(btn), 17, 18, 19, 25
@@ -113,11 +113,16 @@ This pins are connected to display and touch sensor
 - 2, 15, 18, 30, 31
 
 ### Display
-Supposedly controlled by ST7789. 
+Supposedly controlled by ST7789.
 
 Backlight has 4 brightness levels set by changing values on `D22` and `D30` pins.
 
-Pinout of SPI is unknown. Flash memory chip is likely to be on same SPI interface.
+Pinout of SPI is unknown.
+
+D18 is connected to screen
+D47 is connected to screen
+D45 is connected to screen
+D44 flips when D45 is toggled
 
 ### Flash memory chip
 XT25F64B
@@ -151,6 +156,11 @@ IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet
 
 There's a driver and datasheet for similar device here: https://github.com/amazfitbip/documentation/tree/master/documents/IT7259
 
+When D24 is 0, pins D42, D43, D44 are pulled up. This is not changing by unplugging screen connected so it must be some mainboard circutry doing so.
+
+Pins D42, D43, D44, D45 and D47 are connected to touch panel controller. Exact pinout is unknown.
+
+
 ### Accelerometer
 Unknown, labelled as "B271 VS35". 
 
@@ -178,6 +188,10 @@ Battery charge level is analog value on D28
 Pin D39 is low when device is charging.
 
 - TODO: add battery percentage calculation
+
+## No chip
+
+Pins D11, D41 are leading to chip that is missing on the PCB
 
 ## Ask questions
 https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
