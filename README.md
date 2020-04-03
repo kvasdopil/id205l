@@ -60,7 +60,7 @@ Pinout
 - 0 - XL1
 - 1 - XL1
 - 2 - 
-- 3
+- 3 - NO_CHIP
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
 - 6 - ACCELEROMETER_STOP
@@ -120,9 +120,6 @@ Backlight has 4 brightness levels set by changing values on `D22` and `D30` pins
 Pinout of SPI is unknown.
 
 D18 is connected to screen
-D47 is connected to screen
-D45 is connected to screen
-D44 flips when D45 is toggled
 
 ### Flash memory chip
 XT25F64B
@@ -159,7 +156,7 @@ There's a driver and datasheet for similar device here: https://github.com/amazf
 When D24 is 0, pins D42, D43, D44 are pulled up. This is not changing by unplugging screen connected so it must be some mainboard circutry doing so.
 
 Pins D42, D43, D44, D45 and D47 are connected to touch panel controller. Exact pinout is unknown.
-
+D44 flips when D45 is toggled
 
 ### Accelerometer
 Unknown, labelled as "B271 VS35". 
