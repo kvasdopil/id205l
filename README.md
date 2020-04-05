@@ -59,7 +59,7 @@ Connect to J-Link to device to following pads:
 Pinout
 - 0 - XL1
 - 1 - XL1
-- 2 - 
+- 2 - LCD?
 - 3 - NO_CHIP
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
@@ -72,23 +72,23 @@ Pinout
 - 12 - MEMORY_WP
 - 13 - 
 - 14 = heart sensor backlight aka LED1
-- 15 - 
+- 15 - LCD?
 - 16 = BTN1
 - 17 = HEART_SENSOR_ENABLE
-- 18 - (DEVICE RESET), connected to screen
+- 18 - LCD?
 - 19 - MEMORY_CS
 - 20 = MOTOR
 - 21 = MEMORY_SO
 - 22 = BACKLIGHT
 - 23 - 
 - 24 - TOUCH_RESET
-- 25 - 
+- 25 - LCD?
 - 26 - ACCELEROMETER_INT1? (pulled down)
 - 27 - ACCELEROMETER SDA device 0x1f
 - 28 - BATTERY_LEVEL
-- 29 - 
+- 29 - LCD?
 - 30 - BACKLIGHT2
-- 31 - ?
+- 31 - LCD?
 - 32 -
 - 33 - MEMORY_HOLD
 - 34 -
@@ -106,11 +106,7 @@ Pinout
 - 46 -
 - 47 - TOUCH unknown
 
-These pins are connected to wires going to heart sensor and button
-- 15, 16(btn), 17, 18, 19, 25
-
-This pins are connected to display and touch sensor
-- 2, 15, 18, 30, 31
+when D24 -> 0, MEM_SO -> 1
 
 ### Display
 Supposedly controlled by ST7789.
@@ -119,7 +115,7 @@ Backlight has 4 brightness levels set by changing values on `D22` and `D30` pins
 
 Pinout of SPI is unknown.
 
-D18 is connected to screen
+D2, D15, D18, D25, D29, D31 are connected to screen
 
 ### Flash memory chip
 XT25F64B
@@ -155,8 +151,16 @@ There's a driver and datasheet for similar device here: https://github.com/amazf
 
 When D24 is 0, pins D42, D43, D44 are pulled up. This is not changing by unplugging screen connected so it must be some mainboard circutry doing so.
 
+When D2 is 1, pins D42, D43, D44 are pulled up. (only when screen is plugged in) (also D29, D31, D42)
+When D31 is 1, pins D42, D43, D44 are pulled up. (only when screen is plugged in)
+When D46 is 1, pins D42, D43, D44 are pulled up. (only when screen is plugged in)
+
 Pins D42, D43, D44, D45 and D47 are connected to touch panel controller. Exact pinout is unknown.
 D44 flips when D45 is toggled
+
+When 45 -> 1, 44 changes the value
+
+D2, D24, D31
 
 ### Accelerometer
 Unknown, labelled as "B271 VS35". 
