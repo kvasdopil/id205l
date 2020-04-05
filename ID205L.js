@@ -81,6 +81,7 @@ const BUTTON = 16;
 const HEART_SENSOR_ENABLE = 17;
 const MOTOR = 20;
 const BACKLIGHT = 22;
+const TOUCH_RESET = 24;
 const ACCELEROMETER_SDA = 27;
 const BATTERY_LEVEL = 28;
 const LCD_SI = 29;
@@ -202,18 +203,11 @@ console.log('Accelerometer', accelerometer.read());
 const connectGraphics = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/ST7789.js");
 
 const initGraphics = () => new Promise(resolve => {
-  D24.write(0); // causes screen flicker if non-zero
-  D22.write(1); // backlight1
-  D30.write(1); // backlight2
+  digitalWrite(TOUCH_RESET, 0); // causes screen flicker if non-zero
+  // backlight(2);
 
-  const si = D29;
-  const sck = D2;
-  const dc = D31;
-  const ce = D47;
-  const rst = D46;
-
-  SPI1.setup({ mosi: si, sck: sck, baud: 10000000 });
-  const g = connectGraphics(SPI1, dc, ce, rst, () => resolve(g));
+  SPI1.setup({ mosi: Pin(LCD_SI), sck: Pin(LCD_SCK), baud: 10000000 });
+  const g = connectGraphics(SPI1, Pin(LCD_DC), Pin(LCD_CS), Pin(LCD_RESET), () => resolve(g));
 });
 
 const renderTime = (g) => {
@@ -248,19 +242,21 @@ const renderBatt = (g) => {
 };
 
 let GG;
-initGraphics()
-  .then(g => {
-    GG = g;
-    g.clear();
-    renderTime(g);
-    renderBatt(g);
-  });
+
+setTimeout(() => {
+  initGraphics()
+    .then(g => {
+      GG = g;
+      g.clear();
+      renderTime(g);
+      renderBatt(g);
+    });
+}, 1000);
 
 let on = true;
 setWatch(() => {
   on = !on;
-  D22.write(on);
-  D30.write(on);
+  backlight(on ? 2 : 0);
   if (on) {
     digitalPulse(HEART_BACKLIGHT, 1, 100);
     vibrate(100);
