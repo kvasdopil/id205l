@@ -59,7 +59,7 @@ Connect to J-Link to device to following pads:
 Pinout
 - 0 - XL1
 - 1 - XL1
-- 2 - LCD?
+- 2 - LDC_SCK
 - 3 - NO_CHIP
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
@@ -72,23 +72,23 @@ Pinout
 - 12 - MEMORY_WP
 - 13 - 
 - 14 = heart sensor backlight aka LED1
-- 15 - LCD?
+- 15 - 
 - 16 = BTN1
 - 17 = HEART_SENSOR_ENABLE
-- 18 - LCD?
+- 18 - 
 - 19 - MEMORY_CS
 - 20 = MOTOR
 - 21 = MEMORY_SO
 - 22 = BACKLIGHT
 - 23 - 
 - 24 - TOUCH_RESET
-- 25 - LCD?
+- 25 - 
 - 26 - ACCELEROMETER_INT1? (pulled down)
 - 27 - ACCELEROMETER SDA device 0x1f
 - 28 - BATTERY_LEVEL
-- 29 - LCD?
+- 29 - LCD_SI
 - 30 - BACKLIGHT2
-- 31 - LCD?
+- 31 - LCD_DC
 - 32 -
 - 33 - MEMORY_HOLD
 - 34 -
@@ -103,13 +103,26 @@ Pinout
 - 43 - TOUCH unknown
 - 44 - TOUCH unknown
 - 45 - TOUCH unknown
-- 46 -
-- 47 - TOUCH unknown
+- 46 - LCD_RESET
+- 47 - LCD_CS
 
 when D24 -> 0, MEM_SO -> 1
 
 ### Display
-Supposedly controlled by ST7789.
+Controlled by ST7789V.
+
+
+- LCD_SCK - D2
+- LCD_SI - D29
+- LCD_DC - D31
+- LCD_RESET - D46
+- LCD_CS - D47
+
+spi.setup({ mosi: si, sck: sck, mode: 3 });
+const g = display.connect(spi, dc, ce, D46, () => {
+    g.clear();
+    g.drawString("Hello world", 0, 0);
+});
 
 Backlight has 4 brightness levels set by changing values on `D22` and `D30` pins.
 
