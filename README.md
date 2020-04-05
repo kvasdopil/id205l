@@ -59,7 +59,7 @@ Connect to J-Link to device to following pads:
 Pinout
 - 0 - XL1
 - 1 - XL1
-- 2 - LDC_SCK
+- 2 - LCD_SCK
 - 3 - NO_CHIP
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
@@ -111,24 +111,13 @@ when D24 -> 0, MEM_SO -> 1
 ### Display
 Controlled by ST7789V.
 
-
 - LCD_SCK - D2
 - LCD_SI - D29
 - LCD_DC - D31
 - LCD_RESET - D46
 - LCD_CS - D47
 
-spi.setup({ mosi: si, sck: sck, mode: 3 });
-const g = display.connect(spi, dc, ce, D46, () => {
-    g.clear();
-    g.drawString("Hello world", 0, 0);
-});
-
 Backlight has 4 brightness levels set by changing values on `D22` and `D30` pins.
-
-Pinout of SPI is unknown.
-
-D2, D15, D18, D25, D29, D31 are connected to screen
 
 ### Flash memory chip
 XT25F64B

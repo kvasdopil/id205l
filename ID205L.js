@@ -2,8 +2,8 @@
 === Pin Layout ===
 - 0 - XL1
 - 1 - XL1
-- 2 - related to LCD?
-- 3
+- 2 - LCD_SCK
+- 3 - NO_CHIP
 - 4 - ACCELEROMETER_ENABLE
 - 5 - ACCELEROMETER SCL device 0x1f
 - 6 - ACCELEROMETER_STOP
@@ -11,27 +11,27 @@
 - 8 = HEART_SENSOR SCL device 0x44
 - 9  - GND?
 - 10 - GND?
-- 11 - 
+- 11 - NO_CHIP? 
 - 12 - MEMORY_WP
 - 13 - 
 - 14 = heart sensor backlight aka LED1
 - 15 - 
 - 16 = BTN1
 - 17 = HEART_SENSOR_ENABLE
-- 18 - (DEVICE RESET)
+- 18 - 
 - 19 - MEMORY_CS
 - 20 = MOTOR
 - 21 = MEMORY_SO
 - 22 = BACKLIGHT
 - 23 - 
-- 24 - 
+- 24 - TOUCH_RESET
 - 25 - 
-- 26 - GND? ACCELEROMETER_INT1?
+- 26 - ACCELEROMETER_INT1? (pulled down)
 - 27 - ACCELEROMETER SDA device 0x1f
 - 28 - BATTERY_LEVEL
-- 29 - 
+- 29 - LCD_SI
 - 30 - BACKLIGHT2
-- 31 - ?
+- 31 - LCD_DC
 - 32 -
 - 33 - MEMORY_HOLD
 - 34 -
@@ -40,14 +40,14 @@
 - 37 - RX
 - 38 - MEMORY_CLK
 - 39 - CHARGING
-- 40 - GND?
-- 41 - ?
-- 42 - VCC?
-- 43 - VCC?
-- 44 - VCC?
-- 45 -
-- 46 -
-- 47 -
+- 40 - (pulled down) - connected to HEART_SENSOR
+- 41 - NO_CHIP?
+- 42 - TOUCH unknown
+- 43 - TOUCH unknown
+- 44 - TOUCH unknown
+- 45 - TOUCH unknown
+- 46 - LCD_RESET
+- 47 - LCD_CS
 */
 
 // Poke on pin -> changed values:
@@ -71,6 +71,7 @@
 // input
 // 41 = 1
 
+const LCD_SCK = 2;
 const ACCELEROMETER_ENABLE = 4;
 const ACCELEROMETER_SCL = 5;
 const HEART_SDA = 7
@@ -80,10 +81,14 @@ const BUTTON = 16;
 const HEART_SENSOR_ENABLE = 17;
 const MOTOR = 20;
 const BACKLIGHT = 22;
-const BACKLIGHT2 = 30;
 const ACCELEROMETER_SDA = 27;
 const BATTERY_LEVEL = 28;
+const LCD_SI = 29;
+const BACKLIGHT2 = 30;
+const LCD_DC = 31;
 const CHARGING = 39;
+const LCD_RESET = 46;
+const LCD_CS = 47;
 
 const MEMORY_CS = 21;
 const MEMORY_WP = 12;
@@ -105,6 +110,10 @@ digitalPulse(HEART_BACKLIGHT, 1, 100);
 backlight(2);
 
 Pin(CHARGING).mode('input_pulldown');
+
+const initLcd = () = new Promise(resolve => {
+
+});
 
 // === heart rate sensor functions ===
 
@@ -268,40 +277,6 @@ const pinScan2 = (sda) => {
     scanI2C(sda, b);
   }, 500);
 }
-
-const tryDisplay = () => {
-  var spi = new SPI();
-  setWatch(() => {
-    const freePins = [
-      24, 23, 28, 21, 12, 19, 18, 2, 1, 3
-    ];
-    const pick = () => {
-      while (1) {
-        var n = Math.floor(Math.random() * freePins.length);
-        const res = freePins[n];
-        if (res != -1) {
-          freePins[n] = -1;
-          return res;
-        }
-      }
-    }
-    const cs = pick();
-    const en = pick();
-    const irq = pick();
-    const mosi = pick();
-    const sck = pick();
-    spi.setup({ mosi: Pin(mosi), sck: Pin(sck) });
-    var g = require("ST7789").connect(spi, Pin(cs), Pin(en), Pin(irq), () => {
-      console.log('conn', cs, en, irq, mosi, sck);
-      //g.clear();
-      g.setRotation(1);
-      g.drawString("Hello", 0, 0);
-      //g.setFontVector(20);
-      //g.setColor(0,0.5,1);
-      //g.drawString("Espruino",0,10);
-    });
-  }, BTN1, { edge: 'rising', debounce: 50, repeat: true });
-};
 
 /// ====
 
