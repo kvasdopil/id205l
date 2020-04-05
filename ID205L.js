@@ -110,8 +110,11 @@ digitalPulse(HEART_BACKLIGHT, 1, 100);
 
 backlight(2);
 
-Pin(CHARGING).mode('input_pulldown');
+Pin(CHARGING).mode('input_pullup');
 Pin(BATTERY_LEVEL).mode('analog');
+
+const getBattery = () => 2 * (analogRead(BATTERY_LEVEL) - 0.68);
+const isCharging = () => !digitalRead(CHARGING);
 
 // === heart rate sensor functions ===
 
@@ -228,6 +231,7 @@ const renderTime = (g) => {
 };
 
 const renderBatt = (g) => {
+  g.setColor(1, 1, 1);
   g.drawRect(215, 8, 235, 18);
   g.drawRect(235, 10, 237, 16);
 
@@ -235,10 +239,19 @@ const renderBatt = (g) => {
   g.fillRect(217, 10, 217 + 16, 16);
 
   g.setColor(0, 1, 0);
-  const level = analogRead(Pin(BATTERY_LEVEL));
+  const level = getBattery();
   const lvl = 16.0 * level;
   console.log('Battery', level);
   g.fillRect(217, 10, 217 + lvl, 16);
+
+  g.setFont();
+  if (isCharging()) {
+    g.setColor(0, 1, 0);
+  } else {
+    g.setColor(0, 0, 0);
+  }
+
+  g.drawString("+", 202, 7);
 };
 
 let GG;
@@ -258,9 +271,15 @@ setWatch(() => {
   on = !on;
   backlight(on ? 2 : 0);
   if (on) {
-    digitalPulse(HEART_BACKLIGHT, 1, 100);
+    digitalPulse(HEART_BACKLIGHT, 1, 1000);
     vibrate(100);
     renderTime(GG);
     renderBatt(GG);
   }
 }, BTN1, { edge: 'rising', debounce: 10, repeat: true });
+
+
+setWatch(() => {
+  console.log('chg', isCharging());
+  renderBatt(GG);
+}, CHARGING, { edge: 'both', debounce: 10, repeat: true });
