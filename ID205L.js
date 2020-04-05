@@ -113,7 +113,7 @@ backlight(2);
 Pin(CHARGING).mode('input_pullup');
 Pin(BATTERY_LEVEL).mode('analog');
 
-const getBattery = () => 2 * (analogRead(BATTERY_LEVEL) - 0.68);
+const getBattery = () => 5 * (analogRead(BATTERY_LEVEL) - 0.68);
 const isCharging = () => !digitalRead(CHARGING);
 
 // === heart rate sensor functions ===
@@ -213,14 +213,19 @@ const initGraphics = () => new Promise(resolve => {
   const g = connectGraphics(SPI1, Pin(LCD_DC), Pin(LCD_CS), Pin(LCD_RESET), () => resolve(g));
 });
 
+let prevTime = 0;
 const renderTime = (g) => {
   const date = new Date();
   const h = date.getHours();
   const m = date.getMinutes();
 
-  const line = (h < 10 ? `0${h}` : `${h}`) + ":" + (m < 10 ? `0${m}` : `${m}`);
+  const newTime = h * 100 + m;
+  if (prevTime === newTime) {
+    return;
+  }
+  prevTime = newTime;
 
-  console.log(line);
+  const line = (h < 10 ? `0${h}` : `${h}`) + ":" + (m < 10 ? `0${m}` : `${m}`);
 
   g.setColor(0, 0, 0);
   g.fillRect(6, 6, 120, 6 + 12);
@@ -232,17 +237,17 @@ const renderTime = (g) => {
 
 const renderBatt = (g) => {
   g.setColor(1, 1, 1);
-  g.drawRect(215, 8, 235, 18);
-  g.drawRect(235, 10, 237, 16);
+  g.drawRect(215, 8, 235, 19);
+  g.drawRect(235, 10, 237, 17);
 
   g.setColor(0, 0, 0);
-  g.fillRect(217, 10, 217 + 16, 16);
+  g.fillRect(217, 10, 217 + 16, 17);
 
   g.setColor(0, 1, 0);
   const level = getBattery();
-  const lvl = 16.0 * level;
+  const lvl = Math.round(16.0 * level);
   console.log('Battery', level);
-  g.fillRect(217, 10, 217 + lvl, 16);
+  g.fillRect(217, 10, 217 + lvl, 17);
 
   g.setFont();
   if (isCharging()) {
@@ -267,19 +272,57 @@ setTimeout(() => {
 }, 1000);
 
 let on = true;
-setWatch(() => {
-  on = !on;
-  backlight(on ? 2 : 0);
+
+const sleep = () => {
+  if (!on) {
+    return;
+  }
+  console.log('sleep');
+  on = false;
+  backlight(0);
+};
+
+const wake = () => {
+  idleTimer = 0;
   if (on) {
-    digitalPulse(HEART_BACKLIGHT, 1, 1000);
-    vibrate(100);
-    renderTime(GG);
-    renderBatt(GG);
+    return;
+  }
+  console.log('wakeup');
+  on = true;
+  backlight(3);
+  digitalPulse(HEART_BACKLIGHT, 1, 1000);
+  vibrate(50);
+};
+
+const IDLE_TIMEOUT = 10000;
+let idleTimer = 0;
+
+setInterval(() => {
+  renderTime(GG);
+  if (on) {
+    idleTimer += 1000;
+    if (idleTimer >= IDLE_TIMEOUT) {
+      console.log('idle timer');
+      sleep();
+    }
+  }
+}, 1000);
+
+setInterval(() => {
+  renderBatt(GG);
+}, 10000);
+
+setWatch(() => {
+  if (!on) {
+    wake();
+  } else {
+    sleep();
   }
 }, BTN1, { edge: 'rising', debounce: 10, repeat: true });
 
 
 setWatch(() => {
-  console.log('chg', isCharging());
+  const chg = isCharging();
   renderBatt(GG);
+  wake();
 }, CHARGING, { edge: 'both', debounce: 10, repeat: true });
