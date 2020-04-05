@@ -111,10 +111,6 @@ backlight(2);
 
 Pin(CHARGING).mode('input_pulldown');
 
-const initLcd = () = new Promise(resolve => {
-
-});
-
 // === heart rate sensor functions ===
 
 const HEART_SENSOR_DEVICEID = 0x44;
