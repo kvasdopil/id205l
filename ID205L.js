@@ -271,6 +271,30 @@ setTimeout(() => {
     });
 }, 1000);
 
+// ====
+
+const ACCEL_THRESHOLD = 100;
+
+let prevAccel = { x: 0, y: 0, z: 0 };
+const resetAccel = () => {
+  prevAccel = accelerometer.read();
+};
+const checkAccelerometer = () => {
+  const data = accelerometer.read();
+
+  let axii = 0;
+  if (Math.abs(prevAccel.x - data.x) > ACCEL_THRESHOLD) { axii++; }
+  if (Math.abs(prevAccel.y - data.y) > ACCEL_THRESHOLD) { axii++; }
+  if (Math.abs(prevAccel.z - data.z) > ACCEL_THRESHOLD) { axii++; }
+  if (axii > 1) {
+    prevAccel = data;
+    return true;
+  }
+  return false;
+};
+
+// ====
+
 let on = true;
 
 const sleep = () => {
@@ -280,6 +304,7 @@ const sleep = () => {
   // console.log('sleep');
   on = false;
   backlight(0);
+  resetAccel();
 };
 
 const wake = () => {
@@ -294,24 +319,6 @@ const wake = () => {
   vibrate(50);
 };
 
-const ACCEL_THRESHOLD = 100;
-
-const prevAccel = [0, 0, 0];
-const checkAccelerometer = () => {
-  const data = accelerometer.read();
-
-  let axii = 0;
-  if (Math.abs(prevAccel[0] - data.x) > ACCEL_THRESHOLD) { axii++; }
-  if (Math.abs(prevAccel[1] - data.y) > ACCEL_THRESHOLD) { axii++; }
-  if (Math.abs(prevAccel[2] - data.z) > ACCEL_THRESHOLD) { axii++; }
-  if (axii > 1) {
-    wake();
-    prevAccel[0] = data.x;
-    prevAccel[1] = data.y;
-    prevAccel[2] = data.z;
-  }
-};
-
 const IDLE_TIMEOUT = 10000;
 let idleTimer = 0;
 
@@ -323,14 +330,16 @@ setInterval(() => {
       console.log('idle timer');
       sleep();
     }
-  } else {
-    checkAccelerometer();
+    return;
+  }
+  if (checkAccelerometer()) {
+    wake();
   }
 }, 1000);
 
 setInterval(() => {
   renderBatt(GG);
-}, 10000);
+}, 60000);
 
 setWatch(() => {
   if (!on) {
