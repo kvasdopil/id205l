@@ -342,7 +342,6 @@ setWatch(() => {
 
 
 setWatch(() => {
-  const chg = isCharging();
   renderBatt(GG);
   wake();
 }, CHARGING, { edge: 'both', debounce: 10, repeat: true });
