@@ -83,8 +83,9 @@ const connect = (spi, dc, ce, rst, callback) => {
 };
 
 const initGraphics = () => new Promise(resolve => {
-  D22.write(1);
-  D30.write(1);
+  D24.write(0); // causes screen flicker if non-zero
+  D22.write(1); // backlight1
+  D30.write(1); // backlight2
 
   const si = D29;
   const sck = D2;
@@ -107,7 +108,11 @@ const renderTime = (g) => {
   const line = (h < 10 ? `0${h}` : `${h}`) + ":" + (m < 10 ? `0${m}` : `${m}`);
 
   console.log(line);
-  g.setFontVector(15);
+
+  g.setColor(0, 0, 0);
+  g.fillRect(6, 6, 120, 6 + 12);
+
+  g.setFontVector(12);
   g.setColor(1, 1, 1);
   g.drawString(line, 6, 6);
 };
@@ -116,17 +121,31 @@ const renderBatt = (g) => {
   g.drawRect(215, 10, 235, 20);
   g.drawRect(235, 12, 237, 18);
 
+  g.setColor(0, 0, 0);
+  g.fillRect(217, 12, 217 + 16, 18);
+
   g.setColor(0, 1, 0);
   const lvl = 16.0 * analogRead(BATTERY_LEVEL);
   console.log('level', analogRead(BATTERY_LEVEL));
   g.fillRect(217, 12, 217 + lvl, 18);
 };
 
+let GG;
 initGraphics()
   .then(g => {
+    GG = g;
     g.clear();
     renderTime(g);
     renderBatt(g);
   });
 
-
+let on = true;
+setWatch(() => {
+  on = !on;
+  D22.write(on);
+  D30.write(on);
+  if (on) {
+    renderTime(GG);
+    renderBatt(GG);
+  }
+}, BTN1, { edge: 'rising', debounce: 10, repeat: true });
