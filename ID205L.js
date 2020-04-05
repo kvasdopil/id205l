@@ -110,6 +110,7 @@ digitalPulse(HEART_BACKLIGHT, 1, 100);
 backlight(2);
 
 Pin(CHARGING).mode('input_pulldown');
+Pin(BATTERY_LEVEL).mode('analog');
 
 // === heart rate sensor functions ===
 
@@ -184,95 +185,9 @@ const accelerometer = {
       x: u8u8tos16(data[1], data[0]) >> 6,
       y: u8u8tos16(data[3], data[2]) >> 6,
       z: u8u8tos16(data[5], data[4]) >> 6
-    }
+    };
   }
-}
-
-// === demo of the button ===
-
-setWatch(() => {
-  digitalPulse(HEART_BACKLIGHT, 1, 100);
-  vibrate(100);
-}, BTN1, { edge: 'rising', debounce: 50, repeat: true });
-
-// ==== utility functions used to figure out pin assignments ====
-
-const pinMonitor = (mode) => {
-  const regs = [
-    2, 3, 4, 5, 6, 9,
-    10, 11, 12, 13, 15, 18, 19,
-    21, 23, 24, 25, 26, 27, 28, 29,
-    31, 32, 33, 34, 35, 36, 37, 38, 39,
-    40, 41, 42, 43, 44, 45, 46, 47
-  ];
-
-  let pr = {};
-  regs.forEach(r => {
-    Pin(r).mode(mode);
-  });
-
-  setInterval(() => {
-    regs.forEach(r => {
-      const val = digitalRead(r);
-      if (val != pr[r]) {
-        console.log(r, val);
-        pr[r] = val;
-      }
-    });
-  }, 100);
 };
-
-const scanI2C = (sda, scl) => {
-  I2C1.setup({ sda: sda, scl: scl });
-  for (let reg = 8; reg < 127; reg++) {
-    try {
-      I2C1.writeTo(reg, 0);
-      I2C1.readFrom(reg, 1).forEach(val => {
-        console.log('found i2c on scl', scl, 'sda', sda, 'reg', Number(reg).toString(16), 'reg0', val);
-      });
-    } catch (e) {
-    }
-  }
-  Pin(scl).mode('input');
-  Pin(sda).mode('input');
-};
-
-const pinScan = () => {
-  const regs = [
-    2, 3, 4, 5, 6, 9,
-    10, 11, 12, 13, 15, 18, 19,
-    21, 23, 24, 25, 26, 27, 28, 29,
-    31, 32, 33, 34, 35, 36, 37, 38, 39,
-    40, 41, 42, 43, 44, 45, 46, 47
-  ];
-  let a = 0;
-  let b = 0;
-  const int = setInterval(() => {
-    if (a >= b) { console.log('.', b); b++; a = 0; };
-    if (b >= regs.length) { console.log('done'); clearInterval(int); return };
-
-    if (a != b && a != undefined && b != undefined) {
-      scanI2C(regs[a], regs[b]);
-      scanI2C(regs[b], regs[a]);
-    }
-    a++;
-  }, 500);
-}
-
-const pinScan2 = (sda) => {
-  const regs = [
-    2, 3, 4, 5, 6, 9,
-    10, 11, 12, 13, 15, 18, 19,
-    21, 23, 24, 25, 26, 27, 28, 29,
-    31, 32, 33, 34, 35, 36, 37, 38, 39,
-    40, 41, 42, 43, 44, 45, 46, 47
-  ];
-  const i = setInterval(() => {
-    if (regs.length === 0) { console.log('done'); clearInterval(i); return; }
-    const b = regs.shift();
-    scanI2C(sda, b);
-  }, 500);
-}
 
 /// ====
 
@@ -282,3 +197,74 @@ console.log('Heart', heartSensor.read(0, 16).map(i => Number(i).toString(16)));
 accelerometer.enable();
 console.log('Accelerometer', accelerometer.read());
 
+// ==== Graphics example ===
+
+const connectGraphics = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/ST7789.js");
+
+const initGraphics = () => new Promise(resolve => {
+  D24.write(0); // causes screen flicker if non-zero
+  D22.write(1); // backlight1
+  D30.write(1); // backlight2
+
+  const si = D29;
+  const sck = D2;
+  const dc = D31;
+  const ce = D47;
+  const rst = D46;
+
+  SPI1.setup({ mosi: si, sck: sck, baud: 10000000 });
+  const g = connectGraphics(SPI1, dc, ce, rst, () => resolve(g));
+});
+
+const renderTime = (g) => {
+  const date = new Date();
+  const h = date.getHours();
+  const m = date.getMinutes();
+
+  const line = (h < 10 ? `0${h}` : `${h}`) + ":" + (m < 10 ? `0${m}` : `${m}`);
+
+  console.log(line);
+
+  g.setColor(0, 0, 0);
+  g.fillRect(6, 6, 120, 6 + 12);
+
+  g.setFontVector(12);
+  g.setColor(1, 1, 1);
+  g.drawString(line, 6, 6);
+};
+
+const renderBatt = (g) => {
+  g.drawRect(215, 8, 235, 18);
+  g.drawRect(235, 10, 237, 16);
+
+  g.setColor(0, 0, 0);
+  g.fillRect(217, 10, 217 + 16, 16);
+
+  g.setColor(0, 1, 0);
+  const level = analogRead(Pin(BATTERY_LEVEL));
+  const lvl = 16.0 * level;
+  console.log('Battery', level);
+  g.fillRect(217, 10, 217 + lvl, 16);
+};
+
+let GG;
+initGraphics()
+  .then(g => {
+    GG = g;
+    g.clear();
+    renderTime(g);
+    renderBatt(g);
+  });
+
+let on = true;
+setWatch(() => {
+  on = !on;
+  D22.write(on);
+  D30.write(on);
+  if (on) {
+    digitalPulse(HEART_BACKLIGHT, 1, 100);
+    vibrate(100);
+    renderTime(GG);
+    renderBatt(GG);
+  }
+}, BTN1, { edge: 'rising', debounce: 10, repeat: true });
