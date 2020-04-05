@@ -199,7 +199,7 @@ heartSensor.enable();
 console.log('Heart', heartSensor.read(0, 16).map(i => Number(i).toString(16)));
 
 accelerometer.enable();
-console.log('Accelerometer', accelerometer.read());
+// console.log('Accelerometer', accelerometer.read());
 
 // ==== Graphics example ===
 
@@ -246,7 +246,7 @@ const renderBatt = (g) => {
   g.setColor(0, 1, 0);
   const level = getBattery();
   const lvl = Math.round(16.0 * level);
-  console.log('Battery', level);
+  // console.log('Battery', level);
   g.fillRect(217, 10, 217 + lvl, 17);
 
   g.setFont();
@@ -277,7 +277,7 @@ const sleep = () => {
   if (!on) {
     return;
   }
-  console.log('sleep');
+  // console.log('sleep');
   on = false;
   backlight(0);
 };
@@ -287,11 +287,29 @@ const wake = () => {
   if (on) {
     return;
   }
-  console.log('wakeup');
+  // console.log('wakeup');
   on = true;
   backlight(3);
   digitalPulse(HEART_BACKLIGHT, 1, 1000);
   vibrate(50);
+};
+
+const ACCEL_THRESHOLD = 100;
+
+const prevAccel = [0, 0, 0];
+const checkAccelerometer = () => {
+  const data = accelerometer.read();
+
+  let axii = 0;
+  if (Math.abs(prevAccel[0] - data.x) > ACCEL_THRESHOLD) { axii++; }
+  if (Math.abs(prevAccel[1] - data.y) > ACCEL_THRESHOLD) { axii++; }
+  if (Math.abs(prevAccel[2] - data.z) > ACCEL_THRESHOLD) { axii++; }
+  if (axii > 1) {
+    wake();
+    prevAccel[0] = data.x;
+    prevAccel[1] = data.y;
+    prevAccel[2] = data.z;
+  }
 };
 
 const IDLE_TIMEOUT = 10000;
@@ -305,6 +323,8 @@ setInterval(() => {
       console.log('idle timer');
       sleep();
     }
+  } else {
+    checkAccelerometer();
   }
 }, 1000);
 
