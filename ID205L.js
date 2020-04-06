@@ -42,10 +42,10 @@
 - 39 - CHARGING
 - 40 - (pulled down) - connected to HEART_SENSOR
 - 41 - NO_CHIP?
-- 42 - TOUCH unknown
-- 43 - TOUCH unknown
-- 44 - TOUCH unknown
-- 45 - TOUCH unknown
+- 42 - TOUCH_SCL
+- 43 - TOUCH_SDA
+- 44 - TOUCH_INT
+- 45 - TOUCH_ENABLE
 - 46 - LCD_RESET
 - 47 - LCD_CS
 */
@@ -88,6 +88,10 @@ const LCD_SI = 29;
 const BACKLIGHT2 = 30;
 const LCD_DC = 31;
 const CHARGING = 39;
+const TOUCH_SCL = 42;
+const TOUCH_SDA = 43;
+const TOUCH_INT = 44;
+const TOUCH_ENABLE = 45;
 const LCD_RESET = 46;
 const LCD_CS = 47;
 

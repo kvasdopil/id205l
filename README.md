@@ -99,10 +99,10 @@ Pinout
 - 39 - CHARGING
 - 40 - (pulled down) - connected to HEART_SENSOR
 - 41 - NO_CHIP?
-- 42 - TOUCH unknown
-- 43 - TOUCH unknown
-- 44 - TOUCH unknown
-- 45 - TOUCH unknown
+- 42 - TOUCH_SCL
+- 43 - TOUCH_SDA
+- 44 - TOUCH_INT
+- 45 - TOUCH_ENABLE
 - 46 - LCD_RESET
 - 47 - LCD_CS
 
@@ -151,18 +151,14 @@ IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet
 
 There's a driver and datasheet for similar device here: https://github.com/amazfitbip/documentation/tree/master/documents/IT7259
 
-When D24 is 0, pins D42, D43, D44 are pulled up. This is not changing by unplugging screen connected so it must be some mainboard circutry doing so.
+Pins:
+- 42 - TOUCH_SCL
+- 43 - TOUCH_SDA
+- 44 - TOUCH_INT
+- 45 - TOUCH_ENABLE
 
-When D2 is 1, pins D42, D43, D44 are pulled up. (only when screen is plugged in) (also D29, D31, D42)
-When D31 is 1, pins D42, D43, D44 are pulled up. (only when screen is plugged in)
-When D46 is 1, pins D42, D43, D44 are pulled up. (only when screen is plugged in)
-
-Pins D42, D43, D44, D45 and D47 are connected to touch panel controller. Exact pinout is unknown.
-D44 flips when D45 is toggled
-
-When 45 -> 1, 44 changes the value
-
-D2, D24, D31
+D45 should be 1 for touch sensor to work
+D24 should be 0
 
 ### Accelerometer
 Unknown, labelled as "B271 VS35". 
