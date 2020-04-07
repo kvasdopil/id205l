@@ -1,0 +1,159 @@
+const Watch = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/ID205L.js");
+
+// initialsation
+
+Watch.vibrate([50, 50, 50]);
+digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 100);
+
+Watch.setBacklight(2);
+
+Watch.heart.enable();
+console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
+
+Watch.accelerometer.enable();
+
+Watch.touch.enable();
+
+// main code
+
+let prevTime = 0;
+const renderTime = (g) => {
+  const date = new Date();
+  const h = date.getHours();
+  const m = date.getMinutes();
+
+  const newTime = h * 100 + m;
+  if (prevTime === newTime) {
+    return;
+  }
+  prevTime = newTime;
+
+  const line = (h < 10 ? `0${h}` : `${h}`) + ":" + (m < 10 ? `0${m}` : `${m}`);
+
+  g.setColor(0, 0, 0);
+  g.fillRect(6, 6, 120, 6 + 12);
+
+  g.setFontVector(12);
+  g.setColor(1, 1, 1);
+  g.drawString(line, 6, 6);
+};
+
+const renderBatt = (g) => {
+  g.setColor(1, 1, 1);
+  g.drawRect(215, 8, 235, 19);
+  g.drawRect(235, 10, 237, 17);
+
+  g.setColor(0, 0, 0);
+  g.fillRect(217, 10, 217 + 16, 17);
+
+  g.setColor(0, 1, 0);
+  const level = Watch.getBattery();
+  const lvl = Math.round(16.0 * level);
+  // console.log('Battery', level);
+  g.fillRect(217, 10, 217 + lvl, 17);
+
+  g.setFont();
+  if (Watch.isCharging()) {
+    g.setColor(0, 1, 0);
+  } else {
+    g.setColor(0, 0, 0);
+  }
+
+  g.drawString("+", 202, 7);
+};
+
+let GG;
+
+setTimeout(() => {
+  initGraphics()
+    .then(g => {
+      GG = g;
+      g.clear();
+      renderTime(g);
+      renderBatt(g);
+    });
+}, 1000);
+
+// ====
+
+const ACCEL_THRESHOLD = 100;
+
+let prevAccel = { x: 0, y: 0, z: 0 };
+const resetAccel = () => {
+  prevAccel = Watch.accelerometer.read();
+};
+const checkAccelerometer = () => {
+  const data = Watch.accelerometer.read();
+
+  let axii = 0;
+  if (Math.abs(prevAccel.x - data.x) > ACCEL_THRESHOLD) { axii++; }
+  if (Math.abs(prevAccel.y - data.y) > ACCEL_THRESHOLD) { axii++; }
+  if (Math.abs(prevAccel.z - data.z) > ACCEL_THRESHOLD) { axii++; }
+  if (axii > 1) {
+    prevAccel = data;
+    return true;
+  }
+  return false;
+};
+
+// ====
+
+let on = true;
+
+const sleep = () => {
+  if (!on) {
+    return;
+  }
+  // console.log('sleep');
+  on = false;
+  Watch.setBacklight(0);
+  resetAccel();
+};
+
+const wake = () => {
+  idleTimer = 0;
+  if (on) {
+    return;
+  }
+  // console.log('wakeup');
+  on = true;
+  Watch.setBacklight(3);
+  digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 1000);
+  Watch.vibrate(50);
+};
+
+const IDLE_TIMEOUT = 10000;
+let idleTimer = 0;
+
+setInterval(() => {
+  renderTime(GG);
+  if (on) {
+    idleTimer += 1000;
+    if (idleTimer >= IDLE_TIMEOUT) {
+      console.log('idle timer');
+      sleep();
+    }
+    return;
+  }
+  if (checkAccelerometer()) {
+    wake();
+  }
+}, 1000);
+
+setInterval(() => {
+  renderBatt(GG);
+}, 60000);
+
+setWatch(() => {
+  if (!on) {
+    wake();
+  } else {
+    sleep();
+  }
+}, BTN1, { edge: 'rising', debounce: 10, repeat: true });
+
+
+setWatch(() => {
+  renderBatt(GG);
+  wake();
+}, CHARGING, { edge: 'both', debounce: 10, repeat: true });
