@@ -50,7 +50,7 @@
 - 47 - LCD_CS
 */
 
-const IT7259 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/TI7259.js");
+const IT7259 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/IT7259.js");
 const ST7789 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/ST7789.js");
 
 const LCD_SCK = 2;
