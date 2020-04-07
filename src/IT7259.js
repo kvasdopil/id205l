@@ -38,4 +38,4 @@ function init(cfg) {
   return result;
 }
 
-module.export = init;
+module.exports = init;
