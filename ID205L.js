@@ -50,26 +50,8 @@
 - 47 - LCD_CS
 */
 
-// Poke on pin -> changed values:
-// 13->11
-// 18->13
-// 22->18,30,15
-// 23->30
-// 24->31
-// 28->27,23
-// 29->23,22
-
-// back sensor related pins are
-// 15, 16(btn), 17, 18, 19, 25
-// display - 30,31,2
-
-// display related pins are
-// 2, 15, 18, 30, 31,
-
-// pullup
-// 40 = 0
-// input
-// 41 = 1
+const IT7259 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/TI7259.js");
+const ST7789 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/ST7789.js");
 
 const LCD_SCK = 2;
 const ACCELEROMETER_ENABLE = 4;
@@ -81,17 +63,17 @@ const BUTTON = 16;
 const HEART_SENSOR_ENABLE = 17;
 const MOTOR = 20;
 const BACKLIGHT = 22;
-const TOUCH_RESET = 24;
+const TOUCH_RESET = D24;
 const ACCELEROMETER_SDA = 27;
 const BATTERY_LEVEL = 28;
 const LCD_SI = 29;
 const BACKLIGHT2 = 30;
 const LCD_DC = 31;
 const CHARGING = 39;
-const TOUCH_SCL = 42;
-const TOUCH_SDA = 43;
-const TOUCH_INT = 44;
-const TOUCH_ENABLE = 45;
+const TOUCH_SCL = D42;
+const TOUCH_SDA = D43;
+const TOUCH_INT = D44;
+const TOUCH_ENABLE = D45;
 const LCD_RESET = 46;
 const LCD_CS = 47;
 
@@ -199,28 +181,13 @@ const accelerometer = {
 
 /// ==== Touch panel
 
-const TOUCH_ADDRESS = 0x46;
-const TOUCH_REG = 225;
-const touchI2C = new I2C();
-touchI2C.setup({ sda: TOUCH_SDA, scl: TOUCH_SCL });
-const touch = {
-  enable: () => {
-    digitalWrite(TOUCH_ENABLE, 1);
-    digitalWrite(TOUCH_RESET, 0);
-  },
-  disable: () => {
-    digitalWrite(TOUCH_ENABLE, 0);
-  },
-  onTouch: (event) => {
-    console.log(event);
-  }
-}
-
-setWatch(() => {
-  touchI2C.writeTo(TOUCH_ADDRESS, TOUCH_REG);
-  const res = touchI2C.readFrom(TOUCH_ADDRESS, 16);
-  touch.onTouch({ x: res[2], y: res[4], type: res[0] });
-}, TOUCH_INT, { edge: 'falling', debounce: 10, repeat: true });
+const touch = IT7259({
+  sda: TOUCH_SDA,
+  scl: TOUCH_SCL,
+  enable: TOUCH_ENABLE,
+  reset: TOUCH_RESET,
+  int: TOUCH_INT,
+});
 
 /// ====
 
@@ -234,14 +201,12 @@ touch.enable();
 
 // ==== Graphics example ===
 
-const connectGraphics = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/ST7789.js");
-
 const initGraphics = () => new Promise(resolve => {
   digitalWrite(TOUCH_RESET, 0); // causes screen flicker if non-zero
   // backlight(2);
 
   SPI1.setup({ mosi: Pin(LCD_SI), sck: Pin(LCD_SCK), baud: 10000000 });
-  const g = connectGraphics(SPI1, Pin(LCD_DC), Pin(LCD_CS), Pin(LCD_RESET), () => resolve(g));
+  const g = ST7789(SPI1, Pin(LCD_DC), Pin(LCD_CS), Pin(LCD_RESET), () => resolve(g));
 });
 
 let prevTime = 0;
