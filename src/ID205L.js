@@ -56,42 +56,42 @@ const HX3600 = require("https://raw.githubusercontent.com/kvasdopil/id205l/maste
 const B271 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/devices/B271.js"); // accelerometer
 
 const pins = {
-  ACCELEROMETER_ENABLE = D4,
-  ACCELEROMETER_SCL = D5,
-  ACCELEROMETER_SDA = D27,
+  ACCELEROMETER_ENABLE: D4,
+  ACCELEROMETER_SCL: D5,
+  ACCELEROMETER_SDA: D27,
 
-  BUTTON = D16,
+  BUTTON: D16,
 
-  HEART_SDA = D7,
-  HEART_SCL = D8,
-  HEART_BACKLIGHT = D14,
-  HEART_ENABLE = D17,
+  HEART_SDA: D7,
+  HEART_SCL: D8,
+  HEART_BACKLIGHT: D14,
+  HEART_ENABLE: D17,
 
-  MOTOR = D20,
+  MOTOR: D20,
 
-  BACKLIGHT = D22,
-  BACKLIGHT2 = D30,
+  BACKLIGHT: D22,
+  BACKLIGHT2: D30,
 
-  BATTERY_LEVEL = D28,
-  CHARGING = D39,
+  BATTERY_LEVEL: D28,
+  CHARGING: D39,
 
-  TOUCH_RESET = D24, // also a reset for lcd
-  TOUCH_SCL = D42,
-  TOUCH_SDA = D43,
-  TOUCH_INT = D44,
-  TOUCH_ENABLE = D45,
+  TOUCH_RESET: D24, // also a reset for lcd
+  TOUCH_SCL: D42,
+  TOUCH_SDA: D43,
+  TOUCH_INT: D44,
+  TOUCH_ENABLE: D45,
 
-  LCD_SCK = D2,
-  LCD_RESET = D46,
-  LCD_CS = D47,
-  LCD_SI = D29,
-  LCD_DC = D31,
+  LCD_SCK: D2,
+  LCD_RESET: D46,
+  LCD_CS: D47,
+  LCD_SI: D29,
+  LCD_DC: D31,
 
-  MEMORY_CS = D21,
-  MEMORY_WP = D12,
-  MEMORY_SO = D19,
-  MEMORY_HOLD = D33,
-  MEMORY_CLK = D38,
+  MEMORY_CS: D21,
+  MEMORY_WP: D12,
+  MEMORY_SO: D19,
+  MEMORY_HOLD: D33,
+  MEMORY_CLK: D38,
 };
 
 // const MEMORY_SI = ??;
