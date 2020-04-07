@@ -1,4 +1,4 @@
-const I2C_ADDRESS = 0x46;
+const I2C_DEVICEID = 0x46;
 const I2C_REG = 225;
 
 /**
@@ -19,10 +19,10 @@ function init(cfg) {
       cfg.reset && cfg.reset.write(0); // ID205L uses separate reset pin for screen and touch controller
     },
     disable: () => cfg.enable.write(0),
-    onTouch: (event) => console.log(event),
+    onTouch: event => console.log(event),
     read: () => {
-      i2c.writeTo(TOUCH_ADDRESS, TOUCH_REG);
-      const res = i2c.readFrom(TOUCH_ADDRESS, 16);
+      i2c.writeTo(I2C_DEVICEID, I2C_REG);
+      const res = i2c.readFrom(I2C_DECICEID, 16);
       return { x: res[2], y: res[4], type: res[0] };
     }
   }
