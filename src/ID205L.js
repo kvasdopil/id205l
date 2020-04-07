@@ -137,7 +137,7 @@ const lcd = {
   }),
 }
 
-module.export = {
+module.exports = {
   pins,
   heart,
   accelerometer,
