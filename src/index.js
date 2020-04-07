@@ -1,4 +1,4 @@
-const Watch = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/ID205L.js");
+const Watch = require("https://github.com/kvasdopil/id205l/blob/master/src/ID205L.js");
 
 // initialsation
 

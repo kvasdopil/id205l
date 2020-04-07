@@ -50,10 +50,10 @@
 - 47 - LCD_CS
 */
 
-const IT7259 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/devices/IT7259.js"); // touch screen
-const ST7789 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/devices/ST7789.js"); // display
-const HX3600 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/devices/HX3600.js"); // heart sensor
-const B271 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/devices/B271.js"); // accelerometer
+const IT7259 = require("https://github.com/kvasdopil/id205l/blob/master/src/devices/IT7259.js"); // touch screen
+const ST7789 = require("https://github.com/kvasdopil/id205l/blob/master/src/devices/ST7789.js"); // display
+const HX3600 = require("https://github.com/kvasdopil/id205l/blob/master/src/devices/HX3600.js"); // heart sensor
+const B271 = require("https://github.com/kvasdopil/id205l/blob/master/src/devices/B271.js"); // accelerometer
 
 const pins = {
   ACCELEROMETER_ENABLE: D4,
