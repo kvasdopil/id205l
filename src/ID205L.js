@@ -92,9 +92,8 @@ const pins = {
   MEMORY_SO: D19,
   MEMORY_HOLD: D33,
   MEMORY_CLK: D38,
+  // MEMORY_SI: D9?,
 };
-
-// const MEMORY_SI = ??;
 
 const vibrate = ms => digitalPulse(pins.MOTOR, 1, ms);
 
