@@ -197,6 +197,31 @@ const accelerometer = {
   }
 };
 
+/// ==== Touch panel
+
+const TOUCH_ADDRESS = 0x46;
+const TOUCH_REG = 225;
+const touchI2C = new I2C();
+touchI2C.setup({ sda: TOUCH_SDA, scl: TOUCH_SCL });
+const touch = {
+  enable: () => {
+    digitalWrite(TOUCH_ENABLE, 1);
+    digitalWrite(TOUCH_RESET, 0);
+  },
+  disable: () => {
+    digitalWrite(TOUCH_ENABLE, 0);
+  },
+  onTouch: (event) => {
+    console.log(event);
+  }
+}
+
+setWatch(() => {
+  touchI2C.writeTo(TOUCH_ADDRESS, TOUCH_REG);
+  const res = touchI2C.readFrom(TOUCH_ADDRESS, 16);
+  touch.onTouch({ x: res[2], y: res[4], type: res[0] });
+}, TOUCH_INT, { edge: 'falling', debounce: 10, repeat: true });
+
 /// ====
 
 heartSensor.enable();
@@ -204,6 +229,8 @@ console.log('Heart', heartSensor.read(0, 16).map(i => Number(i).toString(16)));
 
 accelerometer.enable();
 // console.log('Accelerometer', accelerometer.read());
+
+touch.enable();
 
 // ==== Graphics example ===
 
