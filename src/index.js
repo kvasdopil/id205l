@@ -1,6 +1,6 @@
 const Watch = require("https://github.com/kvasdopil/id205l/blob/master/src/ID205L.js");
 
-// initialsation
+// initialization
 
 Watch.vibrate([50, 50, 50]);
 digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 100);
@@ -65,7 +65,7 @@ const renderBatt = (g) => {
 let GG;
 
 setTimeout(() => {
-  initGraphics()
+  Watch.lcd.init()
     .then(g => {
       GG = g;
       g.clear();
