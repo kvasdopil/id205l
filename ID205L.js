@@ -50,13 +50,14 @@
 - 47 - LCD_CS
 */
 
-const IT7259 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/IT7259.js");
-const ST7789 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/ST7789.js");
-const HX3600 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/HX3600.js");
+const IT7259 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/IT7259.js"); // touch screen
+const ST7789 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/ST7789.js"); // display
+const HX3600 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/HX3600.js"); // heart sensor
+const B271 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/B271.js"); // accelerometer
 
 const LCD_SCK = 2;
-const ACCELEROMETER_ENABLE = 4;
-const ACCELEROMETER_SCL = 5;
+const ACCELEROMETER_ENABLE = D4;
+const ACCELEROMETER_SCL = D5;
 const HEART_SDA = D7;
 const HEART_SCL = D8;
 const HEART_BACKLIGHT = 14;
@@ -65,18 +66,18 @@ const HEART_ENABLE = D17;
 const MOTOR = 20;
 const BACKLIGHT = 22;
 const TOUCH_RESET = D24;
-const ACCELEROMETER_SDA = 27;
+const ACCELEROMETER_SDA = D27;
 const BATTERY_LEVEL = 28;
-const LCD_SI = 29;
+const LCD_SI = D29;
 const BACKLIGHT2 = 30;
-const LCD_DC = 31;
+const LCD_DC = D31;
 const CHARGING = 39;
 const TOUCH_SCL = D42;
 const TOUCH_SDA = D43;
 const TOUCH_INT = D44;
 const TOUCH_ENABLE = D45;
-const LCD_RESET = 46;
-const LCD_CS = 47;
+const LCD_RESET = D46;
+const LCD_CS = D47;
 
 const MEMORY_CS = 21;
 const MEMORY_WP = 12;
@@ -103,38 +104,17 @@ Pin(BATTERY_LEVEL).mode('analog');
 const getBattery = () => 5 * (analogRead(BATTERY_LEVEL) - 0.68);
 const isCharging = () => !digitalRead(CHARGING);
 
-// === heart rate sensor functions ===
+const heart = HX3600({
+  scl: HEART_SCL,
+  sda: HEART_SDA,
+  enable: HEART_ENABLE
+});
 
-const heart = HX3600({ scl: HEART_SCL, sda: HEART_SDA, enable: HEART_ENABLE })
-
-// === accelerometer ===
-
-const u8u8tos16 = (byteA, byteB) => {
-  const sign = byteA & (1 << 7);
-  var x = ((byteA & 0xff) << 8) | (byteB & 0xff);
-  if (sign) {
-    return 0xffff0000 | x; // fill in most significant bits with 1's
-  }
-  return x;
-};
-
-const accI2C = new I2C();
-accI2C.setup({ sda: ACCELEROMETER_SDA, scl: ACCELEROMETER_SCL });
-const accelerometer = {
-  enable: () => digitalWrite(ACCELEROMETER_ENABLE, 1),
-  disable: () => digitalRead(ACCELEROMETER_ENABLE, 0),
-  read: () => {
-    accI2C.writeTo(0x1f, 0x02);
-    const data = accI2C.readFrom(0x1f, 6);
-    return {
-      x: u8u8tos16(data[1], data[0]) >> 6,
-      y: u8u8tos16(data[3], data[2]) >> 6,
-      z: u8u8tos16(data[5], data[4]) >> 6
-    };
-  }
-};
-
-/// ==== Touch panel
+const accelerometer = B271({
+  scl: ACCELEROMETER_SCL,
+  sda: ACCELEROMETER_SDA,
+  enable: ACCELEROMETER_ENABLE
+});
 
 const touch = IT7259({
   sda: TOUCH_SDA,
@@ -142,6 +122,14 @@ const touch = IT7259({
   enable: TOUCH_ENABLE,
   reset: TOUCH_RESET,
   int: TOUCH_INT,
+});
+
+const initGraphics = () => new Promise(resolve => {
+  digitalWrite(TOUCH_RESET, 0); // causes screen flicker if non-zero
+  // backlight(2);
+
+  SPI1.setup({ mosi: Pin(LCD_SI), sck: Pin(LCD_SCK), baud: 10000000 });
+  const g = ST7789(SPI1, Pin(LCD_DC), Pin(LCD_CS), Pin(LCD_RESET), () => resolve(g));
 });
 
 /// ====
@@ -154,15 +142,7 @@ accelerometer.enable();
 
 touch.enable();
 
-// ==== Graphics example ===
-
-const initGraphics = () => new Promise(resolve => {
-  digitalWrite(TOUCH_RESET, 0); // causes screen flicker if non-zero
-  // backlight(2);
-
-  SPI1.setup({ mosi: Pin(LCD_SI), sck: Pin(LCD_SCK), baud: 10000000 });
-  const g = ST7789(SPI1, Pin(LCD_DC), Pin(LCD_CS), Pin(LCD_RESET), () => resolve(g));
-});
+// main code
 
 let prevTime = 0;
 const renderTime = (g) => {
