@@ -17,7 +17,7 @@
 - 14 = heart sensor backlight aka LED1
 - 15 - 
 - 16 = BTN1
-- 17 = HEART_SENSOR_ENABLE
+- 17 = HEART_ENABLE
 - 18 - 
 - 19 - MEMORY_CS
 - 20 = MOTOR
@@ -52,15 +52,16 @@
 
 const IT7259 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/IT7259.js");
 const ST7789 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/ST7789.js");
+const HX3600 = require("https://raw.githubusercontent.com/kvasdopil/id205l/master/src/HX3600.js");
 
 const LCD_SCK = 2;
 const ACCELEROMETER_ENABLE = 4;
 const ACCELEROMETER_SCL = 5;
-const HEART_SDA = 7
-const HEART_SCL = 8
+const HEART_SDA = D7;
+const HEART_SCL = D8;
 const HEART_BACKLIGHT = 14;
 const BUTTON = 16;
-const HEART_SENSOR_ENABLE = 17;
+const HEART_ENABLE = D17;
 const MOTOR = 20;
 const BACKLIGHT = 22;
 const TOUCH_RESET = D24;
@@ -104,53 +105,7 @@ const isCharging = () => !digitalRead(CHARGING);
 
 // === heart rate sensor functions ===
 
-const HEART_SENSOR_DEVICEID = 0x44;
-const heartI2C = new I2C();
-heartI2C.setup({ sda: HEART_SDA, scl: HEART_SCL });
-const heartSensor = {
-  enable: () => digitalWrite(HEART_SENSOR_ENABLE, 1),
-  disable: () => digitalWrite(HEART_SENSOR_ENABLE, 0),
-  read: (reg, length) => {
-    heartI2C.writeTo(HEART_SENSOR_DEVICEID, reg);
-    return heartI2C.readFrom(HEART_SENSOR_DEVICEID, length);
-  }
-};
-
-/* HX3600 registers 
-addr   value  desc
-0x00 - 0x22 - device ID
-0x01 - 0x01 - reserved
-0x02 - 0x11 - functions enabled (should be 0x33)
-0x03 - 0x00 - reserved (should be 0x8f)
-0x04 - 0x10 - LED1 phase config
-0x05 - 0x20 - LED2 phase config
-0x06 - 0x50 - INT1 config
-0x07 - 0x07 - INT1 config
-0x08 - 0x00 - INT1 config
-0x09 - 0x02 - sleep enabled
-
-0x14 - 0x00 - ps offset
-0x15 - 0x00 - hrs offset
-0x16 - 0x40 - ps interval
-
-0xA0 - 0x00 - hrs data out
-0xA1 - 0x00 - hrs data out
-0xA2 - 0x00 - hrs data out
-
-0xA3 - 0x00 - als data out
-0xA4 - 0x00 - als data out
-0xA5 - 0x00 - als data out
-
-0xA6 - 0x00 - ps1 data out
-0xA7 - 0x00 - ps1 data out
-0xA8 - 0x00 - ps1 data out
-
-0xA9 - 0x00 - als2 data out
-0xAA - 0x00 - als2 data out
-0xAB - 0x00 - als2 data out
-
-0xC0 - 0x86 - led driver config
-*/
+const heart = HX3600({ scl: HEART_SCL, sda: HEART_SDA, enable: HEART_ENABLE })
 
 // === accelerometer ===
 
@@ -191,8 +146,8 @@ const touch = IT7259({
 
 /// ====
 
-heartSensor.enable();
-console.log('Heart', heartSensor.read(0, 16).map(i => Number(i).toString(16)));
+heart.enable();
+console.log('Heart', heart.read(0, 16).map(i => Number(i).toString(16)));
 
 accelerometer.enable();
 // console.log('Accelerometer', accelerometer.read());
