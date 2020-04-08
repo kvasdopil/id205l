@@ -22,7 +22,7 @@ function init(cfg) {
     onTouch: event => console.log(event),
     read: () => {
       i2c.writeTo(I2C_DEVICEID, I2C_REG);
-      const res = i2c.readFrom(I2C_DECICEID, 16);
+      const res = i2c.readFrom(I2C_DEVICEID, 16);
       return { x: res[2], y: res[4], type: res[0] };
     }
   }

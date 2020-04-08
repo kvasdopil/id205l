@@ -53,144 +53,87 @@ Connect to J-Link to device to following pads:
 - DIO - DIO  
 - C - CLK
 
-## What we do know
-### Chip: NRF52840
+## Using peripherals
 
-Pinout
-- 0 - XL1
-- 1 - XL1
-- 2 - LCD_SCK
-- 3 - NO_CHIP
-- 4 - ACCELEROMETER_ENABLE
-- 5 - ACCELEROMETER SCL device 0x1f
-- 6 - ACCELEROMETER_STOP
-- 7 = HEART_SENSOR SDA device 0x44
-- 8 = HEART_SENSOR SCL device 0x44
-- 9  - GND?
-- 10 - GND?
-- 11 - NO_CHIP? 
-- 12 - MEMORY_WP
-- 13 - 
-- 14 = heart sensor backlight aka LED1
-- 15 - 
-- 16 = BTN1
-- 17 = HEART_SENSOR_ENABLE
-- 18 - 
-- 19 - MEMORY_CS
-- 20 = MOTOR
-- 21 = MEMORY_SO
-- 22 = BACKLIGHT
-- 23 - 
-- 24 - TOUCH_RESET
-- 25 - 
-- 26 - ACCELEROMETER_INT1? (pulled down)
-- 27 - ACCELEROMETER SDA device 0x1f
-- 28 - BATTERY_LEVEL
-- 29 - LCD_SI
-- 30 - BACKLIGHT2
-- 31 - LCD_DC
-- 32 -
-- 33 - MEMORY_HOLD
-- 34 -
-- 35 -
-- 36 - TX
-- 37 - RX
-- 38 - MEMORY_CLK
-- 39 - CHARGING
-- 40 - (pulled down) - connected to HEART_SENSOR
-- 41 - NO_CHIP?
-- 42 - TOUCH_SCL
-- 43 - TOUCH_SDA
-- 44 - TOUCH_INT
-- 45 - TOUCH_ENABLE
-- 46 - LCD_RESET
-- 47 - LCD_CS
+[Pinout here](./DEVICES.md)
 
-when D24 -> 0, MEM_SO -> 1
+Generally all you want is to import one file to handle all watch peripherals:
+```
+const Watch = require("https://github.com/kvasdopil/id205l/blob/master/src/ID205L.js")
+```
+
+### Button
+
+```
+Watch.pins.BUTTON.read();
+
+// this also works
+BTN1.read();
+```
+
+- TODO: add interrupt-driven events
+
+### Charge level
+
+```
+console.log(Watch.isCharging()); // returns true if device is charging
+console.log(Watch.getBattery()); // returns battery level from 0.0 to 1.0
+```
+
+- TODO: add interrupt-driven events
 
 ### Display
-Controlled by ST7789V.
-
-- LCD_SCK - D2
-- LCD_SI - D29
-- LCD_DC - D31
-- LCD_RESET - D46
-- LCD_CS - D47
-
-Backlight has 4 brightness levels set by changing values on `D22` and `D30` pins.
-
-### Flash memory chip
-XT25F64B
-
-Pinout:
-- CS - D21?
-- SO - D19?
-- WP - D12
-- HOLD - D33
-- SCLK - D38
-- SI - D9?
-
-### Heart rate sensor
-HX3600, enabled by `D17.write(1)`, I2C on `SDA=7` `SCL=8` `deviceId=0x44`
-
-Datasheet: http://www.synercontech.com/Public/uploads/file/2019_10/20191020152311_81180.pdf
-
-More detailed datasheet for similar device: http://www.tianyihexin.com/pic/file/20180323/20180323105824952495.pdf
-
-Usage: 
 ```
-  heartSensor.enable();
-  console.log(heartSensor.read(0, 16)); // read registers 0x00-0x10
+Watch.setBacklight(3); // accepts values 0..3, 0 is off
+
+Watch.lcd.enable();
+Watch.lcd.init().then(g => {
+  g.setColor(1,0,0);
+  g.drawString("Hello", 10, 20);
+});
+```
+
+- TODO: add buffering and flip()
+- TODO: use SPIM interface
+
+### Accelerometer
+```
+Watch.accelerometer.enable();
+console.log(Watch.accelerometer.read()); // returns an object with {x, y, z} values
+```
+
+- TODO: add interrupt-driven events
+
+### Heart sensor
+```
+Watch.pins.HEART_BACKLIGHT.write(1); 
+// this also works
+LED1.write(1);
+
+Watch.heart.enable();
+console.log(Watch.heart.read(0, 16)); // performs raw i2c read from heart sensor
 ```
 
 - TODO: add actual data processing
-- TODO: add interrupt support
+- TODO: add interrupt-driven events
 
 ### Touch sensor
-IT7259, photos: https://photos.app.goo.gl/u1DJjaMRU4kKJ2W87 is there a datasheet somewhere?
-
-There's a driver and datasheet for similar device here: https://github.com/amazfitbip/documentation/tree/master/documents/IT7259
-
-Pins:
-- 42 - TOUCH_SCL
-- 43 - TOUCH_SDA
-- 44 - TOUCH_INT
-- 45 - TOUCH_ENABLE
-
-D45 should be 1 for touch sensor to work
-D24 should be 0
-
-### Accelerometer
-Unknown, labelled as "B271 VS35". 
-
-Enabled by `D4.write(1)`, I2C on `SDA=27`, `SCL=5`, `deviceId=0x1f`
-Pulling D6 down stops accelerometer (but device is still repsonding).
-Dulling D4 down powers down accelerometer
-
-DeviceId is similar to https://www.nxp.com/docs/en/data-sheet/FXOS8700CQ.pdf, but `WHO_AM_I` register value is wrong.
-
-X,Y,Z accelerometer values can be obtained by reading registers `0x02-0x07`.
-
-Usage: 
 ```
-  accelerometer.enable();
-  setInterval(() => {
-    console.log(accelerometer.read());
-  }, 100);
+Watch.touch.enable();
+// interrupt-driven event
+Watch.touch.onTouch = (event) => {
+  console.log(event.type, event.x, event.y);
+};
+
+// this also works
+Watch.touch.read(); // returns an object with {type, x, y} values
 ```
 
-- TODO: add interrupt support
+- TODO: add gestures support
 
-### Battery level and charging status
+### External flash memory
 
-Battery charge level is analog value on D28
-Pin D39 is low when device is charging.
-
-- TODO: add battery percentage calculation
-
-## No chip
-
-Pins D11, D41 are leading to chip that is missing on the PCB
+- TODO: make it work
 
 ## Ask questions
 https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
