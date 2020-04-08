@@ -1,21 +1,5 @@
 const Watch = require("https://github.com/kvasdopil/id205l/blob/master/src/ID205L.js");
 
-// initialization
-
-Watch.vibrate([50, 50, 50]);
-digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 100);
-
-Watch.setBacklight(2);
-
-Watch.heart.enable();
-console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
-
-Watch.accelerometer.enable();
-
-Watch.touch.enable();
-
-// main code
-
 let prevTime = 0;
 const renderTime = (g) => {
   const date = new Date();
@@ -64,20 +48,9 @@ const renderBatt = (g) => {
 
 let GG;
 
-setTimeout(() => {
-  Watch.lcd.init()
-    .then(g => {
-      GG = g;
-      g.clear();
-      renderTime(g);
-      renderBatt(g);
-    });
-}, 1000);
-
 // ====
 
 const ACCEL_THRESHOLD = 100;
-
 let prevAccel = { x: 0, y: 0, z: 0 };
 const resetAccel = () => {
   prevAccel = Watch.accelerometer.read();
@@ -99,7 +72,6 @@ const checkAccelerometer = () => {
 // ====
 
 let on = true;
-
 const sleep = () => {
   if (!on) {
     return;
@@ -125,7 +97,7 @@ const wake = () => {
 const IDLE_TIMEOUT = 10000;
 let idleTimer = 0;
 
-setInterval(() => {
+const updateDevices = () => {
   renderTime(GG);
   if (on) {
     idleTimer += 1000;
@@ -138,11 +110,34 @@ setInterval(() => {
   if (checkAccelerometer()) {
     wake();
   }
+}
+
+// initialization
+
+Watch.vibrate([50, 50, 50]);
+digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 100);
+
+Watch.setBacklight(2);
+
+Watch.heart.enable();
+console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
+
+Watch.accelerometer.enable();
+
+Watch.touch.enable();
+
+setTimeout(() => {
+  Watch.lcd.init()
+    .then(g => {
+      GG = g;
+      g.clear();
+      renderTime(g);
+      renderBatt(g);
+    });
+
+  setInterval(updateDevices, 1000);
 }, 1000);
 
-setInterval(() => {
-  renderBatt(GG);
-}, 60000);
 
 setWatch(() => {
   if (!on) {
@@ -152,8 +147,11 @@ setWatch(() => {
   }
 }, BTN1, { edge: 'rising', debounce: 10, repeat: true });
 
-
 setWatch(() => {
   renderBatt(GG);
   wake();
-}, CHARGING, { edge: 'both', debounce: 10, repeat: true });
+}, Watch.pins.CHARGING, { edge: 'both', debounce: 10, repeat: true });
+
+setInterval(() => {
+  renderBatt(GG);
+}, 60000);
