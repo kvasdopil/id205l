@@ -138,13 +138,13 @@ const lcd = {
 }
 
 module.exports = {
-  pins,
-  heart,
-  accelerometer,
-  touch,
-  lcd,
-  vibrate,
-  setBacklight,
-  getBattery,
-  isCharging,
+  pins: pins,
+  heart: heart,
+  accelerometer: accelerometer,
+  touch: touch,
+  lcd: lcd,
+  vibrate: vibrate,
+  setBacklight: setBacklight,
+  getBattery: getBattery,
+  isCharging: isCharging,
 }
