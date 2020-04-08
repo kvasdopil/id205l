@@ -110,7 +110,7 @@ const updateDevices = () => {
   if (checkAccelerometer()) {
     wake();
   }
-}
+};
 
 // initialization
 
