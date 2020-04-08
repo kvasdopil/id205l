@@ -1,3 +1,5 @@
+// Espruino driver for ST7789 lcd screen 
+
 const LCD_WIDTH = 240;
 const LCD_HEIGHT = 240;
 const COLSTART = 0;

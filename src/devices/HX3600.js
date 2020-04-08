@@ -1,27 +1,5 @@
 
-const I2C_DEVICEID = 0x44;
-
-/*
-Params:
-- sda - i2c sda
-- scl - i2c scl
-- enable - enable pin, chip is on when high
-*/
-function init(cfg) {
-  const result = {
-    enable: () => cfg.enable.write(1),
-    disable: () => cfg.enable.write(0),
-    read: (reg, length) => {
-      const i2c = new I2C();
-      i2c.setup({ sda: cfg.sda, scl: cfg.scl });
-
-      i2c.writeTo(I2C_DEVICEID, reg);
-      return i2c.readFrom(I2C_DEVICEID, length);
-    },
-  };
-
-  return result;
-}
+// Espruino driver for HX3600 heart sensor
 
 /* HX3600 registers 
 addr   value  desc
@@ -58,5 +36,29 @@ addr   value  desc
  
 0xC0 - 0x86 - led driver config
 */
+
+const I2C_DEVICEID = 0x44;
+
+/*
+Params:
+- sda - i2c sda
+- scl - i2c scl
+- enable - enable pin, chip is on when high
+*/
+function init(cfg) {
+  const result = {
+    enable: () => cfg.enable.write(1),
+    disable: () => cfg.enable.write(0),
+    read: (reg, length) => {
+      const i2c = new I2C();
+      i2c.setup({ sda: cfg.sda, scl: cfg.scl });
+
+      i2c.writeTo(I2C_DEVICEID, reg);
+      return i2c.readFrom(I2C_DEVICEID, length);
+    },
+  };
+
+  return result;
+}
 
 module.exports = init;

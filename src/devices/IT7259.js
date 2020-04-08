@@ -1,8 +1,9 @@
+// Espruino driver for IT7259 touch sensor
+
 const I2C_DEVICEID = 0x46;
 const I2C_REG = 225;
 
-/**
- * 
+/*
  * sda: sda I2C pin
  * scl: scl I2C pin
  * int: interrupt pin

@@ -1,4 +1,4 @@
-// Driver for an unknown accelerometer labelled "B271 VS35".
+// Espruino driver for an unknown accelerometer labelled "B271 VS35".
 
 const I2C_DEVICEID = 0x1f;
 const I2C_REG = 0x02;
@@ -12,6 +12,11 @@ const u8u8tos16 = (byteA, byteB) => {
   return x;
 };
 
+/*
+ cfg.sda - i2c sda pin
+ cfg.scl - i2c scl pin
+ cfg.enable - i2c reset pin, high to enable device
+*/
 function init(cfg) {
   const i2c = new I2C();
   i2c.setup({ sda: cfg.sda, scl: cfg.scl });
