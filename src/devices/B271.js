@@ -14,7 +14,7 @@ const u8u8tos16 = (byteA, byteB) => {
 
 function init(cfg) {
   const i2c = new I2C();
-  i2c.setup({ sda: ACCELEROMETER_SDA, scl: ACCELEROMETER_SCL });
+  i2c.setup({ sda: cfg.sda, scl: cfg.scl });
 
   const result = {
     enable: () => cfg.enable.write(1),
