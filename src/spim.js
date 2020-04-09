@@ -14,7 +14,7 @@ LCD_CS.mode('af_output');
 TOUCH_RESET.write(0);
 digitalPulse(LCD_RESET, 0, 10);
 
-const spim = require('spim');
+const spim = SPI1; // require('spim');
 spim.setup({
   mosi: LCD_SI,
   sck: LCD_SCK,
@@ -33,6 +33,7 @@ const send = (data) => {
 };
 
 ce.reset();
-send([0x11, 0], 1);
-send([0x29, 0], 1);
+send([0x11, 0]);
+send([0x29, 0]);
+send([0, 0]);
 ce.set();
