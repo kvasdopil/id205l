@@ -54,6 +54,21 @@ const init = (cfg) => new Promise(resolve => {
   }, 120);
 });
 
+let cachedFill = null;
+let cachedColor = null;
+const getFillRect = (len, c) => {
+  if (c === cachedColor) {
+    return cachedFill;
+  };
+  cachedColor = c;
+  cachedFill = new Uint8Array(len * 2);
+  for (let i = 0; i < len; i++) {
+    data[i * 2] = c >> 8;
+    data[i * 2 + 1] = c;
+  }
+  return cachedFill;
+}
+
 const connect = (cfg) => init(cfg)
   .then(() =>
     Graphics.createCallback(LCD_WIDTH, LCD_HEIGHT, 16, {
@@ -63,11 +78,7 @@ const connect = (cfg) => init(cfg)
         SPIM.sendSync([0x2C, c >> 8, c], 1);
       },
       fillRect: (x1, y1, x2, y2, c) => {
-        const data = new Uint8Array(1024 * 2);
-        for (let i = 0; i < 1024; i++) {
-          data[i * 2] = c >> 8;
-          data[i * 2 + 1] = c;
-        }
+        const data = getFillRect(1024, c)
         SPIM.sendSync([0x2A, (COLSTART + x1) >> 8, COLSTART + x1, (COLSTART + x2) >> 8, COLSTART + x2], 1);
         SPIM.sendSync([0x2B, (ROWSTART + y1) >> 8, ROWSTART + y1, (ROWSTART + y2) >> 8, (ROWSTART + y2)], 1);
         SPIM.sendSync([0x2C], 1);
@@ -77,6 +88,5 @@ const connect = (cfg) => init(cfg)
         }
       }
     }));
-
 
 module.exports = connect;
