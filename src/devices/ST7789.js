@@ -63,8 +63,8 @@ const getFillRect = (len, c) => {
   cachedColor = c;
   cachedFill = new Uint8Array(len * 2);
   for (let i = 0; i < len; i++) {
-    data[i * 2] = c >> 8;
-    data[i * 2 + 1] = c;
+    cachedFill[i * 2] = c >> 8;
+    cachedFill[i * 2 + 1] = c;
   }
   return cachedFill;
 }
