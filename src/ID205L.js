@@ -80,11 +80,16 @@ const touch = IT7259({
 });
 
 const lcd = {
-  init: () => new Promise(resolve => {
+  init: () => {
     pins.TOUCH_RESET.write(0); // causes screen flicker if non-zero
-    SPI1.setup({ mosi: pins.LCD_SI, sck: pins.LCD_SCK, baud: 10000000 });
-    const g = ST7789(SPI1, pins.LCD_DC, pins.LCD_CS, pins.LCD_RESET, () => resolve(g));
-  }),
+    return ST7789({
+      dcx: pins.LCD_DC,
+      ss: pins.LCD_CS,
+      rst: pins.LCD_RESET,
+      sck: pins.LCD_SCK,
+      mosi: pins.LCD_SI
+    });
+  },
 }
 
 module.exports = {

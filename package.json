@@ -1,0 +1,22 @@
+{
+  "name": "id205l",
+  "version": "1.0.0",
+  "description": "ID205L smart watch custom firmware",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvasdopil/id205l.git"
+  },
+  "author": "Alexey Guskov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kvasdopil/id205l/issues"
+  },
+  "homepage": "https://github.com/kvasdopil/id205l#readme",
+  "dependencies": {
+    "espruino": "^0.1.31"
+  }
+}
