@@ -1,6 +1,10 @@
 const Watch = require("./src/ID205L.js");
 const fontDylex7x13 = require("https://www.espruino.com/modules/FontDylex7x13.js");
 
+const BitBlt = require('./src/bitblt');
+
+const BigFont = BitBlt('nmbrs.i', 24, 38);
+
 fontDylex7x13.add(Graphics);
 
 let prevTime = 0;
@@ -121,14 +125,17 @@ console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
 
 Watch.accelerometer.enable();
 
-Watch.touch.enable();
+let n = 0;
 
+Watch.touch.enable();
 Watch.touch.onTouch = (event) => {
   wake();
-  if (event.type === 9) {
-    GG.setColor(1, 0, 0);
-    GG.fillRect(event.x - 2, event.y - 2, event.x + 2, event.y + 2);
+  if (event.type !== 9) {
+    return;
   }
+
+  BigFont.draw(event.x, event.y, n % 10);
+  n++;
 };
 
 setTimeout(() => {

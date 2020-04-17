@@ -78,13 +78,19 @@ const connect = (cfg) => init(cfg)
         SPIM.sendSync([0x2C, c >> 8, c], 1);
       },
       fillRect: (x1, y1, x2, y2, c) => {
-        const data = getFillRect(1024, c)
+        let len = (x2 - x1 + 1) * (y2 - y1 + 1);
+
         SPIM.sendSync([0x2A, (COLSTART + x1) >> 8, COLSTART + x1, (COLSTART + x2) >> 8, COLSTART + x2], 1);
         SPIM.sendSync([0x2B, (ROWSTART + y1) >> 8, ROWSTART + y1, (ROWSTART + y2) >> 8, (ROWSTART + y2)], 1);
         SPIM.sendSync([0x2C], 1);
-        const count = (x2 - x1 + 1) * (y2 - y1 + 1);
-        for (let i = 0; i < count; i += 1024) {
+
+        const data = new Uint16Array(1024);
+        const a = (c >> 8) & 0xff;
+        const b = c & 0xff;
+        data.fill(b << 8 | a);
+        while (len >= 0) {
           SPIM.sendSync(data, 0);
+          len -= 512;
         }
       }
     }));

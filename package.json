@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/kvasdopil/id205l#readme",
   "dependencies": {
-    "espruino": "^0.1.31"
+    "espruino": "^0.1.31",
+    "png-js": "^1.0.0"
   }
 }
