@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "espruino -d 'Espruino ID205L' ./src/index.js --config MODULE_MINIFICATION_LEVEL='WHITESPACE'",
+    "cli": "espruino -d 'Espruino ID205L'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

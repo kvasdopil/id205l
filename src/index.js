@@ -127,7 +127,7 @@ Watch.touch.onTouch = (event) => {
   wake();
   if (event.type === 9) {
     GG.setColor(1, 0, 0);
-    GG.fillRect(event.x - 5, event.y - 5, event.x + 5, event.y + 5);
+    GG.fillRect(event.x - 2, event.y - 2, event.x + 2, event.y + 2);
   }
 };
 
