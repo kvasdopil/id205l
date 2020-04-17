@@ -4,7 +4,7 @@
   "description": "ID205L smart watch custom firmware",
   "main": "index.js",
   "scripts": {
-    "start": "espruino -d 'Espruino ID205L' ./src/index.js --config MODULE_MINIFICATION_LEVEL=''",
+    "start": "espruino -d 'Espruino ID205L' ./src/index.js --config MODULE_MINIFICATION_LEVEL='WHITESPACE'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
