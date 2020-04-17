@@ -85,9 +85,11 @@ const connect = (cfg) => init(cfg)
         SPIM.sendSync([0x2C], 1);
 
         const data = new Uint16Array(1024);
+
         const a = (c >> 8) & 0xff;
         const b = c & 0xff;
         data.fill(b << 8 | a);
+
         while (len >= 0) {
           SPIM.sendSync(data, 0);
           len -= 512;

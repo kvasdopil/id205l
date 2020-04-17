@@ -1,11 +1,7 @@
 const Watch = require("./src/ID205L.js");
-const fontDylex7x13 = require("https://www.espruino.com/modules/FontDylex7x13.js");
-
 const BitBlt = require('./src/bitblt');
 
 const BigFont = BitBlt('nmbrs.i', 24, 38);
-
-fontDylex7x13.add(Graphics);
 
 let prevTime = 0;
 const renderTime = (g) => {
@@ -19,20 +15,22 @@ const renderTime = (g) => {
   }
   prevTime = newTime;
 
-  const line = (h < 10 ? `0${h}` : `${h}`) + ":" + (m < 10 ? `0${m}` : `${m}`);
+  const x = 60;
+  const y = 100;
 
-  g.setColor(0, 0, 0);
-  g.fillRect(6, 6, 120, 6 + 12);
+  BigFont.draw(x, y, Math.floor(h / 10));
+  BigFont.draw(x + 25, y, h % 10);
+  BigFont.draw(x + 50, y, 10);
 
-  g.setFont("Dylex7x13");
-  g.setColor(1, 1, 1);
-  g.drawString(line, 6, 6);
+  BigFont.draw(x + 65, y, Math.floor(m / 10));
+  BigFont.draw(x + 65 + 25, y, m % 10);
 };
 
 const renderBatt = (g) => {
   g.setColor(1, 1, 1);
   g.drawRect(215, 8, 235, 19);
   g.drawRect(235, 10, 237, 17);
+
 
   g.setColor(0, 0, 0);
   g.fillRect(217, 10, 217 + 16, 17);
@@ -42,7 +40,6 @@ const renderBatt = (g) => {
   const lvl = Math.round(16.0 * level);
   g.fillRect(217, 10, 217 + lvl, 17);
 
-  g.setFont('Dylex7x13');
   if (Watch.isCharging()) {
     g.setColor(0, 1, 0);
   } else {

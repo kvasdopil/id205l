@@ -18,8 +18,10 @@ PNG.decode(png, (p) => {
     const result = [];
     for (let pt = 0; pt < p.length; pt += 4) {
         // writing 5-6-5 data
-        result.push((p[pt + 0] & 0b11111 << 3) | (p[pt + 1] & 0b111000 >> 3));
-        result.push((p[pt + 1] & 0b111 << 5) | (p[pt + 2] & 0b11111));
+        const a = (p[pt + 0] & 0b11111 << 3) | (p[pt + 1] & 0b111000 >> 3);
+        const b = (p[pt + 1] & 0b111 << 5) | (p[pt + 2] & 0b11111);
+        result.push(b);
+        result.push(a);
     }
 
     const size = result.length;
