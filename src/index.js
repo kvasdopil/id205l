@@ -1,9 +1,7 @@
-const Watch = require("https://github.com/kvasdopil/id205l/blob/master/src/ID205L.js");
+const Watch = require("./src/ID205L.js");
 const fontDylex7x13 = require("https://www.espruino.com/modules/FontDylex7x13.js");
-const fontNumbers = require("https://www.espruino.com/modules/FontCopasetic40x58Numeric.js");
 
 fontDylex7x13.add(Graphics);
-fontNumbers.add(Graphics);
 
 let prevTime = 0;
 const renderTime = (g) => {
