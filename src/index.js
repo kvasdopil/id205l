@@ -116,17 +116,12 @@ console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
 
 Watch.accelerometer.enable();
 
-let n = 0;
-
 Watch.touch.enable();
 Watch.touch.onTouch = (event) => {
   wake();
-  if (event.type !== 9) {
-    return;
-  }
-
-  BigFont.draw(event.x, event.y, n % 10);
-  n++;
+  // if (event.type !== 9) {
+  //   return;
+  // }
 };
 
 const render = () => {
