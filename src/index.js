@@ -3,17 +3,10 @@ const BitBlt = require('./src/bitblt');
 
 const BigFont = BitBlt('nmbrs.i', 24, 38);
 
-let prevTime = 0;
 const renderTime = (g) => {
   const date = new Date();
   const h = date.getHours();
   const m = date.getMinutes();
-
-  const newTime = h * 100 + m;
-  if (prevTime === newTime) {
-    return;
-  }
-  prevTime = newTime;
 
   const x = 60;
   const y = 100;
@@ -28,12 +21,11 @@ const renderTime = (g) => {
 
 const renderBatt = (g) => {
   g.setColor(1, 1, 1);
-  g.drawRect(215, 8, 235, 19);
-  g.drawRect(235, 10, 237, 17);
-
+  g.fillRect(215, 8, 235, 19);
+  g.fillRect(235, 10, 237, 17);
 
   g.setColor(0, 0, 0);
-  g.fillRect(217, 10, 217 + 16, 17);
+  g.fillRect(216, 9, 234, 18);
 
   g.setColor(0, 1, 0);
   const level = Watch.getBattery();
@@ -46,7 +38,8 @@ const renderBatt = (g) => {
     g.setColor(0, 0, 0);
   }
 
-  g.drawString("+", 202, 7);
+  g.fillRect(203, 13, 210, 14);
+  g.fillRect(206, 10, 207, 17);
 };
 
 let GG;
@@ -90,7 +83,8 @@ const wake = () => {
     return;
   }
   on = true;
-  Watch.setBacklight(3);
+  render();
+  Watch.setBacklight(1);
 };
 
 const IDLE_TIMEOUT = 10000;
@@ -115,7 +109,7 @@ const updateDevices = () => {
 Watch.vibrate([50, 50, 50]);
 digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 100);
 
-Watch.setBacklight(2);
+Watch.setBacklight(1);
 
 Watch.heart.enable();
 console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
@@ -135,13 +129,17 @@ Watch.touch.onTouch = (event) => {
   n++;
 };
 
+const render = () => {
+  renderTime(GG);
+  renderBatt(GG);
+}
+
 setTimeout(() => {
   Watch.lcd.init()
     .then(g => {
       GG = g;
       g.clear();
-      renderTime(g);
-      renderBatt(g);
+      render()
     });
 
   setInterval(updateDevices, 1000);
@@ -150,6 +148,7 @@ setTimeout(() => {
 
 setWatch(() => {
   if (!on) {
+    GG.clear();
     wake();
   } else {
     sleep();
@@ -157,8 +156,9 @@ setWatch(() => {
 }, BTN1, { edge: 'rising', debounce: 10, repeat: true });
 
 setWatch(() => {
-  renderBatt(GG);
   wake();
+  render();
+  Watch.vibrate([50, 50, 50]);
 }, Watch.pins.CHARGING, { edge: 'both', debounce: 10, repeat: true });
 
 setInterval(() => {
