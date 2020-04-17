@@ -38,7 +38,6 @@ const renderBatt = (g) => {
   g.setColor(0, 1, 0);
   const level = Watch.getBattery();
   const lvl = Math.round(16.0 * level);
-  // console.log('Battery', level);
   g.fillRect(217, 10, 217 + lvl, 17);
 
   g.setFont('Dylex7x13');
@@ -81,7 +80,6 @@ const sleep = () => {
   if (!on) {
     return;
   }
-  // console.log('sleep');
   on = false;
   Watch.setBacklight(0);
   resetAccel();
@@ -92,11 +90,8 @@ const wake = () => {
   if (on) {
     return;
   }
-  // console.log('wakeup');
   on = true;
   Watch.setBacklight(3);
-  digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 1000);
-  Watch.vibrate(50);
 };
 
 const IDLE_TIMEOUT = 10000;
@@ -107,7 +102,6 @@ const updateDevices = () => {
   if (on) {
     idleTimer += 1000;
     if (idleTimer >= IDLE_TIMEOUT) {
-      console.log('idle timer');
       sleep();
     }
     return;
@@ -130,6 +124,14 @@ console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
 Watch.accelerometer.enable();
 
 Watch.touch.enable();
+
+Watch.touch.onTouch = (event) => {
+  wake();
+  if (event.type === 9) {
+    GG.setColor(1, 0, 0);
+    GG.fillRect(event.x - 5, event.y - 5, event.x + 5, event.y + 5);
+  }
+};
 
 setTimeout(() => {
   Watch.lcd.init()
