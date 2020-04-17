@@ -24,8 +24,8 @@ PNG.decode(png, (p) => {
         const j = (r << 3) + (g >> 3);
         const q = (g & 0b111 << 5) + b;
         // console.log(r, g, b, j, q);
-        result.push(j);
         result.push(q);
+        result.push(j);
     }
 
     const size = result.length;
