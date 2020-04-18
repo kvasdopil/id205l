@@ -1,3 +1,5 @@
+// settings screen, renders brightness level
+
 const start = () => {
   render();
 };

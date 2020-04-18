@@ -2,6 +2,8 @@ const BitBlt = require('./src/bitblt');
 
 const BigFont = BitBlt('nmbrs.i', 24, 38);
 
+// main screen, renders current time
+
 let updateInterval;
 
 const renderTime = (g) => {

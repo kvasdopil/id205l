@@ -2,6 +2,7 @@ const Watch = require("./src/ID205L");
 
 const MainPage = require('./src/pages/main');
 const SettingsPage = require('./src/pages/settings');
+const AccelPage = require('./src/pages/accel');
 
 const SETTINGS = {
   BL_LEVEL: 1,
@@ -58,6 +59,7 @@ const checkAccelerometer = () => {
 const pages = [
   MainPage,
   SettingsPage,
+  AccelPage,
 ]
 
 const page = null;
@@ -65,15 +67,13 @@ function setPage(p) {
   if (!pages[p]) {
     return;
   }
-  if (page !== null) {
+  if (pages[page]) {
     pages[page].stop()
-    console.log('page stopped', page);
   };
   page = p;
   GG.clear();
   render();
   pages[page].start();
-  console.log('page started', page);
 }
 
 // ====
@@ -87,6 +87,7 @@ const sleep = () => {
   Watch.setBacklight(0);
   resetAccel();
   pages[page].stop();
+  page = null;
 };
 
 const wake = () => {
@@ -98,10 +99,10 @@ const wake = () => {
   GG.clear();
   render();
   Watch.setBacklight(SETTINGS.BL_LEVEL);
-  pages[page].start();
+  setPage(0); // will start defailt page
 };
 
-const IDLE_TIMEOUT = 10000;
+const IDLE_TIMEOUT = 30000;
 let idleTimer = 0;
 
 const updateDevices = () => {
@@ -132,6 +133,10 @@ Watch.accelerometer.enable();
 Watch.touch.enable();
 
 Watch.touch.onTouch = (event) => {
+  if (!on) {
+    wake();
+    return;
+  }
   wake();
   if (event.type === 128) {
     if (event.dir == 2) {
@@ -147,7 +152,9 @@ Watch.touch.onTouch = (event) => {
       console.log('down');
     }
     if (event.dir == -3) {
-      pages[page].touch(event);
+      if (pages[page]) {
+        pages[page].touch(event);
+      }
     }
   }
   // if (event.type !== 9) {
@@ -159,18 +166,15 @@ const render = () => {
   renderBatt(GG);
 }
 
-setTimeout(() => {
-  Watch.lcd.init()
-    .then(g => {
-      GG = g;
-      g.clear();
-      render();
-      setPage(0);
-    });
+Watch.lcd.init()
+  .then(g => {
+    GG = g;
+    g.clear();
+    render();
+    setPage(0);
+  });
 
-  setInterval(updateDevices, 1000);
-}, 1000);
-
+setInterval(updateDevices, 1000);
 
 setWatch(() => {
   if (!on) {
