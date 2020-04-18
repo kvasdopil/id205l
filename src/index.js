@@ -1,23 +1,11 @@
-const Watch = require("./src/ID205L.js");
-const BitBlt = require('./src/bitblt');
+const Watch = require("./src/ID205L");
 
-const BigFont = BitBlt('nmbrs.i', 24, 38);
+const MainPage = require('./src/pages/main');
+const SettingsPage = require('./src/pages/settings');
 
-const renderTime = (g) => {
-  const date = new Date();
-  const h = date.getHours();
-  const m = date.getMinutes();
-
-  const x = 60;
-  const y = 100;
-
-  BigFont.draw(x, y, Math.floor(h / 10));
-  BigFont.draw(x + 25, y, h % 10);
-  BigFont.draw(x + 50, y, 10);
-
-  BigFont.draw(x + 65, y, Math.floor(m / 10));
-  BigFont.draw(x + 65 + 25, y, m % 10);
-};
+const SETTINGS = {
+  BL_LEVEL: 1,
+}
 
 const renderBatt = (g) => {
   g.setColor(1, 1, 1);
@@ -67,6 +55,29 @@ const checkAccelerometer = () => {
 
 // ====
 
+const pages = [
+  MainPage,
+  SettingsPage,
+]
+
+const page = null;
+function setPage(p) {
+  if (!pages[p]) {
+    return;
+  }
+  if (page !== null) {
+    pages[page].stop()
+    console.log('page stopped', page);
+  };
+  page = p;
+  GG.clear();
+  render();
+  pages[page].start();
+  console.log('page started', page);
+}
+
+// ====
+
 let on = true;
 const sleep = () => {
   if (!on) {
@@ -75,6 +86,7 @@ const sleep = () => {
   on = false;
   Watch.setBacklight(0);
   resetAccel();
+  pages[page].stop();
 };
 
 const wake = () => {
@@ -83,15 +95,16 @@ const wake = () => {
     return;
   }
   on = true;
+  GG.clear();
   render();
-  Watch.setBacklight(1);
+  Watch.setBacklight(SETTINGS.BL_LEVEL);
+  pages[page].start();
 };
 
 const IDLE_TIMEOUT = 10000;
 let idleTimer = 0;
 
 const updateDevices = () => {
-  renderTime(GG);
   if (on) {
     idleTimer += 1000;
     if (idleTimer >= IDLE_TIMEOUT) {
@@ -109,23 +122,40 @@ const updateDevices = () => {
 Watch.vibrate([50, 50, 50]);
 digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 100);
 
-Watch.setBacklight(1);
+Watch.setBacklight(SETTINGS.BL_LEVEL);
 
-Watch.heart.enable();
-console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
+// Watch.heart.enable();
+// console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
 
 Watch.accelerometer.enable();
 
 Watch.touch.enable();
+
 Watch.touch.onTouch = (event) => {
   wake();
+  if (event.type === 128) {
+    if (event.dir == 2) {
+      setPage(page - 1);
+    }
+    if (event.dir == 4) {
+      setPage(page + 1);
+    }
+    if (event.dir == 1) {
+      console.log('up');
+    }
+    if (event.dir == 3) {
+      console.log('down');
+    }
+    if (event.dir == -3) {
+      pages[page].touch(event);
+    }
+  }
   // if (event.type !== 9) {
   //   return;
   // }
 };
 
 const render = () => {
-  renderTime(GG);
   renderBatt(GG);
 }
 
@@ -134,7 +164,8 @@ setTimeout(() => {
     .then(g => {
       GG = g;
       g.clear();
-      render()
+      render();
+      setPage(0);
     });
 
   setInterval(updateDevices, 1000);
@@ -143,7 +174,6 @@ setTimeout(() => {
 
 setWatch(() => {
   if (!on) {
-    GG.clear();
     wake();
   } else {
     sleep();
@@ -157,5 +187,5 @@ setWatch(() => {
 }, Watch.pins.CHARGING, { edge: 'both', debounce: 10, repeat: true });
 
 setInterval(() => {
-  renderBatt(GG);
+  render();
 }, 60000);

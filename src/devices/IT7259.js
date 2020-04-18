@@ -20,11 +20,12 @@ function init(cfg) {
       cfg.reset && cfg.reset.write(0); // ID205L uses separate reset pin for screen and touch controller
     },
     disable: () => cfg.enable.write(0),
-    onTouch: event => console.log(event),
+    onTouch: event => { },
+    onSwipe: event => { },
     read: () => {
       i2c.writeTo(I2C_DEVICEID, I2C_REG);
       const res = i2c.readFrom(I2C_DEVICEID, 16);
-      return { x: res[2], y: res[4], type: res[0] };
+      return { x: res[2], y: res[4], type: res[0], dir: (res[10] >> 1) - 3 };
     }
   }
 
@@ -32,7 +33,7 @@ function init(cfg) {
     setWatch(
       () => result.onTouch(result.read()),
       cfg.int,
-      { edge: 'falling', debounce: 10, repeat: true }
+      { edge: 'falling', debounce: 1, repeat: true }
     );
   }
 
