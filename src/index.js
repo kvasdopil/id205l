@@ -1,8 +1,11 @@
 const Watch = require("./src/ID205L");
 
-const MainPage = require('./src/pages/main');
-const SettingsPage = require('./src/pages/settings');
-const AccelPage = require('./src/pages/accel');
+const pages = [
+  require('./src/pages/main'),
+  require('./src/pages/settings'),
+  require('./src/pages/accel'),
+  require('./src/pages/heart'),
+];
 
 const SETTINGS = {
   BL_LEVEL: 1,
@@ -56,12 +59,6 @@ const checkAccelerometer = () => {
 
 // ====
 
-const pages = [
-  MainPage,
-  SettingsPage,
-  AccelPage,
-]
-
 const page = null;
 function setPage(p) {
   if (!pages[p]) {
@@ -102,12 +99,15 @@ const wake = () => {
   setPage(0); // will start defailt page
 };
 
-const IDLE_TIMEOUT = 30000;
+const IDLE_TIMEOUT = 10000;
 let idleTimer = 0;
 
 const updateDevices = () => {
   if (on) {
     idleTimer += 1000;
+    if (pages[page].nosleep) {
+      return; // active page prevents device to go to sleep mode
+    }
     if (idleTimer >= IDLE_TIMEOUT) {
       sleep();
     }
@@ -124,9 +124,6 @@ Watch.vibrate([50, 50, 50]);
 digitalPulse(Watch.pins.HEART_BACKLIGHT, 1, 100);
 
 Watch.setBacklight(SETTINGS.BL_LEVEL);
-
-// Watch.heart.enable();
-// console.log('Heart', Watch.heart.read(0, 16).map(i => Number(i).toString(16)));
 
 Watch.accelerometer.enable();
 
@@ -193,3 +190,19 @@ setWatch(() => {
 setInterval(() => {
   render();
 }, 60000);
+
+const unusedPins = [
+  9, 10,  // GND
+  11, // NO_CHIP
+  13, // heart?
+  15, // heart?
+  18, // heart?
+  23, 25,
+  26, // acc
+  32, 34, 35,
+  40, // heart
+  41 // NO_CHIP?
+];
+
+unusedPins.forEach(pin => setWatch(() => console.log(pin, Pin(pin).read()), Pin(pin), { repeat: true }));
+unusedPins.forEach(pin => Pin(pin).mode('input'));

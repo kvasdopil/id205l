@@ -55,4 +55,5 @@ module.exports = {
   start: start,
   stop: stop,
   touch: touch,
+  nosleep: true,
 }
