@@ -19,8 +19,8 @@ Pinout
 - 6 - ACCELEROMETER_STOP
 - 7 = HEART_SENSOR SDA device 0x44
 - 8 = HEART_SENSOR SCL device 0x44
-- 9  - GND?
-- 10 - GND?
+- 9  - MEMORY_SI
+- 10 - 
 - 11 - NO_CHIP? 
 - 12 - MEMORY_WP
 - 13 - 

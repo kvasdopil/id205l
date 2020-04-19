@@ -1,53 +1,53 @@
 /*
 === Pin Layout ===
-0 - XL1
-1 - XL1
-2 - 
-3 -
-4 - ACCELEROMETER_ENABLE
-5 - ACCELEROMETER SCL reg 0x1f
-6 - 
-7 - HEART_SENSOR SDA reg 0x44
-8 - HEART_SENSOR SCL reg 0x44
-9  - ?? MEMORY_SI
-10 - 
-11 - 
-12 - MEMORY_WP
-13 - 
-14 - HEART_BACKLIGHT
-15 - ??? HEART
-16 - BTN1
-17 - HEART_ENABLE
-18 - ??? HEART
-19 - MEMORY_CS
-20 - MOTOR
-21 - MEMORY_SO
-22 - BACKLIGHT
-23 - 
-24 - 
-25 - 
-26 - 
-27 - ACCELEROMETER SDA reg 0x1f
-28 - BATTERY_CHARGE
-29 - 
-30 - BACKLIGHT2
-31 -
-32 -
-33 - MEMORY_HOLD
-34 -
-35 -
-36 - TX
-37 - RX
-38 - MEMORY_CLK
-39 - CHARGING
-40 - ?
-41 - ?
-42 - 
-43 -
-44 -
-45 -
-46 -
-47 -
+- 0 - XL1
+- 1 - XL1
+- 2 - LCD_SCK
+- 3 - NO_CHIP
+- 4 - ACCELEROMETER_ENABLE
+- 5 - ACCELEROMETER SCL device 0x1f
+- 6 - ACCELEROMETER_STOP
+- 7 = HEART_SENSOR SDA device 0x44
+- 8 = HEART_SENSOR SCL device 0x44
+- 9  - GND?
+- 10 - GND?
+- 11 - NO_CHIP? 
+- 12 - MEMORY_WP
+- 13 - 
+- 14 = heart sensor backlight aka LED1
+- 15 - 
+- 16 = BTN1
+- 17 = HEART_SENSOR_ENABLE
+- 18 - 
+- 19 - MEMORY_CS
+- 20 = MOTOR
+- 21 = MEMORY_SO
+- 22 = BACKLIGHT
+- 23 - 
+- 24 - TOUCH_RESET
+- 25 - 
+- 26 - ACCELEROMETER_INT1? (pulled down)
+- 27 - ACCELEROMETER SDA device 0x1f
+- 28 - BATTERY_LEVEL
+- 29 - LCD_SI
+- 30 - BACKLIGHT2
+- 31 - LCD_DC
+- 32 -
+- 33 - MEMORY_HOLD
+- 34 -
+- 35 -
+- 36 - TX
+- 37 - RX
+- 38 - MEMORY_CLK
+- 39 - CHARGING
+- 40 - (pulled down) - connected to HEART_SENSOR
+- 41 - NO_CHIP?
+- 42 - TOUCH_SCL
+- 43 - TOUCH_SDA
+- 44 - TOUCH_INT
+- 45 - TOUCH_ENABLE
+- 46 - LCD_RESET
+- 47 - LCD_CS
 */
 
 const MEMORY_CLK = 38;
@@ -57,20 +57,36 @@ const MEMORY_HOLD = 33;
 const MEMORY_SI = 9;
 
 const pins = [
-  2, 3, 6, 9, 10, 11, 13, 15, 18, 19,
-  21, 23, 24, 26, 29, 31, 32, 33, 34,
-  35, 38, 40, 41, 42, 43, 44, 45, 46,
-  47, 25];
+  3, 9, 10, 11, 13, 15, 18, 23, 25, 26, 32, 34, 35, 40, 41
+];
+const ppp = [
+  3, 9, 10, 11, 13, 15, 18, 23, 25, 26, 32, 34, 35, 40, 41, 24
+];
 const spi = new SPI();
 
-pins.forEach(p => digitalWrite(p, 1));
-
 const testSPI = (cfg) => {
-  digitalWrite(cfg.hold, 1);
+  // digitalWrite(cfg.hold, 0);
   spi.setup({ sck: cfg.clk, miso: cfg.so, mosi: cfg.si, mode: 0 });
-  return spi.send([0x05, 0, 0, 0], cfg.cs);
+  return spi.send([0x9f, 0, 0, 0], cfg.cs);
 };
 
+D9.mode('input_pullup');
+D10.mode('input_pullup');
+
+console.log(D9.read(), D10.read());
+
+console.log(Number(peek32(0x1000120C)).toString(2));
+poke32(0x1000120C, 0);
+
+setInterval(() => {
+  if (pins.length === 0) {
+    return;
+  }
+  ppp.forEach(pin => Pin(pin).mode('input_pullup'));
+  let p = pins.shift();
+  console.log(p, testSPI({ clk: MEMORY_CLK, so: MEMORY_SO, si: p, hold: MEMORY_HOLD, cs: MEMORY_CS }));
+}, 100);
+/*
 const perms = (base) => {
   const result = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   return () => {
@@ -153,3 +169,6 @@ run();
 // si=15 so=2 cs=3 clk=28 hold=33 255,0,0,0
 
 // si=2 so=2 cs=23 clk=43 hold=33
+*/
+
+
