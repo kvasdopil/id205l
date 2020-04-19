@@ -81,7 +81,7 @@ Pinout:
 - WP - D12
 - HOLD - D33
 - SCLK - D38
-- SI - D9?
+- SI - D9
 
 ### Heart rate sensor
 HX3600, enabled by `D17.write(1)`, I2C on `SDA=7` `SCL=8` `deviceId=0x44`
