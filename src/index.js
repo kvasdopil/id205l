@@ -190,19 +190,3 @@ setWatch(() => {
 setInterval(() => {
   render();
 }, 60000);
-
-const unusedPins = [
-  9, 10,  // GND
-  11, // NO_CHIP
-  13, // heart?
-  15, // heart?
-  18, // heart?
-  23, 25,
-  26, // acc
-  32, 34, 35,
-  40, // heart
-  41 // NO_CHIP?
-];
-
-unusedPins.forEach(pin => setWatch(() => console.log(pin, Pin(pin).read()), Pin(pin), { repeat: true }));
-unusedPins.forEach(pin => Pin(pin).mode('input'));
