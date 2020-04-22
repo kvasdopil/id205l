@@ -4,12 +4,6 @@ const spim = require('spim');
 const fb = require('fb');
 const st = require('Storage');
 
-const readLetter = (filename, WI, HE, index) => {
-  const length = 2 * WI * HE;
-  const skip = index * length;
-  return st.read(filename, skip, length);
-}
-
 const LCD_SCK = D2;
 const LCD_RESET = D46;
 
@@ -19,8 +13,6 @@ const LCD_DC = D31;
 const TOUCH_RESET = D24;
 
 TOUCH_RESET.write(0);
-
-const zero = readLetter('nmbrs.i', 24, 38, 0);
 
 const barWidth = 20;
 const speed = 10;
