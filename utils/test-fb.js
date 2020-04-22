@@ -1,10 +1,14 @@
 const ST7789 = require('./src/devices/ST7789');
-const W = 240;
-const H = 136;
-
-const gr = Graphics.createArrayBuffer(W, H, 16);
 
 const spim = require('spim');
+const fb = require('fb');
+const st = require('Storage');
+
+const readLetter = (filename, WI, HE, index) => {
+  const length = 2 * WI * HE;
+  const skip = index * length;
+  return st.read(filename, skip, length);
+}
 
 const LCD_SCK = D2;
 const LCD_RESET = D46;
@@ -16,14 +20,7 @@ const TOUCH_RESET = D24;
 
 TOUCH_RESET.write(0);
 
-const flip = (x1, y1, WI, HE, buffer) => {
-  const x2 = x1 + WI - 1;
-  const y2 = y1 + HE - 1;
-  spim.sendSync([0x2A, x1 >> 8, x1, x2 >> 8, x2], 1);
-  spim.sendSync([0x2B, y1 >> 8, y1, y2 >> 8, y2], 1);
-  spim.sendSync([0x2C], 1);
-  spim.send(buffer, 0);
-}
+const zero = readLetter('nmbrs.i', 24, 38, 0);
 
 let dx = 2;
 let dy = 2;
@@ -37,23 +34,33 @@ ST7789({
   mosi: LCD_SI
 }).then(() => {
   setInterval(() => {
-    gr.clear();
-    gr.setFont("4x6", 4);
-    gr.drawString('hello', x, y);
+    fb.clear();
+
+    fb.setColor(255, 0, 255);
+    fb.fill(x - 20, y - 20, 40, 40);
+
+    fb.prepareBlit(0, 0);
+    fb.blit(zero, 24, 38);
+
+    spim.sendSync([0x2A, 0, 0, 240 >> 8, 240 && 0xff], 1);
+    spim.sendSync([0x2B, 0, 0, 240 >> 8, 240 && 0xff], 1);
+    spim.sendSync([0x2C], 1);
+    fb.flip(0, 240 * 120 * 2);
+    fb.flip(120, 240 * 120 * 2);
+
     x += dx;
     y += dy;
-    if (x >= W) {
+    if (x >= 140) {
       dx = dx * -1;
     }
     if (x <= 0) {
       dx = dx * -1;
     }
-    if (y >= H) {
+    if (y >= 240) {
       dy = dy * -1;
     }
     if (y <= 0) {
       dy = dy * -1;
     }
-    flip(0, 0, W, H, gr.buffer);
   }, 50);
 });
