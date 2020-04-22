@@ -43,13 +43,15 @@ function resetGame() {
   dead = false;
 }
 
-setWatch(() => {
+const onPress = () => {
   if (dead) {
     resetGame();
   } else {
     vv = - boost;
   }
-}, BTN1, { edge: 'rising', repeat: true });
+}
+
+setWatch(onPress, BTN1, { edge: 'rising', repeat: true });
 
 function render() {
   if (nextPos <= 240) {
@@ -87,8 +89,6 @@ function render() {
     h += vv;
     vv += gravity;
   }
-  // fb.prepareBlit(120, 20);
-  // fb.blit(zero, 24, 38);
 }
 
 ST7789({
@@ -109,5 +109,17 @@ ST7789({
     fb.flip(0, 240 * 120 * 2);
     fb.flip(120, 240 * 120 * 2);
   }, 50);
+});
+
+// New code to define services
+NRF.setServices({
+  "3e440001-f5bb-357d-719d-179272e4d4d9": {
+    "3e440002-f5bb-357d-719d-179272e4d4d9": {
+      value: [0],
+      maxLen: 1,
+      writable: true,
+      onWrite: onPress,
+    }
+  }
 });
 
