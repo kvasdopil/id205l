@@ -1,4 +1,9 @@
 const Watch = require("./src/ID205L");
+const fb = require('fb');
+
+E.enableWatchdog(100);
+
+Watch.lcd.init();
 
 const pages = [
   require('./src/pages/main'),
@@ -11,30 +16,37 @@ const SETTINGS = {
   BL_LEVEL: 1,
 }
 
-const renderBatt = (g) => {
-  g.setColor(1, 1, 1);
-  g.fillRect(215, 8, 235, 19);
-  g.fillRect(235, 10, 237, 17);
+const battery = fb.createRect({
+  x: 215,
+  y: 8,
+  w: 20,
+  h: 11,
+  c: fb.color(0, 255, 0),
+});
 
-  g.setColor(0, 0, 0);
-  g.fillRect(216, 9, 234, 18);
+const renderBattery = () => {
+  fb.updateRect(battery, { w: 4 + Watch.getBattery() });
+  // g.setColor(1, 1, 1);
+  // g.fillRect(215, 8, 235, 19);
+  // g.fillRect(235, 10, 237, 17);
 
-  g.setColor(0, 1, 0);
-  const level = Watch.getBattery();
-  const lvl = Math.round(16.0 * level);
-  g.fillRect(217, 10, 217 + lvl, 17);
+  // g.setColor(0, 0, 0);
+  // g.fillRect(216, 9, 234, 18);
 
-  if (Watch.isCharging()) {
-    g.setColor(0, 1, 0);
-  } else {
-    g.setColor(0, 0, 0);
-  }
+  // g.setColor(0, 1, 0);
+  // const level = Watch.getBattery();
+  // const lvl = Math.round(16.0 * level);
+  // g.fillRect(217, 10, 217 + lvl, 17);
 
-  g.fillRect(203, 13, 210, 14);
-  g.fillRect(206, 10, 207, 17);
+  // if (Watch.isCharging()) {
+  //   g.setColor(0, 1, 0);
+  // } else {
+  //   g.setColor(0, 0, 0);
+  // }
+
+  // g.fillRect(203, 13, 210, 14);
+  // g.fillRect(206, 10, 207, 17);
 };
-
-let GG;
 
 // ====
 
@@ -68,8 +80,6 @@ function setPage(p) {
     pages[page].stop()
   };
   page = p;
-  GG.clear();
-  render();
   pages[page].start();
 }
 
@@ -93,8 +103,6 @@ const wake = () => {
     return;
   }
   on = true;
-  GG.clear();
-  render();
   Watch.setBacklight(SETTINGS.BL_LEVEL);
   setPage(0); // will start defailt page
 };
@@ -159,18 +167,6 @@ Watch.touch.onTouch = (event) => {
   // }
 };
 
-const render = () => {
-  renderBatt(GG);
-}
-
-Watch.lcd.init()
-  .then(g => {
-    GG = g;
-    g.clear();
-    render();
-    setPage(0);
-  });
-
 setInterval(updateDevices, 1000);
 
 setWatch(() => {
@@ -183,10 +179,12 @@ setWatch(() => {
 
 setWatch(() => {
   wake();
-  render();
+  renderBattery();
   Watch.vibrate([50, 50, 50]);
 }, Watch.pins.CHARGING, { edge: 'both', debounce: 10, repeat: true });
 
 setInterval(() => {
-  render();
+  renderBattery();
 }, 60000);
+
+setPage(0);

@@ -4,7 +4,7 @@ const spim = require('spim');
 const fb = require('fb');
 const st = require('Storage');
 
-E.enableWatchdog(3);
+E.enableWatchdog(10);
 
 const LCD_SCK = D2;
 const LCD_RESET = D46;
@@ -27,6 +27,7 @@ let nextW = 60;
 let h = 120;
 let vv = 0;
 let dead = false;
+let score = 0;
 
 function resetGame() {
   nextPos = 0;
@@ -47,25 +48,37 @@ const onPress = () => {
 
 setWatch(onPress, BTN1, { edge: 'rising', repeat: true });
 
-function render() {
-  if (nextPos <= 240) {
-    fb.setColor(255, 0, 0);
-    fb.fill(nextPos, 0, barWidth, nextH);
-    fb.fill(nextPos, nextH + nextW, barWidth, 240 - nextH - nextW);
-  }
+fb.init();
 
-  // fb.setColor(0, 255, 0);
-  // fb.fill(50, h, 10, 10);
-  fb.createRect({
-    x: 50,
-    y: h,
-    w: 10,
-    h: 10,
-    c: 0b11111100000,
-  });
-  fb.renderRect();
+const bird = fb.createRect({
+  x: 50,
+  w: 10,
+  h: 10,
+  c: fb.color(0, 255, 0),
+});
+const wallUp = fb.createRect({
+  y: 0,
+  w: barWidth,
+  c: fb.color(255, 0, 0),
+})
+const wallDn = fb.createRect({
+  w: barWidth,
+  c: fb.color(255, 0, 0),
+});
+const number = fb.createRect({
+  x: 10,
+  y: 10,
+  w: 24,
+  h: 38,
+  buf: st.readArrayBuffer('nmbrs.i'),
+  index: 0,
+})
 
+function update() {
   if (!dead) {
+    h += vv;
+    vv += gravity;
+
     if (h >= deadZone) {
       h = deadZone;
       dead = true;
@@ -81,15 +94,20 @@ function render() {
     }
 
     if (nextPos < -40) {
+      score++;
       nextPos = 240 * (1 + Math.random());
       nextH = Math.random() * 100 + 60;
       nextW = Math.random() * 20 + 40;
+      fb.updateRect(wallUp, { h: nextH });
+      fb.updateRect(wallDn, { y: nextH + nextW, h: 240 - nextH - nextW });
+      fb.updateRect(number, { index: score % 10 });
     } else {
       nextPos -= speed;
     }
 
-    h += vv;
-    vv += gravity;
+    fb.updateRect(wallUp, { x: nextPos });
+    fb.updateRect(wallDn, { x: nextPos });
+    fb.updateRect(bird, { y: h });
   }
 }
 
@@ -101,13 +119,11 @@ ST7789({
   mosi: LCD_SI
 }).then(() => {
   setInterval(() => {
-    fb.clear();
-
-    render();
-
+    update();
     spim.sendSync([0x2A, 0, 0, 240 >> 8, 240 && 0xff], 1);
     spim.sendSync([0x2B, 0, 0, 240 >> 8, 240 && 0xff], 1);
-    fb.flip();
+
+    fb.render();
   }, 50);
 });
 
@@ -122,4 +138,3 @@ NRF.setServices({
     }
   }
 });
-

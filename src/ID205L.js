@@ -5,6 +5,9 @@ const ST7789 = require("./src/devices/ST7789.js"); // display
 const HX3600 = require("./src/devices/HX3600.js"); // heart sensor
 const B271 = require("./src/devices/B271.js"); // accelerometer
 
+const fb = require('fb'); // framebuffer
+const spim = require('spim'); // SPIM interface
+
 const pins = {
   ACCELEROMETER_ENABLE: D4,
   ACCELEROMETER_SCL: D5,
@@ -81,14 +84,16 @@ const touch = IT7259({
 
 const lcd = {
   init: () => {
+    fb.init();
+
     pins.TOUCH_RESET.write(0); // causes screen flicker if non-zero
-    return ST7789({
+    ST7789({
       dcx: pins.LCD_DC,
       ss: pins.LCD_CS,
       rst: pins.LCD_RESET,
       sck: pins.LCD_SCK,
       mosi: pins.LCD_SI
-    });
+    }).then(() => setInterval(fb.render, 50))
   },
 }
 
