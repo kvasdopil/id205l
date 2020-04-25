@@ -3,7 +3,7 @@ const fb = require('fb');
 
 const start = () => {
   let mode = 0;
-  const pt = fb.createRect({
+  const pt = fb.add({
     x: 0,
     y: 0,
     w: 20,
@@ -31,7 +31,7 @@ const start = () => {
 
     const Y = (x / 3) + 120;
     const X = (y / 3) + 120;
-    fb.updateRect(
+    fb.set(
       pt,
       {
         x: X - 10,
@@ -42,13 +42,13 @@ const start = () => {
 
   const onTap = () => {
     mode = (mode + 1) % 3;
-    fb.updateRect(
+    fb.set(
       pt,
       {
         c: fb.color(
+          mode === 0 ? 255 : 0,
           mode === 1 ? 255 : 0,
-          mode === 2 ? 255 : 0,
-          mode === 3 ? 255 : 0
+          mode === 2 ? 255 : 0
         )
       }
     );
@@ -57,7 +57,7 @@ const start = () => {
   return {
     onStop: () => {
       clearInterval(int);
-      // fb.destroy(fb);
+      fb.remove(pt);
     },
     onTap: onTap,
     sleep: false,

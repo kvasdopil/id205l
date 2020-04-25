@@ -16,7 +16,7 @@ const SETTINGS = {
   BL_LEVEL: 1,
 }
 
-const battery = fb.createRect({
+const battery = fb.add({
   x: 215,
   y: 8,
   w: 20,
@@ -25,7 +25,7 @@ const battery = fb.createRect({
 });
 
 const renderBattery = () => {
-  fb.updateRect(battery, { w: 4 + 16 * Watch.getBattery() });
+  fb.set(battery, { w: 4 + 16 * Watch.getBattery() });
   // g.setColor(1, 1, 1);
   // g.fillRect(215, 8, 235, 19);
   // g.fillRect(235, 10, 237, 17);
