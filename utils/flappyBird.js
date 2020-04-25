@@ -4,6 +4,8 @@ const spim = require('spim');
 const fb = require('fb');
 const st = require('Storage');
 
+E.enableWatchdog(3);
+
 const LCD_SCK = D2;
 const LCD_RESET = D46;
 
@@ -52,8 +54,16 @@ function render() {
     fb.fill(nextPos, nextH + nextW, barWidth, 240 - nextH - nextW);
   }
 
-  fb.setColor(0, 255, 0);
-  fb.fill(50, h, 10, 10);
+  // fb.setColor(0, 255, 0);
+  // fb.fill(50, h, 10, 10);
+  fb.createRect({
+    x: 50,
+    y: h,
+    w: 10,
+    h: 10,
+    c: 0b11111100000,
+  });
+  fb.renderRect();
 
   if (!dead) {
     if (h >= deadZone) {
@@ -97,9 +107,7 @@ ST7789({
 
     spim.sendSync([0x2A, 0, 0, 240 >> 8, 240 && 0xff], 1);
     spim.sendSync([0x2B, 0, 0, 240 >> 8, 240 && 0xff], 1);
-    spim.sendSync([0x2C], 1);
-    fb.flip(0, 240 * 120 * 2);
-    fb.flip(120, 240 * 120 * 2);
+    fb.flip();
   }, 50);
 });
 
