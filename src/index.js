@@ -9,7 +9,7 @@ const pages = [
   require('./src/pages/main'),
   require('./src/pages/settings'),
   require('./src/pages/accel'),
-  require('./src/pages/heart'),
+  // require('./src/pages/heart'),
 ];
 
 const SETTINGS = {
@@ -25,7 +25,7 @@ const battery = fb.createRect({
 });
 
 const renderBattery = () => {
-  fb.updateRect(battery, { w: 4 + Watch.getBattery() });
+  fb.updateRect(battery, { w: 4 + 16 * Watch.getBattery() });
   // g.setColor(1, 1, 1);
   // g.fillRect(215, 8, 235, 19);
   // g.fillRect(235, 10, 237, 17);
@@ -55,7 +55,7 @@ let prevAccel = { x: 0, y: 0, z: 0 };
 const resetAccel = () => {
   prevAccel = Watch.accelerometer.read();
 };
-const checkAccelerometer = () => {
+const checkAccel = () => {
   const data = Watch.accelerometer.read();
 
   let axii = 0;
@@ -71,38 +71,34 @@ const checkAccelerometer = () => {
 
 // ====
 
+const pId = 0;
 const page = null;
+
 function setPage(p) {
-  if (!pages[p]) {
-    return;
-  }
-  if (pages[page]) {
-    pages[page].stop()
+  if (page && page.onStop) {
+    page.onStop();
   };
-  page = p;
-  pages[page].start();
+  page = null;
+  if (pages[p]) {
+    pId = p;
+    page = pages[p]();
+  }
 }
 
-// ====
-
-let on = true;
 const sleep = () => {
-  if (!on) {
+  if (!page) {
     return;
   }
-  on = false;
   Watch.setBacklight(0);
   resetAccel();
-  pages[page].stop();
-  page = null;
+  setPage(null);
 };
 
 const wake = () => {
   idleTimer = 0;
-  if (on) {
+  if (page) {
     return;
   }
-  on = true;
   Watch.setBacklight(SETTINGS.BL_LEVEL);
   setPage(0); // will start defailt page
 };
@@ -111,17 +107,15 @@ const IDLE_TIMEOUT = 10000;
 let idleTimer = 0;
 
 const updateDevices = () => {
-  if (on) {
+  if (page) {
     idleTimer += 1000;
-    if (pages[page].nosleep) {
-      return; // active page prevents device to go to sleep mode
-    }
-    if (idleTimer >= IDLE_TIMEOUT) {
+    if (page.sleep !== false && idleTimer >= IDLE_TIMEOUT) {
       sleep();
     }
     return;
   }
-  if (checkAccelerometer()) {
+
+  if (checkAccel()) {
     wake();
   }
 };
@@ -138,17 +132,18 @@ Watch.accelerometer.enable();
 Watch.touch.enable();
 
 Watch.touch.onTouch = (event) => {
-  if (!on) {
-    wake();
+  wake();
+
+  if (!page) {
     return;
   }
-  wake();
+
   if (event.type === 128) {
     if (event.dir == 2) {
-      setPage(page - 1);
+      setPage(pId - 1);
     }
     if (event.dir == 4) {
-      setPage(page + 1);
+      setPage(pId + 1);
     }
     if (event.dir == 1) {
       console.log('up');
@@ -157,8 +152,8 @@ Watch.touch.onTouch = (event) => {
       console.log('down');
     }
     if (event.dir == -3) {
-      if (pages[page]) {
-        pages[page].touch(event);
+      if (page && page.onTap) {
+        page.onTap(event);
       }
     }
   }
@@ -170,7 +165,7 @@ Watch.touch.onTouch = (event) => {
 setInterval(updateDevices, 1000);
 
 setWatch(() => {
-  if (!on) {
+  if (!page) {
     wake();
   } else {
     sleep();

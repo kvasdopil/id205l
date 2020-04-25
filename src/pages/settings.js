@@ -1,29 +1,45 @@
 // settings screen, renders brightness level
+const fb = require('fb');
 
 const start = () => {
-  render();
-};
+  const rects = [
+    fb.createRect({
+      x: 80,
+      y: 40,
+      w: 80,
+      c: fb.color(33, 33, 33),
+    }),
+    fb.createRect({
+      x: 80,
+      y: 40,
+      w: 80,
+      h: 160,
+      c: fb.color(99, 99, 99),
+    })
+  ];
 
-// const render = () => {
-//   GG.setColor(0.2, 0.2, 0.2);
-//   pos = 40 + (200 - 40) / 4 * (4 - SETTINGS.BL_LEVEL);
-//   GG.fillRect(80, 40, 160, pos);
-//   GG.setColor(0.6, 0.6, 0.6);
-//   GG.fillRect(80, pos, 160, 200);
-// }
+  const update = () => {
+    const h = 160 - 40 * SETTINGS.BL_LEVEL;
+    fb.updateRect(rects[0], { h: h });
+  };
 
-const touch = () => {
-  console.log('touch');
-  SETTINGS.BL_LEVEL += 1;
-  if (SETTINGS.BL_LEVEL == 4) {
-    SETTINGS.BL_LEVEL = 1;
+  const onTap = () => {
+    SETTINGS.BL_LEVEL += 1;
+    if (SETTINGS.BL_LEVEL == 4) {
+      SETTINGS.BL_LEVEL = 1;
+    }
+    Watch.setBacklight(SETTINGS.BL_LEVEL);
+    update();
   }
-  Watch.setBacklight(SETTINGS.BL_LEVEL);
-  // render();
-}
 
-module.exports = {
-  start: start,
-  stop: () => { },
-  touch: touch,
+  update();
+
+  return {
+    onStop: () => {
+      // rects.forEach(rect => fb.destroy(rect));
+    },
+    onTap: onTap,
+  }
 };
+
+module.exports = start;
