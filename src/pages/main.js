@@ -4,42 +4,46 @@ const st = require('Storage');
 
 const font = st.readArrayBuffer('nmbrs.i');
 
+const wi = 44;
+const xx = 18;
+const yy = 100;
+
 const start = () => {
   const numbers = [
     fb.add({
-      x: 60,
-      y: 100,
+      x: xx + wi * 0,
+      y: yy,
       buf: font,
       index: 0,
-      c: fb.color(255, 128, 0),
+      c: 0xffff,
     }),
     fb.add({
-      x: 60 + 25,
-      y: 100,
+      x: xx + wi * 1,
+      y: yy,
       buf: font,
-      index: 1,
-      c: fb.color(255, 128, 255),
+      index: 0,
+      c: 0xffff,
     }),
     fb.add({
-      x: 60 + 50,
-      y: 100,
+      x: xx + wi * 2,
+      y: yy,
       buf: font,
       index: 10,
-      c: fb.color(255, 128, 66),
+      c: 0xffff,
     }),
     fb.add({
-      x: 60 + 65,
-      y: 100,
+      x: xx + wi * 2.7,
+      y: yy,
       buf: font,
-      index: 3,
-      c: fb.color(128, 255, 128),
+      index: 0,
+      c: 0xffff,
     }),
     fb.add({
-      x: 60 + 65 + 25,
-      y: 100,
+      x: xx + wi * 3.7,
+      y: yy,
       buf: font,
-      index: 4,
-      c: fb.color(200, 255, 200),
+      index: 0,
+      c: 0xffff,
     })
   ];
 

@@ -1,5 +1,6 @@
 const Watch = require("./src/ID205L");
 const fb = require('fb');
+const st = require('Storage');
 
 E.enableWatchdog(100);
 
@@ -16,36 +17,31 @@ const SETTINGS = {
   BL_LEVEL: 1,
 }
 
-const battery = fb.add({
-  x: 215,
+const chargeInd = fb.add({
+  x: 240 - 8 - 26 - 10,
   y: 8,
-  w: 20,
-  h: 11,
+  c: 0,
+  buf: st.readArrayBuffer('batt.i'),
+  index: 1,
+})
+fb.add({
+  x: 240 - 8 - 26,
+  y: 8,
+  c: 0xffff,
+  buf: st.readArrayBuffer('batt.i'),
+  index: 0,
+});
+const battery = fb.add({
+  x: 240 - 8 - 26 + 2,
+  y: 10,
+  w: 21,
+  h: 9,
   c: fb.color(0, 255, 0),
 });
 
 const renderBattery = () => {
   fb.set(battery, { w: 4 + 16 * Watch.getBattery() });
-  // g.setColor(1, 1, 1);
-  // g.fillRect(215, 8, 235, 19);
-  // g.fillRect(235, 10, 237, 17);
-
-  // g.setColor(0, 0, 0);
-  // g.fillRect(216, 9, 234, 18);
-
-  // g.setColor(0, 1, 0);
-  // const level = Watch.getBattery();
-  // const lvl = Math.round(16.0 * level);
-  // g.fillRect(217, 10, 217 + lvl, 17);
-
-  // if (Watch.isCharging()) {
-  //   g.setColor(0, 1, 0);
-  // } else {
-  //   g.setColor(0, 0, 0);
-  // }
-
-  // g.fillRect(203, 13, 210, 14);
-  // g.fillRect(206, 10, 207, 17);
+  fb.set(chargeInd, { c: Watch.isCharging() ? 0xffff : 0 })
 };
 
 // ====
@@ -193,5 +189,6 @@ setWatch(() => {
 setInterval(() => {
   renderBattery();
 }, 60000);
+renderBattery();
 
 setPage(0);
