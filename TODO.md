@@ -10,3 +10,4 @@
 - alpha blending
 - bitmap cropping
 - hw animation
+- RLE compression for bitmaps

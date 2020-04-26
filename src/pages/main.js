@@ -11,30 +11,35 @@ const start = () => {
       y: 100,
       buf: font,
       index: 0,
+      c: fb.color(255, 128, 0),
     }),
     fb.add({
       x: 60 + 25,
       y: 100,
       buf: font,
       index: 1,
+      c: fb.color(255, 128, 255),
     }),
     fb.add({
       x: 60 + 50,
       y: 100,
       buf: font,
       index: 10,
+      c: fb.color(255, 128, 66),
     }),
     fb.add({
       x: 60 + 65,
       y: 100,
       buf: font,
       index: 3,
+      c: fb.color(128, 255, 128),
     }),
     fb.add({
       x: 60 + 65 + 25,
       y: 100,
       buf: font,
       index: 4,
+      c: fb.color(200, 255, 200),
     })
   ];
 
