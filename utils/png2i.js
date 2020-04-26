@@ -47,10 +47,10 @@ async function main(argv) {
 
   // dump(result, w);
 
-  result.unshift(w);
-  result.unshift(h);
-  result.unshift(bw ? 8 : 16);
   result.unshift(0);
+  result.unshift(bw ? 8 : 16);
+  result.unshift(h);
+  result.unshift(w);
   print(result, output);
   // console.log(result.length, result.join(','));
   // const zipped = zip(result);
