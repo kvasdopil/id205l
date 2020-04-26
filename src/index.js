@@ -164,13 +164,25 @@ Watch.touch.onTouch = (event) => {
 
 setInterval(updateDevices, 1000);
 
+const resetT = 0;
 setWatch(() => {
+  resetT = setTimeout(() => {
+    E.reboot();
+  }, 3000);
+
   if (!page) {
     wake();
   } else {
     sleep();
   }
 }, BTN1, { edge: 'rising', debounce: 10, repeat: true });
+
+setWatch(() => {
+  if (resetT) {
+    clearTimeout(resetT);
+    resetT = null;
+  }
+}, BTN1, { edge: 'falling', debounce: 10, repeat: true });
 
 setWatch(() => {
   wake();

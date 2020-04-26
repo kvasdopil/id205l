@@ -1,11 +1,6 @@
 // Espruino driver for ST7789 lcd screen 
 // this module uses custom spim module that may not be available on your platform
 
-const LCD_WIDTH = 240;
-const LCD_HEIGHT = 240;
-const COLSTART = 0;
-const ROWSTART = 0;
-
 const SPIM = require('spim');
 
 const init = (cfg) => new Promise(resolve => {
@@ -54,47 +49,4 @@ const init = (cfg) => new Promise(resolve => {
   }, 120);
 });
 
-let cachedFill = null;
-let cachedColor = null;
-const getFillRect = (len, c) => {
-  if (c === cachedColor) {
-    return cachedFill;
-  };
-  cachedColor = c;
-  cachedFill = new Uint8Array(len * 2);
-  for (let i = 0; i < len; i++) {
-    cachedFill[i * 2] = c >> 8;
-    cachedFill[i * 2 + 1] = c;
-  }
-  return cachedFill;
-}
-
-const connect = (cfg) => init(cfg)
-  .then(() =>
-    Graphics.createCallback(LCD_WIDTH, LCD_HEIGHT, 16, {
-      setPixel: (x, y, c) => {
-        SPIM.sendSync([0x2A, (COLSTART + x) >> 8, COLSTART + x, (COLSTART + x) >> 8, COLSTART + x], 1);
-        SPIM.sendSync([0x2B, (ROWSTART + y) >> 8, ROWSTART + y, (ROWSTART + y) >> 8, (ROWSTART + y)], 1);
-        SPIM.sendSync([0x2C, c >> 8, c], 1);
-      },
-      fillRect: (x1, y1, x2, y2, c) => {
-        let len = (x2 - x1 + 1) * (y2 - y1 + 1);
-
-        SPIM.sendSync([0x2A, (COLSTART + x1) >> 8, COLSTART + x1, (COLSTART + x2) >> 8, COLSTART + x2], 1);
-        SPIM.sendSync([0x2B, (ROWSTART + y1) >> 8, ROWSTART + y1, (ROWSTART + y2) >> 8, (ROWSTART + y2)], 1);
-        SPIM.sendSync([0x2C], 1);
-
-        const data = new Uint16Array(1024);
-
-        const a = (c >> 8) & 0xff;
-        const b = c & 0xff;
-        data.fill(b << 8 | a);
-
-        while (len >= 0) {
-          SPIM.sendSync(data, 0);
-          len -= 512;
-        }
-      }
-    }));
-
-module.exports = connect;
+module.exports = init;
