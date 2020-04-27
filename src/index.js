@@ -86,6 +86,7 @@ const sleep = () => {
     return;
   }
   Watch.setBacklight(0);
+  Watch.lcd.sleep();
   resetAccel();
   setPage(null);
 };
@@ -95,6 +96,7 @@ const wake = () => {
   if (page) {
     return;
   }
+  Watch.lcd.wake();
   Watch.setBacklight(SETTINGS.BL_LEVEL);
   setPage(0); // will start defailt page
 };

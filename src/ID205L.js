@@ -95,6 +95,8 @@ const lcd = {
       mosi: pins.LCD_SI
     }).then(() => setInterval(fb.render, 50))
   },
+  sleep: () => spim.sendSync([0x10, 0], 1),
+  wake: () => spim.sendSync([0x11, 0], 1),
 }
 
 module.exports = {
