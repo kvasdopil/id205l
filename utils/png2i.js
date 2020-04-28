@@ -1,66 +1,143 @@
 const path = require('path');
 const PNG = require('png-js');
 
+const asPixels = (data, w, h) => {
+  const result = new Uint32Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    result[i] = data.readUInt32BE(i * 4);
+  }
+  return result;
+}
+
+function nextEmptyColumn(pixels, w, h, start) {
+  const background = pixels[0];
+  let y = 0;
+  let x1 = start;
+  let clearColumn = true;
+  while (x1 < w) {
+    if (pixels[x1 + y * w] !== background) {
+      clearColumn = false;
+    }
+    y++;
+    if (y === h) {
+      if (clearColumn) {
+        return x1;
+      }
+      clearColumn = true;
+      y = 0;
+      x1++;
+    }
+  }
+
+  return w;
+}
+
+function cropVertical(pixels, w, h) {
+  const background = pixels[0];
+  let y1 = 0;
+  let y2 = h - 1;
+  let x1 = 0;
+  let x2 = w - 1;
+  let x = 0;
+  // find first non-background pixel from the top
+  while (y1 < h) {
+    if (pixels[x + y1 * w] !== background) {
+      break;
+    }
+    x++;
+    if (x === w) {
+      x = 0;
+      y1++;
+    }
+  }
+
+  x = 0;
+  y2 = h - 1;
+  // find first non-background pixel from the bottom
+  while (y2 >= 0) {
+    if (pixels[x + y2 * w] !== background) {
+      break;
+    }
+    x++;
+    if (x === w) {
+      x = 0;
+      y2--;
+    }
+  }
+
+  return [y1, y2];
+}
+
+function findGlyphs(pixels, w, h) {
+  const result = [];
+
+  // find coordinates of non-background data in image
+  let [y1, y2] = cropVertical(pixels, w, h);
+
+  let x = 0;
+  while (x < w) {
+    let x1 = x;
+    let x2 = nextEmptyColumn(pixels, w, h, x);
+    if (x2 - x1 >= 1) {
+      result.push([x1, y1, x2 - x1, y2 - y1]);
+    }
+    x = x2 + 1;
+  }
+  return result;
+}
+
+function encode(pixels, imgw, imgh, x1, y1, w, h) {
+  const result = [];
+  for (let y = y1; y < y1 + h; y++) {
+    for (let x = x1; x < x1 + w; x++) {
+      const pixel = (pixels[x + y * imgw] >> 8) & 0xff;
+      result.push(pixel >> 2); // 6-bit
+    }
+  }
+
+  const zipped = rle(result);
+  zipped.unshift(w);
+  zipped.unshift(1); // 1 - RLE-encoded data
+  zipped.unshift(zipped.length & 0xff);
+  zipped.unshift((zipped.length >> 8) & 0xff);
+  return zipped;
+}
+
 async function main(argv) {
   argv.shift();
   argv.shift();
 
   let bw = false;
-  let w = 0;
-  let h = 0;
   let input = argv.shift();
   if (input === '--bw') {
     input = argv.shift();
     bw = true;
   }
-  if (input === '-w') {
-    w = parseInt(argv.shift(), 10);
-    input = argv.shift();
-  }
-  if (input === '-h') {
-    h = parseInt(argv.shift(), 10);
-    input = argv.shift();
-  }
   if (input === undefined) {
     console.error('Usage: png2raw [--bw] <filename.png>');
     process.exit(1);
   }
-  const output = path.basename(input, '.png') + '.i';
-  const data = await new Promise(resolve => PNG.decode(input, resolve));
-  const result = [];
-  for (let i = 0; i < data.length; i += 4) {
-    // writing 5-6-5 data
-    const r = data[i] >> 3;
-    const g = data[i + 1] >> 2;
-    const b = data[i + 2] >> 3;
 
-    if (bw) {
-      result.push(g);
-    } else {
-      const j = (r << 3) + (g >> 3);
-      const q = ((g << 5) + b);
+  // read and process the file
+  const png = PNG.load(input);
+  const data = await new Promise(resolve => png.decode(resolve));
+  const pixels = asPixels(data, png.width, png.height); // as 32-bit RGBA data
+  const glyphs = findGlyphs(pixels, png.width, png.height);
 
-      result.push(j & 0xff);
-      result.push(q & 0xff);
-    }
-  }
+  const encoded = glyphs.map(([x, y, w, h]) => encode(pixels, png.width, png.height, x, y, w, h));
 
-  // dump(result, w);
-
-  result.unshift(0);
-  result.unshift(bw ? 8 : 16);
-  result.unshift(h);
-  result.unshift(w);
-  print(result, output);
-  // console.log(result.length, result.join(','));
-  // const zipped = zip(result);
-  // print(zipped, output + '.z');
-  // console.log(zipped.length, zipped.join(','));
+  const totalLength = encoded.reduce((a, b) => a + b.length, 0);
+  encoded.forEach((glyph, i) => {
+    console.log(`console.log('glyph ${i}, length=${glyph.length} of ${totalLength}');`);
+    console.log(`data += [${glyph.join(',')}];`);
+  });
+  return;
 }
 
 main(process.argv);
 
-function zip(data) {
+function rle(content) {
+  const data = content.map(i => i);
   result = [];
   while (data.length) {
     const val = data.shift();
@@ -72,23 +149,16 @@ function zip(data) {
         length++;
         data.shift();
       }
-      // console.log('sequence', val, 'x', length);
       result.push(val + 0b10000000);
       result.push(length);
     } else {
       result.push(val);
     }
-    // if (i > 2) {
-    //   result.push(val + 0b10000000);
-    //   result.push(i);
-    //   while (i) { data.shift(); i--; };
-    // }
-    // else {
-    //   result.push(i);
-    // }
   }
   return result;
 }
+
+// unused
 
 function print(content, filename) {
   const data = content.map(i => i);
