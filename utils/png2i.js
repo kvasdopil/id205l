@@ -64,6 +64,7 @@ function cropVertical(pixels, w, h) {
       y2--;
     }
   }
+  y2++;
 
   return [y1, y2];
 }
@@ -126,11 +127,7 @@ async function main(argv) {
 
   const encoded = glyphs.map(([x, y, w, h]) => encode(pixels, png.width, png.height, x, y, w, h));
 
-  const totalLength = encoded.reduce((a, b) => a + b.length, 0);
-  encoded.forEach((glyph, i) => {
-    console.log(`console.log('glyph ${i}, length=${glyph.length} of ${totalLength}');`);
-    console.log(`data += [${glyph.join(',')}];`);
-  });
+  print(encoded, path.basename(input, ".png") + '.i');
   return;
 }
 
@@ -160,21 +157,17 @@ function rle(content) {
 
 // unused
 
-function print(content, filename) {
-  const data = content.map(i => i);
+function print(glyphs, filename) {
+  const totalLength = glyphs.reduce((a, b) => a + b.length, 0);
   console.log('let s=require("Storage");');
   console.log(`s.erase("${filename}");`);
-  const size = data.length;
-  const step = 1024;
   let offset = 0;
-  while (data.length) {
-    const chunk = data.slice(0, step);
-    console.log(`s.write("${filename}", [${chunk.join(',')}], ${offset}, ${size});`);
-    console.log(`console.log("${offset + chunk.length} of ${size}");`);
-    data.splice(0, step);
-    offset += step;
-  }
-  console.log(`echo("Upload ${filename} done");`)
+  glyphs.forEach((chunk, i) => {
+    console.log(`s.write("${filename}", [${chunk.join(',')}], ${offset}, ${totalLength});`);
+    console.log(`console.log("glyph ${i} done, written ${offset + chunk.length} of ${totalLength} bytes");`);
+    offset += chunk.length;
+  });
+  console.log(`echo("Upload ${filename} done");`);
 }
 
 function i2s(r) {

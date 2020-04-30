@@ -2,60 +2,66 @@
 const fb = require('fb');
 const st = require('Storage');
 
-const font = st.readArrayBuffer('nmbrs.i');
+const big_font = st.readArrayBuffer('big_numbers.i');
+const font = st.readArrayBuffer('font1.i');
 
-const wi = 44;
-const xx = 18;
-const yy = 100;
+const str = text => text.split('').map(char => char.charCodeAt(0) - 32).filter(i => i >= 0);
+
+const dows = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+]
+
+const suffix = (day) => {
+  if (day % 10 === 1) {
+    return 'st';
+  }
+  if (day % 10 === 2) {
+    return 'nd';
+  }
+
+  return 'th';
+}
 
 const start = () => {
-  const numbers = [
-    fb.add({
-      x: xx + wi * 0,
-      y: yy,
-      buf: font,
-      index: 0,
-      c: 0xffff,
-    }),
-    fb.add({
-      x: xx + wi * 1,
-      y: yy,
-      buf: font,
-      index: 0,
-      c: 0xffff,
-    }),
-    fb.add({
-      x: xx + wi * 2,
-      y: yy,
-      buf: font,
-      index: 10,
-      c: 0xffff,
-    }),
-    fb.add({
-      x: xx + wi * 2.7,
-      y: yy,
-      buf: font,
-      index: 0,
-      c: 0xffff,
-    }),
-    fb.add({
-      x: xx + wi * 3.7,
-      y: yy,
-      buf: font,
-      index: 0,
-      c: 0xffff,
-    })
-  ];
+  const time = fb.add({
+    x: 32,
+    y: 80,
+    buf: big_font,
+    index: [],
+    c: 0xffff,
+  });
+  const date = fb.add({
+    x: 44,
+    y: 160,
+    buf: font,
+    index: [],
+    c: 0xffff,
+  });
 
   const update = () => {
-    const date = new Date();
-    const h = date.getHours();
-    const m = date.getMinutes();
-    fb.set(numbers[0], { index: Math.floor(h / 10) });
-    fb.set(numbers[1], { index: Math.floor(h % 10) });
-
-    fb.set(numbers[3], { index: Math.floor(m / 10) });
-    fb.set(numbers[4], { index: Math.floor(m % 10) });
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const d = now.getDate();
+    const dow = now.getDay();
+    fb.set(time, {
+      index: [
+        Math.floor(h / 10),
+        Math.floor(h % 10),
+        10,
+        Math.floor(m / 10),
+        Math.floor(m % 10),
+      ]
+    });
+    fb.set(date, {
+      index: str(`${dows[dow]}, ${d}${suffix(d)}`)
+    });
   };
 
   update();
@@ -64,7 +70,8 @@ const start = () => {
   return {
     onStop: () => {
       clearInterval(int);
-      numbers.forEach(n => fb.remove(n));
+      fb.remove(time);
+      fb.remove(date);
     }
   }
 };

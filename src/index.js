@@ -2,6 +2,8 @@ const Watch = require("./src/ID205L");
 const fb = require('fb');
 const st = require('Storage');
 
+const batt = st.readArrayBuffer('battery.i');
+
 E.enableWatchdog(100);
 
 Watch.lcd.init();
@@ -21,14 +23,14 @@ const chargeInd = fb.add({
   x: 240 - 8 - 26 - 10,
   y: 8,
   c: 0,
-  buf: st.readArrayBuffer('batt.i'),
+  buf: batt,
   index: 1,
 })
 fb.add({
   x: 240 - 8 - 26,
   y: 8,
   c: 0xffff,
-  buf: st.readArrayBuffer('batt.i'),
+  buf: batt,
   index: 0,
 });
 const battery = fb.add({
