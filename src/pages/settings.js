@@ -1,5 +1,8 @@
 // settings screen, renders brightness level
+const st = require('Storage');
 const fb = require('fb');
+
+const icons = st.readArrayBuffer('icons.i');
 
 const btn1value = 0;
 const btn2value = 0;
@@ -21,6 +24,13 @@ const start = () => {
     w: 96,
     c: BG,
   });
+  const lightIcon = fb.add({
+    x: 44,
+    y: 163,
+    c: 0,
+    buf: icons,
+    index: 0,
+  });
 
   const bgDnd = fb.add({
     x: 129,
@@ -29,6 +39,13 @@ const start = () => {
     h: 96,
     c: BG,
   });
+  const dndIcon = fb.add({
+    x: 160,
+    y: 46,
+    c: btn1value ? 0 : 0xffff,
+    buf: icons,
+    index: 1,
+  });
 
   const bgCall = fb.add({
     x: 129,
@@ -36,7 +53,32 @@ const start = () => {
     w: 96,
     h: 96,
     c: BG,
-  })
+  });
+  const callIcon = fb.add({
+    x: 158,
+    y: 164,
+    c: btn2value ? 0 : 0xffff,
+    buf: icons,
+    index: 2,
+  });
+
+  const rects = [
+    fb.add({ x: 129, y: 126, c: 0, buf: icons, index: 4 }),
+    fb.add({ x: 129 + 71, y: 126, c: 0, buf: icons, index: 5 }),
+    fb.add({ x: 129, y: 126 + 72, c: 0, buf: icons, index: 6 }),
+    fb.add({ x: 129 + 71, y: 126 + 72, c: 0, buf: icons, index: 7 }),
+
+    fb.add({ x: 129, y: 6, c: 0, buf: icons, index: 4 }),
+    fb.add({ x: 129 + 71, y: 6, c: 0, buf: icons, index: 5 }),
+    fb.add({ x: 129, y: 6 + 72, c: 0, buf: icons, index: 6 }),
+    fb.add({ x: 129 + 71, y: 6 + 72, c: 0, buf: icons, index: 7 }),
+
+    fb.add({ x: 12, y: 6, c: 0, buf: icons, index: 4 }),
+    fb.add({ x: 12 + 71, y: 6, c: 0, buf: icons, index: 5 }),
+
+    fb.add({ x: 12, y: 126 + 72, c: 0, buf: icons, index: 6 }),
+    fb.add({ x: 12 + 71, y: 126 + 72, c: 0, buf: icons, index: 7 }),
+  ];
 
   const updateLight = () => {
     const value = 3 - SETTINGS.BL_LEVEL;
@@ -61,10 +103,12 @@ const start = () => {
       btn1value = !btn1value;
       Watch.vibrate(30);
       fb.set(bgDnd, { c: btn1value ? FG : BG });
+      fb.set(dndIcon, { c: btn1value ? 0 : 0xffff });
     } else {
       btn2value = !btn2value;
       Watch.vibrate(30);
       fb.set(bgCall, { c: btn2value ? FG : BG });
+      fb.set(callIcon, { c: btn2value ? 0 : 0xffff });
     }
   }
 
@@ -76,6 +120,10 @@ const start = () => {
       fb.remove(fgLight);
       fb.remove(bgCall);
       fb.remove(bgDnd);
+      fb.remove(dndIcon);
+      fb.remove(callIcon);
+      fb.remove(lightIcon);
+      rects.forEach(rect => fb.remove(rect));
     },
     onTap: onTap,
   }

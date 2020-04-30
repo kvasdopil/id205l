@@ -7,12 +7,14 @@
 
 ## Graphics library
 - alpha blending
-- bitmap cropping
 - hw animation
-- RLE compression for bitmaps
+- bitmap cropping
 
 ## General
 - dump flash contents
 - use bitmaps from flash
 - use apps from flash
 - add flash service
+
+# Documentation
+- fb library overview 

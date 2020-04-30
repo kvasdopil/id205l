@@ -1,5 +1,7 @@
 // accelerometer test screen, renders current X/Y accelerometer readings
 const fb = require('fb');
+const st = require('Storage');
+const font = st.readArrayBuffer('icons.i');
 
 const start = () => {
   let mode = 0;
@@ -8,7 +10,9 @@ const start = () => {
     y: 0,
     w: 20,
     h: 20,
+    buf: font,
     c: fb.color(255, 0, 0),
+    index: 3,
   });
 
   const int = setInterval(() => {

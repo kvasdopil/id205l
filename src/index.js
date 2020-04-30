@@ -46,6 +46,10 @@ const pId = 0;
 const page = null;
 
 function setPage(p) {
+  if (p !== null && !pages[p]) {
+    return;
+  }
+
   if (page && page.onStop) {
     page.onStop();
   };
