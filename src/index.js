@@ -12,14 +12,12 @@ const pages = [
   require('./src/pages/settings'),
   require('./src/pages/main'),
   require('./src/pages/accel'),
-  // require('./src/pages/heart'),
+  require('./src/pages/info'),
 ];
 
 const SETTINGS = {
   BL_LEVEL: 1,
 }
-
-
 
 // ====
 
