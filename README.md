@@ -14,7 +14,9 @@ i'm pretty sure the easiest way to open it would be using a hot gun and suction 
 ## How to build firmware
 Prebuilt .hex file are located in ./hex/ folder of this repo. 
 
-- Checkout espruino sources
+This project uses custom Espruino fork with SPIM and framebuffer modules.
+
+- Checkout espruino sources from here: `git@github.com:kvasdopil/Espruino.git`
 - Make sure you have `dos2unix` utility installed
 - Run `./scripts/provision.py NRF52340DK` (this will ask for a filename to patch, just press enter twice)
 - copy `build/IS205L.py` to `espruino/boards/`
