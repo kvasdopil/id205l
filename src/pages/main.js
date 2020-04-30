@@ -4,6 +4,7 @@ const st = require('Storage');
 
 const big_font = st.readArrayBuffer('big_numbers.i');
 const font = st.readArrayBuffer('font1.i');
+const batt = st.readArrayBuffer('battery.i');
 
 const str = text => text.split('').map(char => char.charCodeAt(0) - 32).filter(i => i >= 0);
 
@@ -30,7 +31,7 @@ const suffix = (day) => {
 
 const start = () => {
   const time = fb.add({
-    x: 32,
+    x: 45,
     y: 80,
     buf: big_font,
     index: [],

@@ -1,24 +1,22 @@
 const Watch = require("./src/ID205L");
-const fb = require('fb');
 const st = require('Storage');
-
-const batt = st.readArrayBuffer('battery.i');
+const levelApp = require('/src/apps/level');
 
 E.enableWatchdog(100);
 
 Watch.lcd.init();
 
+const levelIcon = st.readArrayBuffer('icon-level.i');
 const pages = [
   require('./src/pages/settings'),
   require('./src/pages/main'),
-  require('./src/pages/accel'),
+  require('./src/pages/app-icon')(levelApp, 'Level', levelIcon),
   require('./src/pages/info'),
 ];
 
 const SETTINGS = {
   BL_LEVEL: 1,
 }
-
 // ====
 
 const ACCEL_THRESHOLD = 100;
@@ -58,7 +56,6 @@ function setPage(p) {
     pId = p;
     page = pages[p]();
   }
-  // renderBattery();
 }
 
 const sleep = () => {
@@ -117,6 +114,17 @@ Watch.touch.onTouch = (event) => {
   }
 
   if (event.type === 128) { // tap or swipe
+    if (event.dir == -3) {
+      if (page && page.onTap) {
+        page.onTap(event);
+      }
+    }
+    if (page && page.isApp) {
+      if (page.onSwipe) {
+        page.onSwipe(event);
+      }
+      return;
+    }
     if (event.dir == 2) {
       setPage(pId - 1);
     }
@@ -128,11 +136,6 @@ Watch.touch.onTouch = (event) => {
     }
     if (event.dir == 3) {
       console.log('down');
-    }
-    if (event.dir == -3) {
-      if (page && page.onTap) {
-        page.onTap(event);
-      }
     }
   }
   if (event.type === 9) { // move
@@ -153,7 +156,11 @@ setWatch(() => {
   if (!page) {
     wake();
   } else {
-    sleep();
+    if (page.isApp) {
+      setPage(1);
+    } else {
+      sleep();
+    }
   }
 }, BTN1, { edge: 'rising', debounce: 10, repeat: true });
 
