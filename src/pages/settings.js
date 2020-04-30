@@ -38,39 +38,37 @@ const start = () => {
     c: BG,
   })
 
-  const updateLight = (value) => {
-    SETTINGS.BL_LEVEL = 3 - value;
-    Watch.setBacklight(SETTINGS.BL_LEVEL);
-
+  const updateLight = () => {
+    const value = 3 - SETTINGS.BL_LEVEL;
     fb.set(fgLight, { h: 80 * value });
   };
 
-  // const on = (e) => {
-  //   console.log(e);
-  //   SETTINGS.BL_LEVEL += 1;
-  //   if (SETTINGS.BL_LEVEL == 4) {
-  //     SETTINGS.BL_LEVEL = 1;
-  //   }
-  //   Watch.setBacklight(SETTINGS.BL_LEVEL);
-  //   updateLight(SETTINGS.BL_LEVEL);
-  // }
-
   const onTap = (e) => {
     if (e.x < 120) { // backlight
-      updateLight(Math.floor(e.y / 80));
+      const value = 3 - Math.floor(e.y / 80);
+      if (value === SETTINGS.BL_LEVEL) {
+        return;
+      }
+      Watch.vibrate(30);
+      SETTINGS.BL_LEVEL = value;
+      Watch.setBacklight(SETTINGS.BL_LEVEL);
+
+      updateLight()
       return;
     }
 
     if (e.y < 120) {
       btn1value = !btn1value;
+      Watch.vibrate(30);
       fb.set(bgDnd, { c: btn1value ? FG : BG });
     } else {
       btn2value = !btn2value;
+      Watch.vibrate(30);
       fb.set(bgCall, { c: btn2value ? FG : BG });
     }
   }
 
-  updateLight(SETTINGS.BL_LEVEL);
+  updateLight();
 
   return {
     onStop: () => {
