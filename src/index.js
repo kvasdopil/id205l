@@ -9,8 +9,8 @@ E.enableWatchdog(100);
 Watch.lcd.init();
 
 const pages = [
-  require('./src/pages/main'),
   require('./src/pages/settings'),
+  require('./src/pages/main'),
   require('./src/pages/accel'),
   // require('./src/pages/heart'),
 ];
@@ -19,32 +19,7 @@ const SETTINGS = {
   BL_LEVEL: 1,
 }
 
-const chargeInd = fb.add({
-  x: 240 - 8 - 26 - 10,
-  y: 8,
-  c: 0,
-  buf: batt,
-  index: 1,
-})
-fb.add({
-  x: 240 - 8 - 26,
-  y: 8,
-  c: 0xffff,
-  buf: batt,
-  index: 0,
-});
-const battery = fb.add({
-  x: 240 - 8 - 26 + 2,
-  y: 10,
-  w: 21,
-  h: 9,
-  c: fb.color(0, 255, 0),
-});
 
-const renderBattery = () => {
-  fb.set(battery, { w: 4 + 16 * Watch.getBattery() });
-  fb.set(chargeInd, { c: Watch.isCharging() ? 0xffff : 0 })
-};
 
 // ====
 
@@ -81,6 +56,7 @@ function setPage(p) {
     pId = p;
     page = pages[p]();
   }
+  // renderBattery();
 }
 
 const sleep = () => {
@@ -100,7 +76,7 @@ const wake = () => {
   }
   Watch.lcd.wake();
   Watch.setBacklight(SETTINGS.BL_LEVEL);
-  setPage(0); // will start defailt page
+  setPage(1); // will start defailt page
 };
 
 const IDLE_TIMEOUT = 10000;
@@ -138,7 +114,7 @@ Watch.touch.onTouch = (event) => {
     return;
   }
 
-  if (event.type === 128) {
+  if (event.type === 128) { // tap or swipe
     if (event.dir == 2) {
       setPage(pId - 1);
     }
@@ -157,9 +133,11 @@ Watch.touch.onTouch = (event) => {
       }
     }
   }
-  // if (event.type !== 9) {
-  //   return;
-  // }
+  if (event.type === 9) { // move
+    if (page && page.onMove) {
+      page.onMove(event);
+    }
+  }
 };
 
 setInterval(updateDevices, 1000);
@@ -186,13 +164,7 @@ setWatch(() => {
 
 setWatch(() => {
   wake();
-  renderBattery();
   Watch.vibrate([50, 50, 50]);
 }, Watch.pins.CHARGING, { edge: 'both', debounce: 10, repeat: true });
 
-setInterval(() => {
-  renderBattery();
-}, 60000);
-renderBattery();
-
-setPage(0);
+setPage(1);
