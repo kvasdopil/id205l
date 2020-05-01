@@ -6,8 +6,9 @@
   "scripts": {
     "start": "espruino -t -d 'Espruino ID205L' ./src/index.js --config MODULE_MINIFICATION_LEVEL='WHITESPACE'",
     "cli": "espruino -d 'Espruino ID205L' --config MODULE_MINIFICATION_LEVEL='WHITESPACE'",
-    "convert": "node ./utils/png2i",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "images": "sh ./utils/convert_images.sh",
+    "images:upload": "sh ./utils/upload_images.sh"
   },
   "repository": {
     "type": "git",

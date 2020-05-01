@@ -159,15 +159,14 @@ function rle(content) {
 
 function print(glyphs, filename) {
   const totalLength = glyphs.reduce((a, b) => a + b.length, 0);
-  console.log('let s=require("Storage");');
   console.log(`s.erase("${filename}");`);
   let offset = 0;
   glyphs.forEach((chunk, i) => {
     console.log(`s.write("${filename}", [${chunk.join(',')}], ${offset}, ${totalLength});`);
-    console.log(`console.log("glyph ${i} done, written ${offset + chunk.length} of ${totalLength} bytes");`);
+    console.log(`console.log("${filename} glyph ${i} done, written ${offset + chunk.length} of ${totalLength} bytes");`);
     offset += chunk.length;
   });
-  console.log(`echo("Upload ${filename} done");`);
+  console.log(`console.log("Upload ${filename} done", s.getFree(), "memory left");`);
 }
 
 function i2s(r) {

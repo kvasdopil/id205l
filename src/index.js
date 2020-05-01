@@ -1,16 +1,31 @@
 const Watch = require("./src/ID205L");
 const st = require('Storage');
-const levelApp = require('/src/apps/level');
+const fb = require('fb');
+const timerApp = require('./src/apps/timer');
+const levelApp = require('./src/apps/level');
+const appIcon = require('./src/pages/app-icon');
 
 E.enableWatchdog(100);
 
 Watch.lcd.init();
 
-const levelIcon = st.readArrayBuffer('icon-level.i');
 const pages = [
   require('./src/pages/settings'),
-  require('./src/pages/main'),
-  require('./src/pages/app-icon')(levelApp, 'Level', levelIcon),
+  require('./src/pages/clock'),
+  appIcon({
+    app: timerApp,
+    title: 'Timer',
+    icon: st.readArrayBuffer('icon-timer.i'),
+    iconX: 28,
+    iconColor: fb.color(0xff, 0x6a, 0x00),
+  }),
+  appIcon({
+    app: levelApp,
+    title: 'Level',
+    icon: st.readArrayBuffer('icon-level.i'),
+    iconX: 0,
+    iconColor: fb.color(0x00, 0xde, 0xff),
+  }),
   require('./src/pages/info'),
 ];
 
@@ -106,6 +121,14 @@ Watch.accelerometer.enable();
 
 Watch.touch.enable();
 
+const longTapTimer = 0;
+const longTapEvent = 0;
+const onLongTap = () => {
+  if (page && page.onLongTap) {
+    page.onLongTap(longTapEvent);
+  }
+}
+
 Watch.touch.onTouch = (event) => {
   wake();
 
@@ -113,7 +136,27 @@ Watch.touch.onTouch = (event) => {
     return;
   }
 
+  if (event.type === 0) {
+    if (longTapTimer) {
+      clearInterval(longTapTimer);
+    }
+    return;
+  }
+
+  if (event.type === 9) {
+    if (longTapTimer) {
+      clearInterval(longTapTimer);
+    }
+    longTapEvent = event;
+    longTapTimer = setInterval(onLongTap, 500);
+    return;
+  }
+
   if (event.type === 128) { // tap or swipe
+    if (longTapTimer) {
+      clearInterval(longTapTimer);
+      longTapTimer = 0;
+    }
     if (event.dir == -3) {
       if (page && page.onTap) {
         page.onTap(event);
@@ -137,12 +180,14 @@ Watch.touch.onTouch = (event) => {
     if (event.dir == 3) {
       console.log('down');
     }
+    return;
   }
-  if (event.type === 9) { // move
-    if (page && page.onMove) {
-      page.onMove(event);
-    }
-  }
+
+  // if (event.type === 9) { // move
+  //   if (page && page.onMove) {
+  //     page.onMove(event);
+  //   }
+  // }
 };
 
 setInterval(updateDevices, 1000);
