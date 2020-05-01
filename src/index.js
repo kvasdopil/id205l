@@ -1,9 +1,4 @@
 const Watch = require("./src/ID205L");
-const st = require('Storage');
-const fb = require('fb');
-const timerApp = require('./src/apps/timer');
-const levelApp = require('./src/apps/level');
-const appIcon = require('./src/pages/app-icon');
 
 E.enableWatchdog(100);
 
@@ -12,25 +7,14 @@ Watch.lcd.init();
 const pages = [
   require('./src/pages/settings'),
   require('./src/pages/clock'),
-  appIcon({
-    app: timerApp,
-    title: 'Timer',
-    icon: st.readArrayBuffer('icon-timer.i'),
-    iconX: 28,
-    iconColor: fb.color(0xff, 0x6a, 0x00),
-  }),
-  appIcon({
-    app: levelApp,
-    title: 'Level',
-    icon: st.readArrayBuffer('icon-level.i'),
-    iconX: 0,
-    iconColor: fb.color(0x00, 0xde, 0xff),
-  }),
+  require('./src/apps/timer'),
+  require('./src/apps/level'),
   require('./src/pages/info'),
 ];
 
 const SETTINGS = {
   BL_LEVEL: 1,
+  NEXT_TIMER: 0,
 }
 // ====
 
