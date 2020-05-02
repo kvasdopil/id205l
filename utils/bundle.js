@@ -472,9 +472,9 @@ const IDLE_TIMEOUT = 10000;
 let idleTimer = 0;
 
 const updateDevices = () => {
-  if (page) {
+  if (page && page.sleep !== false) {
     idleTimer += 1000;
-    if (page.sleep !== false && idleTimer >= IDLE_TIMEOUT) {
+    if (idleTimer >= IDLE_TIMEOUT) {
       sleep();
     }
     return;
@@ -639,6 +639,7 @@ module.exports = (screens) => () => {
 
   let navigate;
   navigate = (n) => {
+    console.log('navigate', n);
     if (n === index || !screens[n]) return;
     if (page) page.onStop();
     index = n;
@@ -1054,8 +1055,9 @@ module.exports = (navigate) => {
 
   const render = () => {
     const diff = (SETTINGS.NEXT_TIMER - new Date().getTime()) / 1000;
-    if (diff < 0) {
+    if (diff <= 0) {
       console.log('diff < 0');
+      SETTINGS.NEXT_TIMER = null;
       navigate(1);
       return;
     };
@@ -1064,7 +1066,6 @@ module.exports = (navigate) => {
     const mm = (diff / 60) % 60;
     const hh = (diff / 3600);
 
-    console.log(SETTINGS.NEXT_TIMER, new Date().getTime());
     if (hh >= 1) {
       if (hh >= 10) {
         fb.set(ui[0], { index: [hh / 10, hh, 11, 10, mm / 10, mm % 10, 10, ss / 10, ss % 10] });
@@ -1127,7 +1128,6 @@ const start = (navigate) => {
     if (e.y > 200) {
       Watch.vibrate([50, 50, 50]);
       SETTINGS.NEXT_TIMER = new Date().getTime() + (1000 * 60 * (mm + 60 * hh));
-      console.log('nexttime', new Date(SETTINGS.NEXT_TIMER));
       navigate(2); // go to active page
       return;
     }
@@ -1154,7 +1154,6 @@ const start = (navigate) => {
       }
     }
     Watch.vibrate(30);
-    console.log(ui);
     fb.set(ui[0], { index: [hh / 10, hh % 10] });
     fb.set(ui[1], { index: [mm / 10, mm % 10] });
   };
@@ -1259,8 +1258,8 @@ const start = () => {
     fb.set(
       pt,
       {
-        x: X - 10,
-        y: Y - 20,
+        x: X - 8,
+        y: Y - 17,
       }
     );
 

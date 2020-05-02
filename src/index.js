@@ -78,9 +78,9 @@ const IDLE_TIMEOUT = 10000;
 let idleTimer = 0;
 
 const updateDevices = () => {
-  if (page) {
+  if (page && page.sleep !== false) {
     idleTimer += 1000;
-    if (page.sleep !== false && idleTimer >= IDLE_TIMEOUT) {
+    if (idleTimer >= IDLE_TIMEOUT) {
       sleep();
     }
     return;

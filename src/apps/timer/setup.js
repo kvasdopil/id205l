@@ -37,7 +37,6 @@ const start = (navigate) => {
     if (e.y > 200) {
       Watch.vibrate([50, 50, 50]);
       SETTINGS.NEXT_TIMER = new Date().getTime() + (1000 * 60 * (mm + 60 * hh));
-      console.log('nexttime', new Date(SETTINGS.NEXT_TIMER));
       navigate(2); // go to active page
       return;
     }
@@ -64,7 +63,6 @@ const start = (navigate) => {
       }
     }
     Watch.vibrate(30);
-    console.log(ui);
     fb.set(ui[0], { index: [hh / 10, hh % 10] });
     fb.set(ui[1], { index: [mm / 10, mm % 10] });
   };

@@ -54,8 +54,8 @@ const start = () => {
     fb.set(
       pt,
       {
-        x: X - 10,
-        y: Y - 20,
+        x: X - 8,
+        y: Y - 17,
       }
     );
 

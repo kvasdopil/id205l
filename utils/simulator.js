@@ -30,16 +30,19 @@ function blit(ctx, X, Y, buf, index, tint) {
     if (rle == 0) {
       br = buf[pt++];
       if (br & 0b10000000) {
-        br &= 0b11111;
+        br &= 0b111111;
         rle = buf[pt++] - 1;
       }
     } else {
       rle--;
     }
-    const r = br * tint[0] >> 4;
-    const g = br * tint[1] >> 4;
-    const b = br * tint[2] >> 4;
-    ctx.fillStyle = `RGB(${r << 2},${g << 2},${b << 2})`
+    const bb = (br << 2) + ((br >> 4) & 0b11);
+    const nbb = 0; // 0xff - bb;
+    const [or, og, ob] = ctx.getImageData(X + x, Y + y, 1, 1).data;
+    const r = ((or * nbb) + (bb * tint[0])) >> 8;
+    const g = ((og * nbb) + (bb * tint[1])) >> 8;
+    const b = ((ob * nbb) + (bb * tint[2])) >> 8;
+    ctx.fillStyle = `RGB(${r},${g},${b})`
     ctx.fillRect(X + x, Y + y, 1, 1);
 
     x++;
@@ -69,7 +72,7 @@ const fb = {
         o.c = [0, 0, 0];
       }
       if (o.c === 0xffff) {
-        o.c = [0xff >> 2, 0xff >> 2, 0xff >> 2];
+        o.c = [0xff, 0xff, 0xff];
       }
     }
     return fbId - 1;
@@ -87,7 +90,7 @@ const fb = {
         o.c = [0, 0, 0];
       }
       if (o.c === 0xffff) {
-        o.c = [0xff >> 2, 0xff >> 2, 0xff >> 2];
+        o.c = [0xff, 0xff, 0xff];
       }
     }
   },
@@ -113,7 +116,7 @@ const fb = {
         }
       } else {
         if (p.w > 0 && p.h > 0) {
-          ctx.fillStyle = `RGB(${p.c[0] << 2},${p.c[1] << 2},${p.c[2] << 2})`;
+          ctx.fillStyle = `RGB(${p.c[0]},${p.c[1]},${p.c[2]})`;
           console.log(ctx.fillStyle);
           ctx.fillRect(p.x, p.y, p.w, p.h);
         }
@@ -121,7 +124,7 @@ const fb = {
     });
     fbChanged = false;
   },
-  color: (r, g, b) => [r >> 2, g >> 2, b >> 2],
+  color: (r, g, b) => [r, g, b],
 }
 
 const spim = {
