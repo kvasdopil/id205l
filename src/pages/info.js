@@ -10,7 +10,7 @@ const GREEN = fb.color(0x58, 0xdc, 0x63);
 const maxStorage = 40960;
 
 const init = () => {
-  const controls = [
+  const ui = [
     fb.add({
       x: 12,
       y: 12,
@@ -37,7 +37,7 @@ const init = () => {
       y: 62,
       c: GREEN,
       h: 12,
-      w: 216 * (st.getFree() / maxStorage),
+      w: 216 * (1 - (st.getFree() / maxStorage)),
     }),
     fb.add({
       x: 12,
@@ -71,7 +71,7 @@ const init = () => {
 
   return {
     onStop: () => {
-      controls.forEach(ctrl => fb.remove(ctrl));
+      ui.forEach(ctrl => fb.remove(ctrl));
     }
   }
 }

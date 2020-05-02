@@ -2,11 +2,12 @@
 const st = require('Storage');
 const fb = require('fb');
 const SETTINGS = require('./src/globals');
+const Watch = require('./src/ID205L');
 
 const icons = st.readArrayBuffer('icons.i');
 
-const btn1value = 0;
-const btn2value = 0;
+let btn1value = 0;
+let btn2value = 0;
 
 const FG = fb.color(0xd8, 0xd8, 0xd8);
 const BG = fb.color(0x53, 0x53, 0x53);

@@ -37,7 +37,7 @@ function blit(ctx, X, Y, buf, index, tint) {
       rle--;
     }
     const bb = (br << 2) + ((br >> 4) & 0b11);
-    const nbb = 0; // 0xff - bb;
+    const nbb = 0xff - bb;
     const [or, og, ob] = ctx.getImageData(X + x, Y + y, 1, 1).data;
     const r = ((or * nbb) + (bb * tint[0])) >> 8;
     const g = ((og * nbb) + (bb * tint[1])) >> 8;
@@ -117,7 +117,6 @@ const fb = {
       } else {
         if (p.w > 0 && p.h > 0) {
           ctx.fillStyle = `RGB(${p.c[0]},${p.c[1]},${p.c[2]})`;
-          console.log(ctx.fillStyle);
           ctx.fillRect(p.x, p.y, p.w, p.h);
         }
       }
@@ -204,7 +203,6 @@ window.process = {
 
 setTimeout(() => {
   const touch = window.i2cs[43];
-  console.log(watches);
   const touchWatch = watches['44falling'];
 
   document.querySelector('#offscreen').onclick = (e) => {

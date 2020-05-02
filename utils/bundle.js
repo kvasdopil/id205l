@@ -814,7 +814,7 @@ const GREEN = fb.color(0x58, 0xdc, 0x63);
 const maxStorage = 40960;
 
 const init = () => {
-  const controls = [
+  const ui = [
     fb.add({
       x: 12,
       y: 12,
@@ -841,7 +841,7 @@ const init = () => {
       y: 62,
       c: GREEN,
       h: 12,
-      w: 216 * (st.getFree() / maxStorage),
+      w: 216 * (1 - (st.getFree() / maxStorage)),
     }),
     fb.add({
       x: 12,
@@ -875,7 +875,7 @@ const init = () => {
 
   return {
     onStop: () => {
-      controls.forEach(ctrl => fb.remove(ctrl));
+      ui.forEach(ctrl => fb.remove(ctrl));
     }
   }
 }
@@ -887,11 +887,12 @@ fileCache['./src/pages/settings.js'] = () => {
 const st = require('Storage');
 const fb = require('fb');
 const SETTINGS = require('./src/globals');
+const Watch = require('./src/ID205L');
 
 const icons = st.readArrayBuffer('icons.i');
 
-const btn1value = 0;
-const btn2value = 0;
+let btn1value = 0;
+let btn2value = 0;
 
 const FG = fb.color(0xd8, 0xd8, 0xd8);
 const BG = fb.color(0x53, 0x53, 0x53);
