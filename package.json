@@ -8,7 +8,8 @@
     "cli": "espruino -d 'Espruino ID205L' --config MODULE_MINIFICATION_LEVEL='WHITESPACE'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "images": "sh ./utils/convert_images.sh",
-    "images:upload": "sh ./utils/upload_images.sh"
+    "images:upload": "sh ./utils/upload_images.sh",
+    "bundle": "node ./simulator/bundler.js > ./build/bundle.js"
   },
   "repository": {
     "type": "git",
