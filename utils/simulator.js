@@ -1,9 +1,13 @@
 function blit(ctx, X, Y, buf, index, tint) {
+  if (index != index) {
+    return;
+  }
+  index = Math.floor(index);
   pt = 0;
   let len = 0;
   while (true) {
     len = (buf[pt++] << 8) + buf[pt++];
-    if (index == 0) {
+    if (index <= 0) {
       break;
     }
     pt += len;
@@ -32,9 +36,9 @@ function blit(ctx, X, Y, buf, index, tint) {
     } else {
       rle--;
     }
-    const r = br * tint[0] >> 6;
-    const g = br * tint[1] >> 6;
-    const b = br * tint[2] >> 6;
+    const r = br * tint[0] >> 4;
+    const g = br * tint[1] >> 4;
+    const b = br * tint[2] >> 4;
     ctx.fillStyle = `RGB(${r << 2},${g << 2},${b << 2})`
     ctx.fillRect(X + x, Y + y, 1, 1);
 
@@ -117,7 +121,7 @@ const fb = {
     });
     fbChanged = false;
   },
-  color: (r, g, b) => [r << 2, g << 2, b << 2],
+  color: (r, g, b) => [r >> 2, g >> 2, b >> 2],
 }
 
 const spim = {
@@ -201,7 +205,7 @@ setTimeout(() => {
   const touchWatch = watches['44falling'];
 
   document.querySelector('#offscreen').onclick = (e) => {
-    touch.reply = [128, 0, e.offsetX, e.offsetY, 0, 0, 0, 0, 0, 0, 0];
+    touch.reply = [128, 0, e.offsetX, 0, e.offsetY, 0, 0, 0, 0, 0, 0, 0];
     touchWatch.cb();
   }
 

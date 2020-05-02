@@ -18,6 +18,7 @@ module.exports = (navigate) => {
   const render = () => {
     const diff = (SETTINGS.NEXT_TIMER - new Date().getTime()) / 1000;
     if (diff < 0) {
+      console.log('diff < 0');
       navigate(1);
       return;
     };
@@ -25,6 +26,8 @@ module.exports = (navigate) => {
     const ss = diff % 60;
     const mm = (diff / 60) % 60;
     const hh = (diff / 3600);
+
+    console.log(SETTINGS.NEXT_TIMER, new Date().getTime());
     if (hh >= 1) {
       if (hh >= 10) {
         fb.set(ui[0], { index: [hh / 10, hh, 11, 10, mm / 10, mm % 10, 10, ss / 10, ss % 10] });
