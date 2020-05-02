@@ -1,8 +1,7 @@
 const Watch = require("./src/ID205L");
+const SETTINGS = require('./src/globals');
 
 E.enableWatchdog(100);
-
-Watch.lcd.init();
 
 const pages = [
   require('./src/pages/settings'),
@@ -12,10 +11,8 @@ const pages = [
   require('./src/pages/info'),
 ];
 
-const SETTINGS = {
-  BL_LEVEL: 1,
-  NEXT_TIMER: 0,
-}
+Watch.lcd.init();
+
 // ====
 
 const ACCEL_THRESHOLD = 100;
@@ -39,8 +36,8 @@ const checkAccel = () => {
 
 // ====
 
-const pId = 0;
-const page = null;
+let pId = 0;
+let page = null;
 
 function setPage(p) {
   if (p !== null && !pages[p]) {

@@ -1,6 +1,7 @@
 // main screen, renders current time
 const fb = require('fb');
 const st = require('Storage');
+const Watch = require('./src/ID205L');
 
 const big_font = st.readArrayBuffer('big_numbers.i');
 const font = st.readArrayBuffer('font1.i');

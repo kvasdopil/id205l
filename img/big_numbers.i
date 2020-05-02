@@ -23,4 +23,4 @@ s.write("big_numbers.i", [0,132,1,11,128,147,4,15,7,128,6,7,46,191,3,53,13,128,3
 console.log("big_numbers.i glyph 10 done, written 5144 of 5212 bytes");
 s.write("big_numbers.i", [0,66,1,11,128,256,128,209,10,30,41,34,16,128,5,30,62,191,4,39,1,128,2,21,191,7,31,128,2,55,191,7,62,2,5,191,9,14,4,191,9,14,0,55,191,8,2,0,24,191,7,35,128,3,38,191,5,47,2,128,4,18,40,51,43,25,128,3], 5144, 5212);
 console.log("big_numbers.i glyph 11 done, written 5212 of 5212 bytes");
-echo("Upload big_numbers.i done", s.getFree(), "memory left");
+console.log("Upload big_numbers.i done", s.getFree(), "memory left");

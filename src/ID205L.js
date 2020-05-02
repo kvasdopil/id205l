@@ -1,5 +1,4 @@
 // Espruino library for ID205L smart watch
-
 const IT7259 = require("./src/devices/IT7259.js"); // touch screen
 const ST7789 = require("./src/devices/ST7789.js"); // display
 const HX3600 = require("./src/devices/HX3600.js"); // heart sensor
@@ -98,6 +97,8 @@ const lcd = {
   sleep: () => spim.sendSync([0x10, 0], 1),
   wake: () => spim.sendSync([0x11, 0], 1),
 }
+
+console.log('ex', module.exports);
 
 module.exports = {
   pins: pins,

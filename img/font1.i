@@ -191,4 +191,4 @@ s.write("font1.i", [0,31,1,7,128,44,1,128,2,2,128,2,41,62,37,3,45,23,13,55,22,54
 console.log("font1.i glyph 94 done, written 8985 of 9025 bytes");
 s.write("font1.i", [0,38,1,6,128,3,1,128,3,13,46,61,40,7,0,50,44,19,51,37,5,63,13,0,26,57,0,47,48,26,54,35,0,9,39,56,33,4,128,78], 8985, 9025);
 console.log("font1.i glyph 95 done, written 9025 of 9025 bytes");
-echo("Upload font1.i done", s.getFree(), "memory left");
+console.log("Upload font1.i done", s.getFree(), "memory left");

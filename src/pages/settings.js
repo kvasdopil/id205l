@@ -1,6 +1,7 @@
 // settings screen, renders brightness level
 const st = require('Storage');
 const fb = require('fb');
+const SETTINGS = require('./src/globals');
 
 const icons = st.readArrayBuffer('icons.i');
 

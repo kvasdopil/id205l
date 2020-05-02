@@ -2,7 +2,7 @@ const st = require('Storage');
 const fb = require('fb');
 const navigator = require('./src/components/navigator');
 
-module.exports = navigator([
+const navi = navigator([
   require('./src/components/app-icon')({
     title: 'Timer',
     icon: st.readArrayBuffer('icon-timer.i'),
@@ -12,3 +12,5 @@ module.exports = navigator([
   require('./src/apps/timer/setup'),
   require('./src/apps/timer/active'),
 ]);
+
+module.exports = navi;

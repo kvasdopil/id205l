@@ -1,0 +1,17 @@
+<html>
+
+<head>
+  <script src="./simulator.js"></script>
+  <script src="./bundle.js"></script>
+</head>
+
+<body>
+  <canvas id="screen" width="240" height="240"></canvas>
+  <canvas id="offscreen" width="240" height="240"></canvas>
+  <script>
+    window.initImages();
+    require('./src/index');
+  </script>
+</body>
+
+</html>

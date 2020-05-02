@@ -3,7 +3,8 @@ module.exports = (screens) => () => {
   let page;
   let result = {};
 
-  const navigate = (n) => {
+  let navigate;
+  navigate = (n) => {
     if (n === index || !screens[n]) return;
     if (page) page.onStop();
     index = n;

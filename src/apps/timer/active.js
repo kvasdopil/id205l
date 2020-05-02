@@ -1,5 +1,6 @@
 const fb = require('fb');
 const st = require('Storage');
+const SETTINGS = require('./src/globals');
 
 const big = st.readArrayBuffer('big_numbers.i');
 const font = st.readArrayBuffer('font1.i');

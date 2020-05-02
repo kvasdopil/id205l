@@ -1,5 +1,6 @@
 const fb = require('fb');
 const st = require('Storage');
+const SETTINGS = require('./src/globals');
 
 const big = st.readArrayBuffer('big_numbers.i');
 const icons = st.readArrayBuffer('icons.i');
