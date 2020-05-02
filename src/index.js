@@ -173,7 +173,7 @@ Watch.touch.onTouch = (event) => {
 
 setInterval(updateDevices, 1000);
 
-const resetT = 0;
+let resetT = 0;
 setWatch(() => {
   resetT = setTimeout(() => {
     E.reboot();

@@ -2,6 +2,7 @@
 const fb = require('fb');
 const st = require('Storage');
 const icons = st.readArrayBuffer('icons.i');
+const Watch = require('./src/ID205L');
 
 const start = () => {
   let mode = 0;

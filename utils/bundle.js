@@ -567,7 +567,7 @@ Watch.touch.onTouch = (event) => {
 
 setInterval(updateDevices, 1000);
 
-const resetT = 0;
+let resetT = 0;
 setWatch(() => {
   resetT = setTimeout(() => {
     E.reboot();
@@ -1088,6 +1088,7 @@ fileCache['./src/apps/timer/setup.js'] = () => {
 const fb = require('fb');
 const st = require('Storage');
 const SETTINGS = require('./src/globals');
+const Watch = require('./src/ID205L');
 
 const big = st.readArrayBuffer('big_numbers.i');
 const icons = st.readArrayBuffer('icons.i');
@@ -1103,8 +1104,8 @@ const start = (navigate) => {
 
   const COLOR_BR = fb.color(0xFF, 0x61, 0x00);
 
-  const hh = 0;
-  const mm = 15;
+  let hh = 0;
+  let mm = 15;
 
   const ui = [
     fb.add({ x: 30, y: 70, c: COLOR_BR, buf: big, index: [0, 0] }),
@@ -1201,6 +1202,7 @@ fileCache['./src/apps/level/level.js'] = () => {
 const fb = require('fb');
 const st = require('Storage');
 const icons = st.readArrayBuffer('icons.i');
+const Watch = require('./src/ID205L');
 
 const start = () => {
   let mode = 0;

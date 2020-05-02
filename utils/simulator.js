@@ -48,18 +48,18 @@ function blit(ctx, X, Y, buf, index, tint) {
   return w;
 }
 
-const fbPrimitives = [];
+let fbPrimitives = [];
 let ctx;
 let fbChanged = false;
+let fbId = 0;
 const fb = {
   init() {
     ctx = document.getElementById('offscreen').getContext('2d');
   },
   add(cfg) {
     fbChanged = true;
-    const o = { ...cfg };
+    const o = { ...cfg, id: fbId++ };
     fbPrimitives.push(o);
-
     if (typeof o.c === 'number') {
       if (o.c === 0) {
         o.c = [0, 0, 0];
@@ -68,12 +68,16 @@ const fb = {
         o.c = [0xff >> 2, 0xff >> 2, 0xff >> 2];
       }
     }
-    return fbPrimitives.length - 1;
+    return fbId - 1;
   },
   set(id, cfg) {
+    const index = fbPrimitives.findIndex(o => o.id === id);
+    if (index < 0) {
+      console.error('cannot find index', id);
+    }
     fbChanged = true;
-    const o = { ...fbPrimitives[id], ...cfg };
-    fbPrimitives[id] = o;
+    const o = { ...fbPrimitives[index], ...cfg };
+    fbPrimitives[index] = o;
     if (typeof o.c === 'number') {
       if (o.c === 0) {
         o.c = [0, 0, 0];
@@ -85,7 +89,7 @@ const fb = {
   },
   remove(i) {
     fbChanged = true;
-    console.log('fb remove', i);
+    fbPrimitives = fbPrimitives.filter(({ id }) => id != i);
   },
   render() {
     if (!fbChanged) {
@@ -161,7 +165,7 @@ window.I2C = function () {
 const watches = {};
 window.setWatch = (cb, pin, params) => {
   console.log(`set watch on D${pin.id}`, params);
-  watches[pin.id] = { cb, params };
+  watches[pin.id + params.edge] = { cb, params };
 }
 
 window.digitalPulse = (pin, period) => {
@@ -193,9 +197,19 @@ window.process = {
 
 setTimeout(() => {
   const touch = window.i2cs[43];
-  const touchWatch = watches[44];
+  console.log(watches);
+  const touchWatch = watches['44falling'];
+
+  document.querySelector('#offscreen').onclick = (e) => {
+    touch.reply = [128, 0, e.offsetX, e.offsetY, 0, 0, 0, 0, 0, 0, 0];
+    touchWatch.cb();
+  }
 
   document.body.onkeypress = ({ key }) => {
+    if (key === 'q') {
+      watches['16rising'].cb(); // button press
+      watches['16falling'].cb(); // button press
+    }
     if (key === 'w') {
       touch.reply = [128, 0, 120, 120, 0, 0, 0, 0, 0, 0, 4 * 2];
       touchWatch.cb();
