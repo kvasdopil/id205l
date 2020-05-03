@@ -11,8 +11,8 @@ module.exports = (navigate) => {
   const COLOR_BR = fb.color(0xFF, 0x61, 0x00);
 
   const ui = [
-    fb.add({ x: 30, y: 70, c: COLOR_BR, buf: big, index: [] }),
-    fb.add({ x: 80, y: 212, c: 0xffff, buf: font, index: str('stop') }),
+    fb.add({ x: 120, y: 70, w: 1, c: COLOR_BR, buf: big, index: [] }),
+    fb.add({ x: 120, y: 180, w: 1, c: 0xffff, buf: font, index: str('stop') }),
   ];
 
   const render = () => {

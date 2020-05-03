@@ -1,9 +1,6 @@
-function blit(ctx, X, Y, buf, index, tint) {
-  if (index != index) {
-    return;
-  }
+function get_offset(buf, index) {
   index = Math.floor(index);
-  pt = 0;
+  let pt = 0;
   let len = 0;
   while (true) {
     len = (buf[pt++] << 8) + buf[pt++];
@@ -13,7 +10,25 @@ function blit(ctx, X, Y, buf, index, tint) {
     pt += len;
     index--;
   }
+  return [pt, len];
+}
 
+function calc_width(buf, indexes) {
+  let result = -2;
+  for (ind of indexes) {
+    if (ind !== ind) continue;
+    const [pt] = get_offset(buf, ind);
+    const w = buf[pt + 1];
+    result += 2 + w;
+  }
+  return Math.max(0, result);
+}
+
+function blit(ctx, X, Y, buf, index, tint) {
+  if (index != index) {
+    return;
+  }
+  let [pt, len] = get_offset(buf, index);
   const type = buf[pt++];
   const w = buf[pt++];
   if (type !== 1) {
@@ -105,20 +120,24 @@ const fb = {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, 240, 240);
     fbPrimitives.forEach(p => {
-      if (p.buf) {
-        if (typeof p.index === 'number') {
-          blit(ctx, p.x, p.y, p.buf, p.index, p.c);
-        } else {
-          let x = p.x;
-          for (ind of p.index) {
-            x += blit(ctx, x, p.y, p.buf, ind, p.c) + 2;
-          }
-        }
-      } else {
+      if (!p.buf) {
         if (p.w > 0 && p.h > 0) {
           ctx.fillStyle = `RGB(${p.c[0]},${p.c[1]},${p.c[2]})`;
           ctx.fillRect(p.x, p.y, p.w, p.h);
         }
+        return;
+      }
+
+      const indexes = typeof p.index === 'number' ? [p.index] : p.index;
+      let x = p.x;
+      if (p.w == 1) { // centered
+        x -= Math.round(calc_width(p.buf, indexes) / 2);
+      }
+      if (p.w == 2) { // right
+        x -= calc_width(p.buf, indexes);
+      }
+      for (ind of indexes) {
+        x += blit(ctx, x, p.y, p.buf, ind, p.c) + 2;
       }
     });
     fbChanged = false;

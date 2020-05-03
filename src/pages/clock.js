@@ -34,6 +34,7 @@ const suffix = (day) => {
 
 const start = () => {
   const ui = [
+    // timer icon
     fb.add({
       x: 5,
       y: 0,
@@ -41,6 +42,7 @@ const start = () => {
       index: [],
       c: fb.color(0xFF, 0x61, 0x00),
     }),
+    // timer text
     fb.add({
       x: 24,
       y: 8,
@@ -51,15 +53,17 @@ const start = () => {
   ]
 
   const time = fb.add({
-    x: 45,
+    x: 120,
     y: 80,
+    w: 1, // centered
     buf: big_font,
     index: [],
     c: 0xffff,
   });
   const date = fb.add({
-    x: 44,
+    x: 120,
     y: 140,
+    w: 1, // centered
     buf: font,
     index: [],
     c: 0xffff,
