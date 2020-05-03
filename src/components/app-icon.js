@@ -8,15 +8,17 @@ module.exports = (props) => {
   return (navigate) => {
     const ui = [
       fb.add({
-        x: 44 + props.iconX,
+        x: 120,
         y: 44,
+        w: 1,
         c: props.iconColor,
         buf: props.icon,
         index: 0
       }),
       fb.add({
-        x: 90,
+        x: 120,
         y: 160,
+        w: 1,
         c: 0xffff,
         buf: font,
         index: str(props.title),

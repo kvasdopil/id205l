@@ -27,9 +27,10 @@ const start = () => {
     c: BG,
   });
   const lightIcon = fb.add({
-    x: 44,
+    x: 60,
     y: 163,
     c: 0,
+    w: 1,
     buf: icons,
     index: 0,
   });
@@ -42,8 +43,9 @@ const start = () => {
     c: BG,
   });
   const dndIcon = fb.add({
-    x: 160,
+    x: 177,
     y: 46,
+    w: 1,
     c: btn1value ? 0 : 0xffff,
     buf: icons,
     index: 1,
@@ -57,8 +59,9 @@ const start = () => {
     c: BG,
   });
   const callIcon = fb.add({
-    x: 158,
+    x: 177,
     y: 164,
+    w: 1,
     c: btn2value ? 0 : 0xffff,
     buf: icons,
     index: 2,

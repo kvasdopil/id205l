@@ -21,15 +21,15 @@ const start = (navigate) => {
   let mm = 15;
 
   const ui = [
-    fb.add({ x: 30, y: 70, c: COLOR_BR, buf: big, index: [0, 0] }),
-    fb.add({ x: 132, y: 70, c: COLOR_BR, buf: big, index: [1, 5] }),
-    fb.add({ x: 50, y: 30, c: 0xffff, buf: icons, index: 8 }),
-    fb.add({ x: 147, y: 30, c: 0xffff, buf: icons, index: 8 }),
-    fb.add({ x: 50, y: 155, c: 0xffff, buf: icons, index: 9 }),
-    fb.add({ x: 147, y: 155, c: 0xffff, buf: icons, index: 9 }),
-    fb.add({ x: 45, y: 132, c: 0xffff, buf: font, index: str('hours') }),
-    fb.add({ x: 145, y: 132, c: 0xffff, buf: font, index: str('mins') }),
-    fb.add({ x: 185, y: 212, c: 0xffff, buf: font, index: str('start') }),
+    fb.add({ x: 70, y: 70, w: 1, c: COLOR_BR, buf: big, index: [0, 0] }),
+    fb.add({ x: 170, y: 70, w: 1, c: COLOR_BR, buf: big, index: [1, 5] }),
+    fb.add({ x: 70, y: 30, w: 1, c: 0xffff, buf: icons, index: 8 }),
+    fb.add({ x: 170, y: 30, w: 1, c: 0xffff, buf: icons, index: 8 }),
+    fb.add({ x: 70, y: 155, w: 1, c: 0xffff, buf: icons, index: 9 }),
+    fb.add({ x: 170, y: 155, w: 1, c: 0xffff, buf: icons, index: 9 }),
+    fb.add({ x: 70, y: 132, w: 1, c: 0xffff, buf: font, index: str('hours') }),
+    fb.add({ x: 170, y: 132, w: 1, c: 0xffff, buf: font, index: str('mins') }),
+    fb.add({ x: 240 - 12, y: 212, c: 0xffff, w: 2, buf: font, index: str('start') }),
   ];
 
   const onTap = (e) => {

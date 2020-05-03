@@ -27,6 +27,7 @@ const start = () => {
     x: 0,
     y: 0,
     buf: icons,
+    w: 1,
     index: 3,
     c: activeColor,
   });
@@ -54,7 +55,7 @@ const start = () => {
     fb.set(
       pt,
       {
-        x: X - 8,
+        x: X,
         y: Y - 17,
       }
     );
