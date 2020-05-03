@@ -2,10 +2,12 @@
 const fb = require('fb');
 const st = require('Storage');
 const Watch = require('./src/ID205L');
+const SETTINGS = require('./src/globals');
 
 const big_font = st.readArrayBuffer('big_numbers.i');
 const font = st.readArrayBuffer('font1.i');
 const batt = st.readArrayBuffer('battery.i');
+const icons = st.readArrayBuffer('icons.i');
 
 const str = text => text.split('').map(char => char.charCodeAt(0) - 32).filter(i => i >= 0);
 
@@ -31,6 +33,23 @@ const suffix = (day) => {
 }
 
 const start = () => {
+  const ui = [
+    fb.add({
+      x: 5,
+      y: 0,
+      buf: icons,
+      index: [],
+      c: fb.color(0xFF, 0x61, 0x00),
+    }),
+    fb.add({
+      x: 24,
+      y: 8,
+      buf: font,
+      index: [],
+      c: 0xffff,
+    })
+  ]
+
   const time = fb.add({
     x: 45,
     y: 80,
@@ -74,7 +93,25 @@ const start = () => {
   };
 
   const update = () => {
+    const fill2 = a => a < 10 ? `0${a}` : a;
+
     const now = new Date();
+    if (SETTINGS.NEXT_TIMER) {
+      fb.set(ui[0], { index: 10 });
+      const diff = Math.max(0, (SETTINGS.NEXT_TIMER - new Date().getTime()) / 1000);
+      const ss = Math.floor(diff % 60);
+      const mm = Math.floor((diff / 60) % 60);
+      const hh = Math.floor(diff / 3600);
+
+      if (hh >= 1) {
+        fb.set(ui[1], { index: str(`${hh}:${fill2(mm)}`) });
+      } else {
+        fb.set(ui[1], { index: str(`${mm}:${fill2(ss)}`) });
+      }
+    } else {
+      fb.set(ui[0], { index: [] });
+      fb.set(ui[1], { index: [] });
+    }
     const h = now.getHours();
     const m = now.getMinutes();
     const d = now.getDate();
@@ -100,6 +137,7 @@ const start = () => {
 
   return {
     onStop: () => {
+      ui.forEach(u => fb.remove(u));
       clearInterval(int);
       fb.remove(time);
       fb.remove(date);

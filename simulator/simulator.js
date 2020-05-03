@@ -210,26 +210,36 @@ setTimeout(() => {
     touchWatch.cb();
   }
 
+  const btn1CLick = () => {
+    watches['16rising'].cb(); // button press
+    watches['16falling'].cb(); // button press
+  }
+  const swipe = (dir) => {
+    touch.reply = [128, 0, 120, 120, 0, 0, 0, 0, 0, 0, dir * 2];
+    touchWatch.cb();
+  }
+
+  document.querySelector("#btn1").onclick = btn1CLick;
+  document.querySelector('#swipeup').onclick = () => swipe(4);
+  document.querySelector('#swipeleft').onclick = () => swipe(5);
+  document.querySelector('#swipedown').onclick = () => swipe(6);
+  document.querySelector('#swiperight').onclick = () => swipe(7);
+
   document.body.onkeypress = ({ key }) => {
     if (key === 'q') {
-      watches['16rising'].cb(); // button press
-      watches['16falling'].cb(); // button press
+      btn1CLick();
     }
     if (key === 'w') {
-      touch.reply = [128, 0, 120, 120, 0, 0, 0, 0, 0, 0, 4 * 2];
-      touchWatch.cb();
+      swipe(4);
     }
     if (key === 'a') {
-      touch.reply = [128, 0, 120, 120, 0, 0, 0, 0, 0, 0, 5 * 2];
-      touchWatch.cb();
+      swipe(5);
     }
     if (key === 's') {
-      touch.reply = [128, 0, 120, 120, 0, 0, 0, 0, 0, 0, 6 * 2];
-      touchWatch.cb();
+      swipe(6);
     }
     if (key === 'd') {
-      touch.reply = [128, 0, 120, 120, 0, 0, 0, 0, 0, 0, 7 * 2];
-      touchWatch.cb();
+      swipe(7)
     }
   }
 }, 1000);

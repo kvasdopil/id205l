@@ -6,7 +6,18 @@
 </head>
 
 <body>
-  <canvas id="offscreen" width="240" height="240"></canvas>
+  <div style="display:flex; align-items: flex-start;">
+    <div style="display: flex; flex-direction: column; width: 285px;">
+      <button id="swipeup">Swipe up</button>
+      <div style="display: flex">
+        <button id="swipeleft">L</button>
+        <canvas id="offscreen" width="240" height="240"></canvas>
+        <button id="swiperight">R</button>
+      </div>
+      <button id="swipedown">Swipe down</button>
+    </div>
+    <button id="btn1" style="margin: 130px 20px 20px 20px">BTN1</button>
+  </div>
   <script>
     window.initImages();
     require('./src/index');
