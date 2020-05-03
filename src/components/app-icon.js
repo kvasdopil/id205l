@@ -17,7 +17,7 @@ module.exports = (props) => {
       }),
       fb.add({
         x: 120,
-        y: 160,
+        y: 180,
         w: 1,
         c: 0xffff,
         buf: font,
