@@ -1,3 +1,92 @@
+const kerntable = `A G -18
+A T -64
+A V -88
+A W -40
+A Y -35
+C O -15
+D A -48
+K A 24
+K O -29
+L T -25
+L V -109
+O W -24
+R Y -36
+T A -64
+T O -40
+V A -88
+V a -32
+V c -68
+V e -68
+V o -68
+W A -40
+W c -54
+W e -54
+W o -54
+Y A -29
+Y c -114
+Y e -114
+Y o -114
+c V -68
+c W -54
+c Y -114
+c o -11
+e V -68
+e W -54
+e Y -114
+e w -25
+o V -68
+o W -54
+o Y -114
+o v -21
+o w -21
+o y -16
+r o -16
+v a -38
+v d -19
+v e -34
+v o -21
+v , -117
+v . -117
+w e -25
+w o -21
+w , -93
+w . -93
+y e -23
+y o -22
+y , -117
+y . -117
+/ \\ -127
+/ \\ 74
+\\ \\ -127
+n d -50
+e r 50
+e l 50
+v e -50
+e v -50
+t o -50
+r a -50
+r e -50
+V a -127
+L e -100
+a r 50
+s t -60
+t a -80
+t e -100
+u r 50
+r s -50
+n s -60
+b y -50
+4 5 -60`.trim()
+  .split('\n')
+  .map(line => line.trim().split(' '))
+  .reduce((res, [a, b, val]) => {
+    const ca = a.charCodeAt(0) - 32;
+    const cb = b.charCodeAt(0) - 32;
+    if (!res[ca]) res[ca] = {};
+    res[ca][cb] = Math.round(parseInt(val) / 80);
+    return res;
+  }, {});
+
 function get_offset(buf, index) {
   index = Math.floor(index);
   let pt = 0;
@@ -14,12 +103,17 @@ function get_offset(buf, index) {
 }
 
 function calc_width(buf, indexes) {
-  let result = -2;
+  let result = 0;
+  let prevIndex = -1;
   for (ind of indexes) {
     if (ind !== ind) continue;
+    let kern = 0;
+    if (kerntable[prevIndex]) {
+      kern = kerntable[prevIndex][ind] || 0;
+    }
     const [pt] = get_offset(buf, ind);
     const w = buf[pt + 1];
-    result += 2 + w;
+    result += kern + w;
   }
   return Math.max(0, result);
 }
@@ -136,8 +230,15 @@ const fb = {
       if (p.w == 2) { // right
         x -= calc_width(p.buf, indexes);
       }
+      let prevIndex = -1;
       for (ind of indexes) {
-        x += blit(ctx, x, p.y, p.buf, ind, p.c) + 2;
+        let kern = 0;
+        if (kerntable[prevIndex]) {
+          kern = Math.round(kerntable[prevIndex][ind] / 80) || 0;
+        }
+        x += kern;
+        x += blit(ctx, x, p.y, p.buf, ind, p.c);
+        prevIndex = ind;
       }
     });
     fbChanged = false;
