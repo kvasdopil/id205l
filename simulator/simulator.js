@@ -1,78 +1,52 @@
-const kerntable = `A T -1
-A V -1
-D A -1
-L V -1
-T A -1
-V A -1
-V c -1
-V e -1
-V o -1
-W c -1
-W e -1
-W o -1
-Y c -1
-Y e -1
-Y o -1
-c V -1
-c W -1
-c Y -1
-e V -1
-e W -1
-e Y -1
-o V -1
-o W -1
-o Y -1
-v , -1
-v . -1
-w , -1
-w . -1
-y , -1
-y . -1
-/ \\ -2
-/ \\ 1
-\\ \\ -2
-n d -1
-e r 1
-e l 1
-v e -1
-e v -1
-t o -1
-r a -1
-r e -1
-V a -2
-L e -1
-a r 1
-s t -1
-t a -1
-t e -1
-u r 1
-r s -1
-n s -1
-b y -1
-4 5 -1`.trim()
-  .split('\n')
-  .map(line => line.trim().split(' '))
-  .reduce((res, [a, b, val]) => {
-    const ca = a.charCodeAt(0) - 32;
-    const cb = b.charCodeAt(0) - 32;
-    if (!res[ca]) res[ca] = {};
-    res[ca][cb] = parseInt(val);
-    return res;
-  }, {});
-
 function get_offset(buf, index) {
   index = Math.floor(index);
   let pt = 0;
   let len = 0;
   while (true) {
     len = (buf[pt++] << 8) + buf[pt++];
-    if (index <= 0) {
+    if (index <= 0 && buf[pt] === 1) {
       break;
     }
+    if (buf[pt] == 1) {
+      index--;
+    }
     pt += len;
-    index--;
   }
   return [pt, len];
+}
+
+function kv(v) {
+  if (v === 0) return -2;
+  if (v === 1) return -1;
+  if (v === 2) return 1;
+  if (v === 3) return 2;
+  return 0;
+}
+
+function getKern(buf, a, b) {
+  if (a < 0) {
+    return 0;
+  }
+  const len = (buf[0] << 8) + buf[1];
+  if (buf.length < 3) return 0;
+  if (buf[2] != 10) return 0;
+  let pt = 3;
+  const oa = a;
+  const ob = b;
+  a *= 2;
+  b *= 2;
+  while (pt + 1 < len) {
+    const aa = buf[pt];
+    const bb = buf[pt + 1];
+    if ((a === (aa & 0b11111110)) && (b === (bb & 0b11111110))) {
+      const res = ((aa & 1) << 1 + (bb & 1));
+      let rr = kv(res) + 1;
+      console.log(a, b, rr);
+      return rr;
+    }
+    pt += 2;
+  }
+  return 0;
 }
 
 function calc_width(buf, indexes) {
@@ -80,13 +54,10 @@ function calc_width(buf, indexes) {
   let prevIndex = -1;
   for (ind of indexes) {
     if (ind !== ind) continue;
-    let kern = 0;
-    if (kerntable[prevIndex]) {
-      kern = kerntable[prevIndex][ind] || 0;
-    }
     const [pt] = get_offset(buf, ind);
     const w = buf[pt + 1];
-    result += kern + w;
+    result += getKern(buf, prevIndex, ind) + w;
+    prevIndex = ind;
   }
   return Math.max(0, result);
 }
@@ -205,11 +176,7 @@ const fb = {
       }
       let prevIndex = -1;
       for (ind of indexes) {
-        let kern = 0;
-        if (kerntable[prevIndex]) {
-          kern = kerntable[prevIndex][ind] || 0;
-        }
-        x += kern;
+        x += getKern(p.buf, prevIndex, ind);
         x += blit(ctx, x, p.y, p.buf, ind, p.c);
         prevIndex = ind;
       }

@@ -19,9 +19,11 @@ const readKerntable = (file) => {
   const result = []
   for (ca in kerntable) {
     for (cb in kerntable[ca]) {
-      const val = 2 + kerntable[ca][cb];
-      const a = (ca << 1) + (val >> 1 & 0b10);
-      const b = (cb << 1) + (val & 0b01);
+      const v = kerntable[ca][cb];
+      if (v === 0) continue;
+      const val = v < 0 ? v + 2 : v + 1;
+      const a = (ca << 1) + ((val >> 1) & 1);
+      const b = (cb << 1) + (val & 1);
       result.push(a);
       result.push(b);
     }
@@ -159,7 +161,7 @@ async function main(argv) {
   const kerntable = path.dirname(input) + '/' + path.basename(input, ".png") + '.kerntable.txt';
   if (fs.existsSync(kerntable)) {
     const kt = readKerntable(kerntable);
-    kt.unshift(10); // 10 = RLE-encoded data
+    kt.unshift(10); // 10 = kerntable
     const l = kt.length;
     kt.unshift(l & 0xff);
     kt.unshift((l >> 8) & 0xff);
