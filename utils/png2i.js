@@ -1,5 +1,34 @@
 const path = require('path');
 const PNG = require('png-js');
+const fs = require('fs');
+
+const readKerntable = (file) => {
+  const kerntable = fs.readFileSync(file)
+    .toString()
+    .trim()
+    .split('\n')
+    .map(line => line.trim().split(' '))
+    .reduce((res, [a, b, val]) => {
+      const ca = a.charCodeAt(0) - 32;
+      const cb = b.charCodeAt(0) - 32;
+      if (!res[ca]) res[ca] = {};
+      res[ca][cb] = parseInt(val);
+      return res;
+    }, {});
+
+  const result = []
+  for (ca in kerntable) {
+    for (cb in kerntable[ca]) {
+      const val = 2 + kerntable[ca][cb];
+      const a = (ca << 1) + (val >> 1 & 0b10);
+      const b = (cb << 1) + (val & 0b01);
+      result.push(a);
+      result.push(b);
+    }
+  }
+
+  return result;
+}
 
 const asPixels = (data, w, h) => {
   const result = new Uint32Array(w * h);
@@ -99,8 +128,9 @@ function encode(pixels, imgw, imgh, x1, y1, w, h) {
   const zipped = rle(result);
   zipped.unshift(w);
   zipped.unshift(1); // 1 - RLE-encoded data
-  zipped.unshift(zipped.length & 0xff);
-  zipped.unshift((zipped.length >> 8) & 0xff);
+  const l = zipped.length;
+  zipped.unshift(l & 0xff);
+  zipped.unshift((l >> 8) & 0xff);
   return zipped;
 }
 
@@ -126,7 +156,15 @@ async function main(argv) {
   const glyphs = findGlyphs(pixels, png.width, png.height);
 
   const encoded = glyphs.map(([x, y, w, h]) => encode(pixels, png.width, png.height, x, y, w, h));
-
+  const kerntable = path.dirname(input) + '/' + path.basename(input, ".png") + '.kerntable.txt';
+  if (fs.existsSync(kerntable)) {
+    const kt = readKerntable(kerntable);
+    kt.unshift(10); // 10 = RLE-encoded data
+    const l = kt.length;
+    kt.unshift(l & 0xff);
+    kt.unshift((l >> 8) & 0xff);
+    encoded.unshift(kt);
+  }
   print(encoded, path.basename(input, ".png") + '.i');
   return;
 }

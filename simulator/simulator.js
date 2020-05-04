@@ -1,89 +1,62 @@
-const kerntable = `A G -18
-A T -64
-A V -88
-A W -40
-A Y -35
-C O -15
-D A -48
-K A 24
-K O -29
-L T -25
-L V -109
-O W -24
-R Y -36
-T A -64
-T O -40
-V A -88
-V a -32
-V c -68
-V e -68
-V o -68
-W A -40
-W c -54
-W e -54
-W o -54
-Y A -29
-Y c -114
-Y e -114
-Y o -114
-c V -68
-c W -54
-c Y -114
-c o -11
-e V -68
-e W -54
-e Y -114
-e w -25
-o V -68
-o W -54
-o Y -114
-o v -21
-o w -21
-o y -16
-r o -16
-v a -38
-v d -19
-v e -34
-v o -21
-v , -117
-v . -117
-w e -25
-w o -21
-w , -93
-w . -93
-y e -23
-y o -22
-y , -117
-y . -117
-/ \\ -127
-/ \\ 74
-\\ \\ -127
-n d -50
-e r 50
-e l 50
-v e -50
-e v -50
-t o -50
-r a -50
-r e -50
-V a -127
-L e -100
-a r 50
-s t -60
-t a -80
-t e -100
-u r 50
-r s -50
-n s -60
-b y -50
-4 5 -60`.trim()
+const kerntable = `A T -1
+A V -1
+D A -1
+L V -1
+T A -1
+V A -1
+V c -1
+V e -1
+V o -1
+W c -1
+W e -1
+W o -1
+Y c -1
+Y e -1
+Y o -1
+c V -1
+c W -1
+c Y -1
+e V -1
+e W -1
+e Y -1
+o V -1
+o W -1
+o Y -1
+v , -1
+v . -1
+w , -1
+w . -1
+y , -1
+y . -1
+/ \\ -2
+/ \\ 1
+\\ \\ -2
+n d -1
+e r 1
+e l 1
+v e -1
+e v -1
+t o -1
+r a -1
+r e -1
+V a -2
+L e -1
+a r 1
+s t -1
+t a -1
+t e -1
+u r 1
+r s -1
+n s -1
+b y -1
+4 5 -1`.trim()
   .split('\n')
   .map(line => line.trim().split(' '))
   .reduce((res, [a, b, val]) => {
     const ca = a.charCodeAt(0) - 32;
     const cb = b.charCodeAt(0) - 32;
     if (!res[ca]) res[ca] = {};
-    res[ca][cb] = Math.round(parseInt(val) / 80);
+    res[ca][cb] = parseInt(val);
     return res;
   }, {});
 
@@ -234,7 +207,7 @@ const fb = {
       for (ind of indexes) {
         let kern = 0;
         if (kerntable[prevIndex]) {
-          kern = Math.round(kerntable[prevIndex][ind] / 80) || 0;
+          kern = kerntable[prevIndex][ind] || 0;
         }
         x += kern;
         x += blit(ctx, x, p.y, p.buf, ind, p.c);
