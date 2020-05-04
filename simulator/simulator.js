@@ -31,8 +31,6 @@ function getKern(buf, a, b) {
   if (buf.length < 3) return 0;
   if (buf[2] != 10) return 0;
   let pt = 3;
-  const oa = a;
-  const ob = b;
   a *= 2;
   b *= 2;
   while (pt + 1 < len) {
@@ -41,7 +39,6 @@ function getKern(buf, a, b) {
     if ((a === (aa & 0b11111110)) && (b === (bb & 0b11111110))) {
       const res = ((aa & 1) << 1 + (bb & 1));
       let rr = kv(res) + 1;
-      console.log(a, b, rr);
       return rr;
     }
     pt += 2;
@@ -56,7 +53,7 @@ function calc_width(buf, indexes) {
     if (ind !== ind) continue;
     const [pt] = get_offset(buf, ind);
     const w = buf[pt + 1];
-    result += getKern(buf, prevIndex, ind) + w;
+    result += 1 + getKern(buf, prevIndex, ind) + w;
     prevIndex = ind;
   }
   return Math.max(0, result);
@@ -178,6 +175,7 @@ const fb = {
       for (ind of indexes) {
         x += getKern(p.buf, prevIndex, ind);
         x += blit(ctx, x, p.y, p.buf, ind, p.c);
+        x += 1
         prevIndex = ind;
       }
     });
