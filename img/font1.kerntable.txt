@@ -38,7 +38,7 @@ t o -1
 r a -1
 r e -1
 V a -2
-L e -1
+L e -2
 s t -1
 t a -1
 t e -1
@@ -50,4 +50,5 @@ o n -1
 4 t -2
 m e -1
 T i -1
+T u -2
 h o -1
