@@ -38,7 +38,8 @@ function getKern(buf, a, b) {
     const bb = buf[pt + 1];
     if ((a === (aa & 0b11111110)) && (b === (bb & 0b11111110))) {
       const res = ((aa & 1) << 1 + (bb & 1));
-      let rr = kv(res) + 1;
+      let rr = kv(res);
+      console.log(buf[pt] >> 1, bb >> 1, rr);
       return rr;
     }
     pt += 2;

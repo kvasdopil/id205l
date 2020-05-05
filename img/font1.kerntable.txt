@@ -2,7 +2,7 @@ A T -1
 A V -1
 D A -1
 L V -1
-L e -2
+L e -1
 O v -2
 T A -1
 T i -1
@@ -45,6 +45,7 @@ r e -1
 r o -1
 r s -1
 s t -1
+s d -1
 t a -1
 t e -1
 t o -1
