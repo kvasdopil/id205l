@@ -16,7 +16,7 @@ const init = () => {
       y: 12,
       buf: font,
       c: 0xffff,
-      index: str("Free storage:"),
+      index: str("A quick brown fox jumps:"),
     }),
     fb.add({
       x: 12,
@@ -44,7 +44,7 @@ const init = () => {
       y: 86,
       buf: font,
       c: 0xffff,
-      index: str("Vars:"),
+      index: str("Over the lazy dog:"),
     }),
     fb.add({
       x: 12,
@@ -72,7 +72,8 @@ const init = () => {
   return {
     onStop: () => {
       ui.forEach(ctrl => fb.remove(ctrl));
-    }
+    },
+    sleep: false,
   }
 }
 

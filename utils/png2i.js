@@ -21,7 +21,7 @@ const readKerntable = (file) => {
     for (cb in kerntable[ca]) {
       const v = kerntable[ca][cb];
       if (v === 0) continue;
-      const val = v < 0 ? v + 2 : v + 1;
+      const val = v < 0 ? v + 3 : v + 2;
       const a = (ca << 1) + ((val >> 1) & 1);
       const b = (cb << 1) + (val & 1);
       result.push(a);
