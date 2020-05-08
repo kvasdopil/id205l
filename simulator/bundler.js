@@ -1,7 +1,7 @@
 const cp = require('child_process');
 const fs = require('fs');
 
-const images = cp.execSync("find ./img").toString().trim().split('\n').filter(name => /.i$/.test(name));
+const images = cp.execSync("find ./img").toString().trim().split('\n').filter(name => /.[if]$/.test(name));
 
 console.log(`window.initImages = () => {`);
 console.log('const s = require("Storage")');

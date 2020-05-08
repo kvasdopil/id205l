@@ -1,5 +1,6 @@
 #!/bin/sh
-echo "var s = require('Storage'); s.eraseAll();" > .images.js
-cat ./img/*.i >> ./temp/images.js
-yarn cli /temp/images.js
-rm -f /temp/images.js
+echo "var s = require('Storage'); s.eraseAll();" > ./build/images.js
+cat ./img/*.i >> ./build/images.js
+cat ./img/*.f >> ./build/images.js
+yarn cli ./build/images.js
+rm -f ./build/images.js
