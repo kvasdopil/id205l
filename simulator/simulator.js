@@ -106,6 +106,94 @@ function blit(ctx, X, Y, buf, index, tint) {
   return w;
 }
 
+/// ====== fb ======
+
+function renderRect(p) {
+  if (p.w > 0 && p.h > 0) {
+    ctx.fillStyle = `RGB(${p.c[0]},${p.c[1]},${p.c[2]})`;
+    ctx.fillRect(p.x, p.y, p.w, p.h);
+  }
+}
+
+function findGlyph(buf, id) {
+  let pt = 0;
+  while (pt < buf.length) {
+    const a = buf[pt++];
+    const b = buf[pt++];
+    const len = (a << 8) + b;
+    const type = buf[pt];
+    const index = buf[pt + 1];
+    if (type !== 11) {
+      return null;
+    }
+    if (id === index) {
+      return pt;
+    }
+    pt += len;
+  }
+}
+
+function blendPixel(x, y, tint, alpha) {
+  const br = (alpha << 2) + ((alpha >> 4) & 0b11); // brightness
+  const nbr = 0xff - br; // negative brightness
+  const [or, og, ob] = ctx.getImageData(x, y, 1, 1).data; // original color
+  const r = ((or * nbr) + (br * tint[0])) >> 8;
+  const g = ((og * nbr) + (br * tint[1])) >> 8;
+  const b = ((ob * nbr) + (br * tint[2])) >> 8;
+  ctx.fillStyle = `RGB(${r},${g},${b})`
+  ctx.fillRect(x, y, 1, 1);
+}
+
+function renderGlyph(p, index, X, Y) {
+  let pt = findGlyph(p.buf, index);
+  console.log('glyph', ind, pt);
+  pt++; // type
+  pt++; // id
+  const w = p.buf[pt++]; // width 
+  const h = p.buf[pt++]; // height
+  const xoff = p.buf[pt++]; // x offset
+  const yoff = p.buf[pt++]; // y offset
+  const xadv = p.buf[pt++]; // x advance
+  console.log('xoff/yoff', xoff, yoff)
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const brightness = p.buf[pt++];
+      blendPixel(X + xoff + x, Y + y + yoff, p.c, brightness);
+    }
+  }
+  return xadv;
+  // TODO: process kerning pairs
+}
+
+function renderFont(p) {
+  console.log('rendering font', p.index)
+  let indexes = (typeof p.index === 'number') ? [p.index] : p.index;
+  indexes = (typeof indexes === 'string') ? indexes.split('').map(i => i.charCodeAt(0)) : indexes;
+  let xpos = p.x;
+  let ypos = p.y;
+  for (ind of indexes) {
+    xpos += renderGlyph(p, ind, xpos, ypos);
+  }
+}
+
+function renderImage(p) {
+  const indexes = typeof p.index === 'number' ? [p.index] : p.index;
+  let x = p.x;
+  if (p.w == 1) { // centered
+    x -= Math.round(calc_width(p.buf, indexes) / 2);
+  }
+  if (p.w == 2) { // right
+    x -= calc_width(p.buf, indexes);
+  }
+  let prevIndex = -1;
+  for (ind of indexes) {
+    x += getKern(p.buf, prevIndex, ind);
+    x += blit(ctx, x, p.y, p.buf, ind, p.c);
+    x += 1
+    prevIndex = ind;
+  }
+}
+
 let fbPrimitives = [];
 let ctx;
 let fbChanged = false;
@@ -157,28 +245,14 @@ const fb = {
     ctx.fillRect(0, 0, 240, 240);
     fbPrimitives.forEach(p => {
       if (!p.buf) {
-        if (p.w > 0 && p.h > 0) {
-          ctx.fillStyle = `RGB(${p.c[0]},${p.c[1]},${p.c[2]})`;
-          ctx.fillRect(p.x, p.y, p.w, p.h);
-        }
-        return;
+        return renderRect(p);
       }
 
-      const indexes = typeof p.index === 'number' ? [p.index] : p.index;
-      let x = p.x;
-      if (p.w == 1) { // centered
-        x -= Math.round(calc_width(p.buf, indexes) / 2);
+      if (p.buf[2] == 11) {
+        return renderFont(p);
       }
-      if (p.w == 2) { // right
-        x -= calc_width(p.buf, indexes);
-      }
-      let prevIndex = -1;
-      for (ind of indexes) {
-        x += getKern(p.buf, prevIndex, ind);
-        x += blit(ctx, x, p.y, p.buf, ind, p.c);
-        x += 1
-        prevIndex = ind;
-      }
+
+      renderImage(p);
     });
     fbChanged = false;
   },

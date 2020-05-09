@@ -5,7 +5,7 @@ const Watch = require('./src/ID205L');
 
 const big = st.readArrayBuffer('big_numbers.i');
 const icons = st.readArrayBuffer('icons.i');
-const font = st.readArrayBuffer('font1.i');
+const font = st.readArrayBuffer('metropolis-medium.18.f');
 
 const str = text => text.split('').map(char => char.charCodeAt(0) - 32).filter(i => i >= 0);
 
@@ -27,9 +27,9 @@ const start = (navigate) => {
     fb.add({ x: 170, y: 30, w: 1, c: 0xffff, buf: icons, index: 8 }),
     fb.add({ x: 70, y: 155, w: 1, c: 0xffff, buf: icons, index: 9 }),
     fb.add({ x: 170, y: 155, w: 1, c: 0xffff, buf: icons, index: 9 }),
-    fb.add({ x: 70, y: 132, w: 1, c: 0xffff, buf: font, index: str('hours') }),
-    fb.add({ x: 170, y: 132, w: 1, c: 0xffff, buf: font, index: str('mins') }),
-    fb.add({ x: 240 - 12, y: 212, c: 0xffff, w: 2, buf: font, index: str('start') }),
+    fb.add({ x: 70, y: 132, w: 1, c: 0xffff, buf: font, index: 'hours' }),
+    fb.add({ x: 170, y: 132, w: 1, c: 0xffff, buf: font, index: 'mins' }),
+    fb.add({ x: 240 - 12, y: 212, c: 0xffff, w: 2, buf: font, index: 'start' }),
   ];
 
   const onTap = (e) => {

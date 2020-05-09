@@ -3,7 +3,7 @@ const st = require('Storage');
 const SETTINGS = require('./src/globals');
 
 const big = st.readArrayBuffer('big_numbers.i');
-const font = st.readArrayBuffer('font1.i');
+const font = st.readArrayBuffer('metropolis-medium.18.f');
 
 const str = text => text.split('').map(char => char.charCodeAt(0) - 32).filter(i => i >= 0);
 
@@ -12,7 +12,7 @@ module.exports = (navigate) => {
 
   const ui = [
     fb.add({ x: 120, y: 70, w: 1, c: COLOR_BR, buf: big, index: [] }),
-    fb.add({ x: 120, y: 180, w: 1, c: 0xffff, buf: font, index: str('stop') }),
+    fb.add({ x: 120, y: 180, w: 1, c: 0xffff, buf: font, index: 'stop' }),
   ];
 
   const render = () => {

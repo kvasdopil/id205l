@@ -5,7 +5,7 @@ const Watch = require('./src/ID205L');
 const SETTINGS = require('./src/globals');
 
 const big_font = st.readArrayBuffer('big_numbers.i');
-const font = st.readArrayBuffer('font1.i');
+const font = st.readArrayBuffer('metropolis-medium.18.f');
 const batt = st.readArrayBuffer('battery.i');
 const icons = st.readArrayBuffer('icons.i');
 
@@ -130,7 +130,7 @@ const start = () => {
       ]
     });
     fb.set(date, {
-      index: str(`${dows[dow]}, ${d}${suffix(d)}`)
+      index: `${dows[dow]}, ${d}${suffix(d)}`
     });
 
     renderBattery();

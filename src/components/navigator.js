@@ -5,7 +5,6 @@ module.exports = (screens) => () => {
 
   let navigate;
   navigate = (n) => {
-    console.log('navigate', n);
     if (n === index || !screens[n]) return;
     if (page) page.onStop();
     index = n;
