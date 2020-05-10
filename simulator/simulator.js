@@ -58,9 +58,6 @@ function blendPixel(x, y, tint, alpha) {
 }
 
 function renderGlyph(p, index, prevIndex, X, Y) {
-  if (p) {
-    console.log(p);
-  }
   let pt = findGlyph(p.buf, index);
   const type = p.buf[pt++]; // type
   if (type !== 11) {
