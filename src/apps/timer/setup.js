@@ -7,8 +7,6 @@ const big = st.readArrayBuffer('big_numbers.i');
 const icons = st.readArrayBuffer('icons.i');
 const font = st.readArrayBuffer('metropolis-medium.18.f');
 
-const str = text => text.split('').map(char => char.charCodeAt(0) - 32).filter(i => i >= 0);
-
 const start = (navigate) => {
   if (SETTINGS.NEXT_TIMER) {
     setTimeout(() => navigate(2), 1);

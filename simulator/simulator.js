@@ -133,9 +133,29 @@ function findGlyph(buf, id) {
   }
 }
 
+function calcGlyphWidth(buf, index, prevIndex) {
+  let pt = findGlyph(buf, index);
+  const type = buf[pt]; // type
+  if (type !== 11) {
+    console.log('wrong type', type);
+    return 0;
+  }
+  let xadv = buf[pt + 6];
+  const numKerns = buf[pt + 7];
+  pt += 8;
+  for (let k = 0; k < numKerns; k++) {
+    const prev = buf[pt++];
+    const off = buf[pt++];
+    if (prev === prevIndex) {
+      xadv += off;
+    }
+  }
+  return xadv;
+}
+
 function blendPixel(x, y, tint, alpha) {
   const br = (alpha << 2) + ((alpha >> 4) & 0b11); // brightness
-  const nbr = 0xff - br; // negative brightness
+  const nbr = 0xff - br; // inverse brightness
   const [or, og, ob] = ctx.getImageData(x, y, 1, 1).data; // original color
   const r = ((or * nbr) + (br * tint[0])) >> 8;
   const g = ((og * nbr) + (br * tint[1])) >> 8;
@@ -144,17 +164,28 @@ function blendPixel(x, y, tint, alpha) {
   ctx.fillRect(x, y, 1, 1);
 }
 
-function renderGlyph(p, index, X, Y) {
+function renderGlyph(p, index, prevIndex, X, Y) {
   let pt = findGlyph(p.buf, index);
-  console.log('glyph', ind, pt);
-  pt++; // type
+  const type = p.buf[pt++]; // type
+  if (type !== 11) {
+    console.log('wrong type', type);
+    return 0;
+  }
   pt++; // id
   const w = p.buf[pt++]; // width 
   const h = p.buf[pt++]; // height
-  const xoff = p.buf[pt++]; // x offset
+  let xoff = p.buf[pt++]; // x offset
   const yoff = p.buf[pt++]; // y offset
   const xadv = p.buf[pt++]; // x advance
-  console.log('xoff/yoff', xoff, yoff)
+  const numKerns = p.buf[pt++]; // number of kernings
+  for (let k = 0; k < numKerns; k++) {
+    const prev = p.buf[pt++];
+    const off = p.buf[pt++];
+    if (prev === prevIndex) {
+      //      console.log(String.fromCharCode(prev), String.fromCharCode(index), off);
+      xoff += off;
+    }
+  }
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const brightness = p.buf[pt++];
@@ -162,18 +193,39 @@ function renderGlyph(p, index, X, Y) {
     }
   }
   return xadv;
-  // TODO: process kerning pairs
 }
 
 function renderFont(p) {
-  console.log('rendering font', p.index)
   let indexes = (typeof p.index === 'number') ? [p.index] : p.index;
   indexes = (typeof indexes === 'string') ? indexes.split('').map(i => i.charCodeAt(0)) : indexes;
   let xpos = p.x;
-  let ypos = p.y;
-  for (ind of indexes) {
-    xpos += renderGlyph(p, ind, xpos, ypos);
+  const ypos = p.y;
+
+  if (p.w !== 0) {
+    let w = calcFontWidth(p.buf, indexes);
+    if (p.w === 1) {
+      xpos -= Math.floor(w / 2);
+    }
+    if (p.w === 2) {
+      xpos -= w;
+    }
   }
+
+  let prevIndex = 0;
+  for (ind of indexes) {
+    xpos += renderGlyph(p, ind, prevIndex, xpos, ypos);
+    prevIndex = ind;
+  }
+}
+
+function calcFontWidth(buf, indexes) {
+  let result = 0;
+  let prevIndex = 0;
+  for (ind of indexes) {
+    result += calcGlyphWidth(buf, ind, prevIndex);
+    prevIndex = ind;
+  }
+  return result;
 }
 
 function renderImage(p) {

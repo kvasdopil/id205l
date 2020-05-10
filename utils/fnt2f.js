@@ -70,18 +70,22 @@ async function main(argv) {
     result.push(char.xoffset);
     result.push(char.yoffset);
     result.push(char.xadvance);
+
+    // add kernings
+    const kernings = data.filter(({ type, second }) => type === 'kerning' && second === char.id);
+    result.push(kernings.length);
+    kernings.forEach(kern => {
+      result.push(kern.first);
+      result.push(kern.amount);
+    });
+
+    // add pixel data
     for (let y = 0; y < char.height; y++) {
       for (let x = 0; x < char.width; x++) {
         const rgba = pixels[char.y + y][char.x + x];
         result.push((rgba >> 10) & 0b111111); // only use blue channel
       }
     }
-
-    // add kernings
-    data.filter(({ type, second }) => type === 'kerning' && second === char.id).forEach(kern => {
-      result.push(kern.first);
-      result.push(kern.amount);
-    });
 
     const length = result.length;
     result.unshift(length & 0xff);
