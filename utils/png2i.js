@@ -2,36 +2,6 @@ const path = require('path');
 const PNG = require('png-js');
 const fs = require('fs');
 
-const readKerntable = (file) => {
-  const kerntable = fs.readFileSync(file)
-    .toString()
-    .trim()
-    .split('\n')
-    .map(line => line.trim().split(' '))
-    .reduce((res, [a, b, val]) => {
-      const ca = a.charCodeAt(0) - 32;
-      const cb = b.charCodeAt(0) - 32;
-      if (!res[ca]) res[ca] = {};
-      res[ca][cb] = parseInt(val);
-      return res;
-    }, {});
-
-  const result = []
-  for (ca in kerntable) {
-    for (cb in kerntable[ca]) {
-      const v = kerntable[ca][cb];
-      if (v === 0) continue;
-      const val = v < 0 ? v + 3 : v + 2;
-      const a = (ca << 1) + ((val >> 1) & 1);
-      const b = (cb << 1) + (val & 1);
-      result.push(a);
-      result.push(b);
-    }
-  }
-
-  return result;
-}
-
 const asPixels = (data, w, h) => {
   const result = new Uint32Array(w * h);
   for (let i = 0; i < w * h; i++) {
@@ -118,22 +88,31 @@ function findGlyphs(pixels, w, h) {
   return result;
 }
 
-function encode(pixels, imgw, imgh, x1, y1, w, h) {
+function encode(pixels, id, imgw, imgh, x1, y1, w, h) {
   const result = [];
+
+  result.push(11); // type == font data
+  result.push(id); // glyph id
+  result.push(w); // width
+  result.push(h); // height
+  result.push(0); // x offset
+  result.push(0); // y offset
+  result.push(w); // x advance
+  result.push(0); // number of kerning pairs
+
+  const pixelData = [];
   for (let y = y1; y < y1 + h; y++) {
     for (let x = x1; x < x1 + w; x++) {
       const pixel = (pixels[x + y * imgw] >> 8) & 0xff;
-      result.push(pixel >> 2); // 6-bit
+      pixelData.push(pixel >> 2); // 6-bit
     }
   }
+  rle(pixelData).forEach(p => result.push(p));
 
-  const zipped = rle(result);
-  zipped.unshift(w);
-  zipped.unshift(1); // 1 - RLE-encoded data
-  const l = zipped.length;
-  zipped.unshift(l & 0xff);
-  zipped.unshift((l >> 8) & 0xff);
-  return zipped;
+  const length = result.length;
+  result.unshift(length & 0xff);
+  result.unshift((length >> 8) & 0xff);
+  return result;
 }
 
 async function main(argv) {
@@ -157,16 +136,7 @@ async function main(argv) {
   const pixels = asPixels(data, png.width, png.height); // as 32-bit RGBA data
   const glyphs = findGlyphs(pixels, png.width, png.height);
 
-  const encoded = glyphs.map(([x, y, w, h]) => encode(pixels, png.width, png.height, x, y, w, h));
-  const kerntable = path.dirname(input) + '/' + path.basename(input, ".png") + '.kerntable.txt';
-  if (fs.existsSync(kerntable)) {
-    const kt = readKerntable(kerntable);
-    kt.unshift(10); // 10 = kerntable
-    const l = kt.length;
-    kt.unshift(l & 0xff);
-    kt.unshift((l >> 8) & 0xff);
-    encoded.unshift(kt);
-  }
+  const encoded = glyphs.map(([x, y, w, h], i) => encode(pixels, i, png.width, png.height, x, y, w, h));
   print(encoded, path.basename(input, ".png") + '.i');
   return;
 }
@@ -207,39 +177,4 @@ function print(glyphs, filename) {
     offset += chunk.length;
   });
   console.log(`console.log("Upload ${filename} done", s.getFree(), "memory left");`);
-}
-
-function i2s(r) {
-  return String(r).padStart(4, ' ');
-}
-
-function dump(pixels, w) {
-  const data = pixels.map(i => i);
-  const rows = [];
-  while (data.length) {
-    rows.push(data.splice(0, w - 1));
-  };
-
-  for (let y = 0; y < rows.length; y++) {
-    const row = rows[y];
-
-    const zipped = [];
-    zipped.push(i2s(`=${row[0]}`));
-
-    for (let i = 1; i < row.length; i++) {
-      const diffL = row[i] - row[i - 1];
-      const diffU = y > 0 ? row[i] - rows[y - 1][i] : 0xff;
-      if (diffU === 0) {
-        zipped.push('   ^');
-        continue;
-      }
-      if (diffL === 0) {
-        zipped.push('   <');
-        continue;
-      }
-      zipped.push(i2s(Math.min(Math.abs(diffU), Math.abs(diffL))));
-    }
-
-    console.log(zipped.join(''));
-  }
 }

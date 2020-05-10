@@ -1,79 +1,3 @@
-function get_offset(buf, index) {
-  index = Math.floor(index);
-  let pt = 0;
-  let len = 0;
-  while (true) {
-    len = (buf[pt++] << 8) + buf[pt++];
-    if (index <= 0 && buf[pt] === 1) {
-      break;
-    }
-    if (buf[pt] == 1) {
-      index--;
-    }
-    pt += len;
-  }
-  return [pt, len];
-}
-
-function calc_width(buf, indexes) {
-  let result = 0;
-  let prevIndex = -1;
-  for (ind of indexes) {
-    if (ind !== ind) continue;
-    const [pt] = get_offset(buf, ind);
-    const w = buf[pt + 1];
-    result += 1 + w;
-    prevIndex = ind;
-  }
-  return Math.max(0, result);
-}
-
-function blit(ctx, X, Y, buf, index, tint) {
-  if (index != index) {
-    return;
-  }
-  let [pt, len] = get_offset(buf, index);
-  const type = buf[pt++];
-  const w = buf[pt++];
-  if (type !== 1) {
-    console.error('Buf type != 1', type);
-    return;
-  }
-
-  let x = 0;
-  let y = 0;
-  let br = 0;
-  let rle = 0;
-  len = pt + len - 1;
-  while (pt < len) {
-    if (rle == 0) {
-      br = buf[pt++];
-      if (br & 0b10000000) {
-        br &= 0b111111;
-        rle = buf[pt++] - 1;
-      }
-    } else {
-      rle--;
-    }
-    const bb = (br << 2) + ((br >> 4) & 0b11);
-    const nbb = 0xff - bb;
-    const [or, og, ob] = ctx.getImageData(X + x, Y + y, 1, 1).data;
-    const r = ((or * nbb) + (bb * tint[0])) >> 8;
-    const g = ((og * nbb) + (bb * tint[1])) >> 8;
-    const b = ((ob * nbb) + (bb * tint[2])) >> 8;
-    ctx.fillStyle = `RGB(${r},${g},${b})`
-    ctx.fillRect(X + x, Y + y, 1, 1);
-
-    x++;
-    if (x === w) {
-      x = 0;
-      y++;
-    }
-  }
-
-  return w;
-}
-
 /// ====== fb ======
 
 function renderRect(p) {
@@ -99,6 +23,7 @@ function findGlyph(buf, id) {
     }
     pt += len;
   }
+  return null;
 }
 
 function calcGlyphWidth(buf, index, prevIndex) {
@@ -133,6 +58,9 @@ function blendPixel(x, y, tint, alpha) {
 }
 
 function renderGlyph(p, index, prevIndex, X, Y) {
+  if (p) {
+    console.log(p);
+  }
   let pt = findGlyph(p.buf, index);
   const type = p.buf[pt++]; // type
   if (type !== 11) {
@@ -154,9 +82,19 @@ function renderGlyph(p, index, prevIndex, X, Y) {
       xoff += off;
     }
   }
+  let brightness = 0;
+  let rle = 0;
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      const brightness = p.buf[pt++];
+      if (rle == 0) {
+        brightness = p.buf[pt++];
+        if (brightness & 0b10000000) {
+          brightness &= 0b111111;
+          rle = p.buf[pt++] - 1;
+        }
+      } else {
+        rle--;
+      }
       blendPixel(X + xoff + x, Y + y + yoff, p.c, brightness);
     }
   }
@@ -194,23 +132,6 @@ function calcFontWidth(buf, indexes) {
     prevIndex = ind;
   }
   return result;
-}
-
-function renderImage(p) {
-  const indexes = typeof p.index === 'number' ? [p.index] : p.index;
-  let x = p.x;
-  if (p.w == 1) { // centered
-    x -= Math.round(calc_width(p.buf, indexes) / 2);
-  }
-  if (p.w == 2) { // right
-    x -= calc_width(p.buf, indexes);
-  }
-  let prevIndex = -1;
-  for (ind of indexes) {
-    x += blit(ctx, x, p.y, p.buf, ind, p.c);
-    x += 1
-    prevIndex = ind;
-  }
 }
 
 let fbPrimitives = [];
@@ -270,8 +191,6 @@ const fb = {
       if (p.buf[2] == 11) {
         return renderFont(p);
       }
-
-      renderImage(p);
     });
     fbChanged = false;
   },

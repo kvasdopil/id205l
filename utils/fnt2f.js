@@ -26,6 +26,28 @@ function print(glyphs, filename) {
   console.log(`console.log("Upload ${filename} done", s.getFree(), "memory left");`);
 }
 
+function rle(content) {
+  const data = content.map(i => i);
+  result = [];
+  while (data.length) {
+    const val = data.shift();
+    let length = 0;
+    if (data[0] === val) {
+      // start rle
+      length = 1;
+      while (data[0] === val && length < 256 && data.length) {
+        length++;
+        data.shift();
+      }
+      result.push(val + 0b10000000);
+      result.push(length);
+    } else {
+      result.push(val);
+    }
+  }
+  return result;
+}
+
 async function main(argv) {
   argv.shift();
   argv.shift();
@@ -80,12 +102,16 @@ async function main(argv) {
     });
 
     // add pixel data
+    const pixelData = [];
     for (let y = 0; y < char.height; y++) {
       for (let x = 0; x < char.width; x++) {
         const rgba = pixels[char.y + y][char.x + x];
-        result.push((rgba >> 10) & 0b111111); // only use blue channel
+        pixelData.push((rgba >> 10) & 0b111111); // only use blue channel
       }
     }
+
+    // compress pixel data
+    rle(pixelData).forEach(p => result.push(p));
 
     const length = result.length;
     result.unshift(length & 0xff);
