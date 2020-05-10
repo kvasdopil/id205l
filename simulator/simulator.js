@@ -15,38 +15,6 @@ function get_offset(buf, index) {
   return [pt, len];
 }
 
-function kv(v) {
-  if (v === 0) return -3;
-  if (v === 1) return -2;
-  if (v === 2) return -1;
-  if (v === 3) return 1;
-  return 0;
-}
-
-function getKern(buf, a, b) {
-  if (a < 0) {
-    return 0;
-  }
-  const len = (buf[0] << 8) + buf[1];
-  if (buf.length < 3) return 0;
-  if (buf[2] != 10) return 0;
-  let pt = 3;
-  a *= 2;
-  b *= 2;
-  while (pt + 1 < len) {
-    const aa = buf[pt];
-    const bb = buf[pt + 1];
-    if ((a === (aa & 0b11111110)) && (b === (bb & 0b11111110))) {
-      const res = ((aa & 1) << 1 + (bb & 1));
-      let rr = kv(res);
-      console.log(buf[pt] >> 1, bb >> 1, rr);
-      return rr;
-    }
-    pt += 2;
-  }
-  return 0;
-}
-
 function calc_width(buf, indexes) {
   let result = 0;
   let prevIndex = -1;
@@ -54,7 +22,7 @@ function calc_width(buf, indexes) {
     if (ind !== ind) continue;
     const [pt] = get_offset(buf, ind);
     const w = buf[pt + 1];
-    result += 1 + getKern(buf, prevIndex, ind) + w;
+    result += 1 + w;
     prevIndex = ind;
   }
   return Math.max(0, result);
@@ -239,7 +207,6 @@ function renderImage(p) {
   }
   let prevIndex = -1;
   for (ind of indexes) {
-    x += getKern(p.buf, prevIndex, ind);
     x += blit(ctx, x, p.y, p.buf, ind, p.c);
     x += 1
     prevIndex = ind;
