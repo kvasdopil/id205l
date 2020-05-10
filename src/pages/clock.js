@@ -4,12 +4,10 @@ const st = require('Storage');
 const Watch = require('./src/ID205L');
 const SETTINGS = require('./src/globals');
 
-const big_font = st.readArrayBuffer('big_numbers.i');
+const big_font = st.readArrayBuffer('metropolis-medium.72.f');
 const font = st.readArrayBuffer('metropolis-medium.18.f');
 const batt = st.readArrayBuffer('battery.i');
 const icons = st.readArrayBuffer('icons.i');
-
-const str = text => text.split('').map(char => char.charCodeAt(0) - 32).filter(i => i >= 0);
 
 const dows = [
   'Sunday',
@@ -97,7 +95,7 @@ const start = () => {
   };
 
   const update = () => {
-    const fill2 = a => a < 10 ? `0${a}` : a;
+    const fill2 = a => a < 10 ? `0${a}` : `${a}`;
 
     const now = new Date();
     if (SETTINGS.NEXT_TIMER) {
@@ -108,26 +106,20 @@ const start = () => {
       const hh = Math.floor(diff / 3600);
 
       if (hh >= 1) {
-        fb.set(ui[1], { index: str(`${hh}:${fill2(mm)}`) });
+        fb.set(ui[1], { index: `${hh}:${fill2(mm)}` });
       } else {
-        fb.set(ui[1], { index: str(`${mm}:${fill2(ss)}`) });
+        fb.set(ui[1], { index: `${mm}:${fill2(ss)}` });
       }
     } else {
-      fb.set(ui[0], { index: [] });
-      fb.set(ui[1], { index: [] });
+      fb.set(ui[0], { index: '' });
+      fb.set(ui[1], { index: '' });
     }
     const h = now.getHours();
     const m = now.getMinutes();
     const d = now.getDate();
     const dow = now.getDay();
     fb.set(time, {
-      index: [
-        Math.floor(h / 10),
-        Math.floor(h % 10),
-        10,
-        Math.floor(m / 10),
-        Math.floor(m % 10),
-      ]
+      index: `${fill2(h)}:${fill2(m)}`,
     });
     fb.set(date, {
       index: `${dows[dow]}, ${d}${suffix(d)}`

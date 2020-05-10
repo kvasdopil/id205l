@@ -295,7 +295,7 @@ const Storage = {
     const f = storageData[file];
     data.forEach((d, i) => f[i + offset] = d);
   },
-  getFree() { return 12345; }
+  getFree() { return 40960 - Object.values(storageData).reduce((a, b) => a + b.length, 0); }
 }
 
 const modules = {

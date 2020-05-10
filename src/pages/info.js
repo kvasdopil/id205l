@@ -15,7 +15,7 @@ const init = () => {
       y: 12,
       buf: font,
       c: 0xffff,
-      index: "A quick brown fox jumps:",
+      index: "Free storage:",
     }),
     fb.add({
       x: 12,
@@ -43,7 +43,7 @@ const init = () => {
       y: 86,
       buf: font,
       c: 0xffff,
-      index: "Over the lazy dog:",
+      index: "Vars:",
     }),
     fb.add({
       x: 12,

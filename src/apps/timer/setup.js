@@ -3,11 +3,13 @@ const st = require('Storage');
 const SETTINGS = require('./src/globals');
 const Watch = require('./src/ID205L');
 
-const big = st.readArrayBuffer('big_numbers.i');
+const big = st.readArrayBuffer('metropolis-medium.72.f');
 const icons = st.readArrayBuffer('icons.i');
 const font = st.readArrayBuffer('metropolis-medium.18.f');
 
 const start = (navigate) => {
+  const fill2 = a => a < 10 ? `0${a}` : `${a}`;
+
   if (SETTINGS.NEXT_TIMER) {
     setTimeout(() => navigate(2), 1);
     return { onStop: () => { } };
@@ -19,8 +21,8 @@ const start = (navigate) => {
   let mm = 15;
 
   const ui = [
-    fb.add({ x: 70, y: 70, w: 1, c: COLOR_BR, buf: big, index: [0, 0] }),
-    fb.add({ x: 170, y: 70, w: 1, c: COLOR_BR, buf: big, index: [1, 5] }),
+    fb.add({ x: 70, y: 70, w: 1, c: COLOR_BR, buf: big, index: `00` }),
+    fb.add({ x: 170, y: 70, w: 1, c: COLOR_BR, buf: big, index: `15` }),
     fb.add({ x: 70, y: 30, w: 1, c: 0xffff, buf: icons, index: 8 }),
     fb.add({ x: 170, y: 30, w: 1, c: 0xffff, buf: icons, index: 8 }),
     fb.add({ x: 70, y: 155, w: 1, c: 0xffff, buf: icons, index: 9 }),
@@ -61,8 +63,8 @@ const start = (navigate) => {
       }
     }
     Watch.vibrate(30);
-    fb.set(ui[0], { index: [hh / 10, hh % 10] });
-    fb.set(ui[1], { index: [mm / 10, mm % 10] });
+    fb.set(ui[0], { index: fill2(hh) });
+    fb.set(ui[1], { index: fill2(mm) });
   };
   const onLongTap = (e) => {
     if (e.y > 200) return;
@@ -77,8 +79,8 @@ const start = (navigate) => {
       if (mm > 59) { mm = 59 };
     }
     Watch.vibrate(30);
-    fb.set(ui[0], { index: [hh / 10, hh % 10] });
-    fb.set(ui[1], { index: [mm / 10, mm % 10] });
+    fb.set(ui[0], { index: fill2(hh) });
+    fb.set(ui[1], { index: fill2(mm) });
   }
   return {
     onLongTap: onLongTap,
